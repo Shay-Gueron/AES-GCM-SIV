@@ -185,7 +185,6 @@ void init_buffers(int total_blocks, int init_MSG_bit_len, int init_AAD_bit_len,
 				unsigned char* K, 
 				unsigned char* H, 
 				unsigned char* IV, 
-				unsigned char* ZERO_and_ONE,
 				unsigned char* AND_MASK);
 
 

@@ -110,7 +110,6 @@ int main(int argc, char *argv[])
 	uint8_t TAG_dec[16]={0};  			//TAG calculated for authentication
 	uint8_t Htbl[16*8];
 	uint8_t LENBLK[16];
-	uint8_t ZERO_and_ONE_and_TWO[48]={0}; 
 	uint8_t ZERO[16]={0};
 	uint8_t AND_MASK[16]={0};
 	uint8_t H_and_K[48]={0};
@@ -145,7 +144,6 @@ int main(int argc, char *argv[])
 				LENBLK,
 				SINGLE_KEY, 
 				K, H, IV, 
-				ZERO_and_ONE_and_TWO,
 				AND_MASK);
 	
 #ifdef DETAILS	
@@ -177,10 +175,7 @@ int main(int argc, char *argv[])
 					
 #endif	
 
-		//Precalculate
-		#ifdef ONE_KEY 
-		AES256_KS_no_mem_ENC_x3(ZERO_and_ONE_and_TWO, H, K, SINGLE_KEY); 
-		#endif
+
 		INIT_Htable(Htbl, H);
 	
 //*********************************** START - ENCRYPT **********************************************	
@@ -191,10 +186,7 @@ int main(int argc, char *argv[])
 	#endif
 #endif
 
-	#ifdef ONE_KEY 
-	//derive H and K from SINGLE_KEY
-	AES256_KS_no_mem_ENC_x3(ZERO_and_ONE_and_TWO, H, K, SINGLE_KEY); 
-	#endif
+
 	
 	if (total_blocks <= 8) { //HORNER
 	
@@ -254,9 +246,7 @@ int main(int argc, char *argv[])
 
 
 	//Precalculate
-	#ifdef ONE_KEY
-	AES256_KS_no_mem_ENC_x3(ZERO_and_ONE_and_TWO, H, K, SINGLE_KEY); 
-	#endif
+
 	INIT_Htable_6(Htbl, H);
 	((__m128i*)IV_split)[0] = _mm_xor_si128(*((__m128i*)ZERO), *((__m128i*)IV)); 
 	((__m128i*)IV_split)[1] = _mm_xor_si128(*((__m128i*)ZERO), *((__m128i*)IV)); 
@@ -275,10 +265,7 @@ int main(int argc, char *argv[])
 	#endif
 #endif
 
-	#ifdef ONE_KEY 
-	//derive H and K from SINGLE_KEY
-	AES256_KS_no_mem_ENC_x3(ZERO_and_ONE_and_TWO, H, K, SINGLE_KEY);  
-	#endif
+
 	
 	#ifdef WITH_INIT
 	if (L2 >= 6) { //Need Htable
@@ -578,7 +565,7 @@ void init_buffers(int total_blocks, int init_MSG_bit_len, int init_AAD_bit_len,
 				unsigned char* K, 
 				unsigned char* H, 
 				unsigned char* IV, 
-				unsigned char* ZERO_and_ONE_and_TWO,
+
 				unsigned char* AND_MASK) 
 {
 	int i, j;
@@ -596,9 +583,7 @@ void init_buffers(int total_blocks, int init_MSG_bit_len, int init_AAD_bit_len,
 	H[0]=3;
 	IV[0]=3;
 	AND_MASK[15] = 127;		//AND_MASK= 011111..11
-	ZERO_and_ONE_and_TWO[0] = 0;
-	ZERO_and_ONE_and_TWO[16] = 1;
-	ZERO_and_ONE_and_TWO[32] = 2;
+
 	
 	//Init BIG_BUFFER: [00..1][00..2]...[len-block]
 	for(i=0; i< total_blocks*16; i++) {
@@ -629,11 +614,8 @@ void print_lengths(int init_AAD_byte_len,
 				  int padded_MSG_byte_len, 
 				  int L1, int L2)
 {
-	#ifdef ONE_KEY
-	printf("\n\n--------------------- SINGLE_KEY   (AAD = %d, MSG = %d)---------\n\n", init_AAD_byte_len, init_MSG_byte_len);
-	#else
+
 	printf("\n\n--------------------- TWO_KEYS     (AAD = %d, MSG = %d)---------\n\n", init_AAD_byte_len, init_MSG_byte_len);
-	#endif
 	printf("AAD_byte_len = %d\n", init_AAD_byte_len);
 	printf("AAD_bit_len  = %d\n", init_AAD_bit_len);
 	printf("MSG_byte_len = %d\n", init_MSG_byte_len);
@@ -666,29 +648,20 @@ void print_buffers_BE(int init_AAD_byte_len,
 	printf("                                --------------------------------\n");
 
 	
-	#ifdef ONE_KEY
-		printf("SINGLE_KEY =                    "); print_buffer_BE(SINGLE_KEY,32);
-	#else
+
 		printf("K1 = H =                        "); print16_BE(H);
 		printf("K2 = K =                        "); print_buffer_BE(K,32);
-	#endif
+
 		printf("NONCE =                         "); print16_BE(IV);
 	  printf("AAD =                           ");print_buffer_BE(BIG_BUF, init_AAD_byte_len);
 		printf("MSG =                           ");print_buffer_BE(BIG_BUF+padded_AAD_byte_len, init_MSG_byte_len);
 	  printf("PADDED_AAD_and_MSG =            ");print_buffer_BE(BIG_BUF, (total_blocks-1)*16);
 	  printf("LENBLK =                        "); print_buffer_BE(BIG_BUF+(total_blocks-1)*16, 16);
 		
-	#ifdef ONE_KEY
+
 		printf("\nComputing POLYVAL on a\nbuffer of %d blocks + LENBLK.\n", total_blocks-1);
-		#ifdef ADD_INFO
-		printf("\nWorking option is:\nSINGLE_KEY\n\n");
-		#endif
-	#else
-		printf("\nComputing POLYVAL on a\nbuffer of %d blocks + LENBLK.\n", total_blocks-1);
-		#ifdef ADD_INFO
-		printf("\nWorking option is:\nTWO_KEYS\n\n");
-		#endif
-	#endif
+
+
 }
 
 void print_buffers_LE(int init_AAD_byte_len, 
@@ -706,30 +679,20 @@ void print_buffers_LE(int init_AAD_byte_len,
 	printf("                                MSB--------------------------LSB\n");
 	printf("                                15141312111009080706050403020100\n");
 	printf("                                --------------------------------\n");
-	#ifdef ONE_KEY
-		printf("SINGLE_KEY =                    "); print_buffer_LE(SINGLE_KEY,32);
-		
-	#else
+
 		printf("K1 = H =                        "); print16_LE(H);
 		printf("K2 = K =                        "); print_buffer_LE(K,32);
-	#endif
+
 		printf("NONCE =                         "); print16_LE(IV);
 	    printf("AAD =                           ");print_buffer_LE(BIG_BUF, init_AAD_byte_len);
 		printf("MSG =                           ");print_buffer_LE(BIG_BUF+padded_AAD_byte_len, init_MSG_byte_len);
 	    printf("PADDED_AAD_and_MSG =            ");print_buffer_LE(BIG_BUF, (total_blocks-1)*16);
 	    printf("LENBLK =                        "); print_buffer_LE(BIG_BUF+(total_blocks-1)*16, 16);
 		
-	#ifdef ONE_KEY
+
 		printf("\nComputing POLYVAL on a\nbuffer of %d blocks + LENBLK.\n", total_blocks-1);
-		#ifdef ADD_INFO
-		printf("\nWorking option is:\nSINGLE_KEY\n\n");
-		#endif
-	#else
-		printf("\nComputing POLYVAL on a\nbuffer of %d blocks + LENBLK.\n", total_blocks-1);
-		#ifdef ADD_INFO
-		printf("\nWorking option is:\nTWO_KEYS\n\n");
-		#endif
-	#endif
+
+
 }
 
 void print_res_buffers_BE(int init_AAD_byte_len, int init_MSG_byte_len,
@@ -742,10 +705,7 @@ void print_res_buffers_BE(int init_AAD_byte_len, int init_MSG_byte_len,
 							unsigned char* BIG_BUF,
 							unsigned char* CT)
 {
-	#ifdef ONE_KEY
-	printf("Derived H =                     "); print16_BE(H);
-	printf("Derived K =                     "); print_buffer_BE(K,32);
-	#endif
+
 	
 	printf("POLYVAL =                       "); print_buffer_BE(T,16);
 	printf("POLYVAL_xor_NONCE  =            "); print_buffer_BE(TxorIV,16);
@@ -765,10 +725,7 @@ void print_res_buffers_LE(int init_AAD_byte_len, int init_MSG_byte_len,
 							unsigned char* BIG_BUF,
 							unsigned char* CT)
 {
-	#ifdef ONE_KEY
-	printf("Derived H =                     "); print16_LE(H);
-	printf("Derived K =                     "); print_buffer_LE(K,32);
-	#endif
+
 	
 	printf("POLYVAL =                       "); print_buffer_LE(T,16);
 	printf("POLYVAL_xor_NONCE  =            "); print_buffer_LE(TxorIV,16);

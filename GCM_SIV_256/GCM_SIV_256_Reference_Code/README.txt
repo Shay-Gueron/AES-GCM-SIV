@@ -2,7 +2,7 @@ GENERAL_PURPOSE_SIV
 
 To compile, use the makefile in 2 ways:
 1. make DEF=-DDETAILS      - The executable will print outputs for 
-                             SINGLE_KEY and TWO_KEYS according to provided parameters
+                             according to provided parameters
 2. make	                   - The executable will run 40 random tests
 
 The compilation line is:
@@ -73,58 +73,3 @@ Decrypted MSG =                 02000000000000000000000000000000
                                 03000000000000000000000000000000
                                 0400
 SIV_GCM_2_KEYS Passed
-
-*****************************
-Performing SIV_GCM - One Key:
-*****************************
-
-AAD_len = 12 bytes
-MSG_len = 34 bytes
-                                            BYTES ORDER         
-                                LSB--------------------------MSB
-                                00010203040506070809101112131415
-                                --------------------------------
-
-SINGLE_KEY=                     03000000000000000000000000000000
-NONCE =                         03000000000000000000000000000000
-
-AAD =                           010000000000000000000000
-
-MSG =                           02000000000000000000000000000000
-                                03000000000000000000000000000000
-                                0400
-
-PADDED_AAD =                    01000000000000000000000000000000
-
-PADDED_MSG =                    02000000000000000000000000000000
-                                03000000000000000000000000000000
-                                04000000000000000000000000000000
-
-Derived K1 = H =                79c86d43f2be7fce99dd2c2133b0cf7c
-
-Derived K2 = K =                03218f15cc158864f8b7fbb322af7706
-
-LENBLK =                        10010000000000006000000000000000
-
-POLYVAL =                       23e068344bd38cbeb7cff9214dcc325f
-
-POLYVAL_xor_NONCE =             20e068344bd38cbeb7cff9214dcc325f
-
-with_MSbit_cleared =            20e068344bd38cbeb7cff9214dcc325f
-
-TAG =                           a24c333dc0d0d820d0959c73c9588b17
-
-CTRBLK =                        01000000c0d0d820d0959c73c9588b97
-
-TAG' =                          a24c333dc0d0d820d0959c73c9588b17
-
-AAD =                           010000000000000000000000
-
-CIPHERTEXT =                    b338727f5d28516f2de17123a61256f9
-                                963ab56f5a5c8e35adbc4f2f76d1599e
-                                88be
-
-Decrypted MSG =                 02000000000000000000000000000000
-                                03000000000000000000000000000000
-                                0400
-SIV_GCM_1_KEY  Passed

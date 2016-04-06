@@ -323,31 +323,7 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	AES_256_CTR(CT, MSG, (uint32_t*)CTR, MSG_len + msg_pad, (uint32_t*)KS);
 }
 
-void GCM_SIV_ENC_1_Key(uint8_t* CT, uint8_t TAG[16], uint8_t K[32], uint8_t N[16], uint8_t* AAD, uint8_t* MSG, 
-						uint64_t AAD_len, uint64_t MSG_len) 
-{
-	uint64_t ZERO[2] = {0};
-	uint64_t ONE[2] = {1, 0};
-	uint64_t TWO[2] = {2, 0};
-	uint8_t K1[16];
-	uint8_t K2[32];
 
-	uint64_t KS[30];
-	
-	AES_256_Key_Expansion(K, (uint32_t*)KS);
-   
-    AES_256_Encrypt((uint32_t*)K1, (uint32_t*)ZERO, (uint32_t*)KS); 
-	AES_256_Encrypt((uint32_t*)K2, (uint32_t*)ONE,  (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)(&K2[16]), (uint32_t*)TWO,  (uint32_t*)KS);
-	
-#ifdef DETAILS
-	printf("\nDerived K1 = H =                "); print16(K1);
-	printf("\nDerived K2 = K =                "); print16(K2);
-	printf("\n                                "); print16(K2+16);
-#endif
-
-	GCM_SIV_ENC_2_Keys(CT, TAG, K1, K2, N, AAD, MSG, AAD_len, MSG_len);
-}
 
 int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2[32], uint8_t N[16], uint8_t* AAD, uint8_t* CT, 
 						uint64_t AAD_len, uint64_t MSG_len)
@@ -415,24 +391,6 @@ int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	return 0;
 }
 
-void GCM_SIV_DEC_1_Key(uint8_t* MSG, uint8_t TAG[16], uint8_t K[32], uint8_t N[16], uint8_t* AAD, uint8_t* CT, 
-						uint64_t AAD_len, uint64_t MSG_len) 
-{
-	uint64_t ZERO[2] = {0};
-	uint64_t ONE[2] = {1, 0};
-	uint64_t TWO[2] = {2, 0};
-	uint8_t K1[16];
-	uint8_t K2[32];
-    
-	uint64_t KS[30];
-	
-	AES_256_Key_Expansion(K, (uint32_t*)KS);
-   
-    AES_256_Encrypt((uint32_t*)K1, (uint32_t*)ZERO, (uint32_t*)KS); 
-	AES_256_Encrypt((uint32_t*)K2, (uint32_t*)ONE,  (uint32_t*)KS);
-    AES_256_Encrypt((uint32_t*)(&K2[16]), (uint32_t*)TWO,  (uint32_t*)KS);
-	GCM_SIV_DEC_2_Keys(MSG, TAG, K1, K2, N, AAD, CT, AAD_len, MSG_len);
-}
 
 
 

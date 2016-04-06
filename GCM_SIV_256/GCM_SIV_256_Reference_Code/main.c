@@ -92,23 +92,6 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, u
                    uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad, int flag);
 
 
-void SIV_GCM_ENC_1_Key(uint8_t* CT, 				// Output
-						uint8_t TAG[16], 			// Output
-						uint8_t K1[16],
-						uint8_t N[16],						
-						uint8_t* AAD, 
-						uint8_t* MSG, 
-						uint64_t AAD_len, 
-						uint64_t MSG_len);
-				
-int SIV_GCM_DEC_1_Keys(uint8_t* MSG, 				// Output
-						uint8_t TAG[16], 			
-						uint8_t K[16],
-						uint8_t N[16],
-						uint8_t* AAD, 
-						uint8_t* CT, 
-						uint64_t AAD_len, 
-						uint64_t CT_len);
 				
 void SIV_GCM_ENC_2_Keys(uint8_t* CT, 				// Output
 						uint8_t TAG[16], 			// Output
@@ -207,37 +190,7 @@ int main(int argc, char *argv[])
 		printf("SIV_GCM_2_KEYS Failed\n");
 	}
 	
-		
-//Check SIV_GCM 1 key	
 	
-#ifdef DETAILS
-	printf("\n*****************************");
-	printf("\nPerforming SIV_GCM - One Key:");
-	printf("\n*****************************\n\n");
-	printf("AAD_len = %d bytes\n", aad_len);
-	printf("MSG_len = %d bytes\n", in_len);
-	print_buffers(PLAINTEXT, AAD, K1, K2, N, aad_len, in_len, aad_pad, msg_pad, SINGLE_KEY);
-#endif
-	
-	GCM_SIV_ENC_1_Key(CIPHERTEXT, TAG, K1, N, AAD, PLAINTEXT, aad_len, in_len);
-	res = GCM_SIV_DEC_1_Key(decrypted_CT, TAG, K1, N, AAD, CIPHERTEXT, aad_len, in_len);
-	
-#ifdef DETAILS
-	printf("\nAAD =                           "); print_buffer(AAD, aad_len);
-	printf("\nCIPHERTEXT =                    "); print_buffer(CIPHERTEXT, in_len);
-	printf("\nDecrypted MSG =                 "); print_buffer(decrypted_CT, in_len);
-#endif
-
-	if (res == SUCCESS && (memcmp(PLAINTEXT, decrypted_CT, in_len) == 0)) {
-		printf("SIV_GCM_1_KEY  Passed\n");
-	}
-	else {
-		printf("SIV_GCM_1_KEY Failed\n");
-	}
-#ifndef DETAILS
-} //end count for loop 
-#endif
- 
  
 	free(PLAINTEXT);
     free(CIPHERTEXT);
@@ -351,15 +304,11 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, u
 	#endif
 	printf("                                --------------------------------\n\n");
 	
-	if (flag == SINGLE_KEY) {
-		printf("SINGLE_KEY=                     "); print16(K1);
-		printf("                                "); print16(K1+16);
-	}
-	else {
-		printf("K1 = H =                        "); print16(K1);
-		printf("K2 = K =                        "); print16(K2);
-		printf("                                "); print16(K2+16);
-	}
+
+	printf("K1 = H =                        "); print16(K1);
+	printf("K2 = K =                        "); print16(K2);
+	printf("                                "); print16(K2+16);
+
 	
 	printf("NONCE =                         "); print16(N);
 	printf("\nAAD =                           "); print_buffer(AAD, aad_len);

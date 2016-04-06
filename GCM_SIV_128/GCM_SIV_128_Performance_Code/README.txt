@@ -7,6 +7,6 @@ By default printouts are made.
 
 
 The executables receive 2 parameters
-The parameters are: GCM_SIV_1_KEY_ENC A B
+The parameters are: GCM_SIV_ENC A B
 A - AAD length in bytes
 B - MSG length in bytes
