@@ -155,7 +155,12 @@ ENC_MSG_x8:
 .Lbegin:
     pushq   %rbp
     movq    %rsp, %rbp
-    
+    pushq   %rdi
+	pushq   %rsi
+	pushq   %rdx
+	pushq   %rcx
+	pushq   %r8
+	pushq   %r10
 	#Place in stack
  	subq    $16, %rsp
     andq    $-64, %rsp
@@ -314,7 +319,12 @@ LOOP2:
     jne       LOOP2
 	
 END:
-    
+	popq   %r10
+	popq   %r8
+    popq   %rcx
+	popq   %rdx
+	popq   %rsi
+	popq   %rdi
     movq    %rbp, %rsp
     popq    %rbp    
     ret

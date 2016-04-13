@@ -186,6 +186,11 @@ Polyval_Htable:
 .LbeginAAD:
 
     vzeroupper
+	pushq %rdi
+	pushq %rsi
+	pushq %rdx
+	pushq %rcx
+	pushq %r11
 
     vpxor    Xhi, Xhi, Xhi
     vmovdqu	(Tp),T
@@ -321,7 +326,11 @@ Polyval_Htable:
    
 	vmovdqu		T,(Tp)
     vzeroupper
-
+	popq %r11
+	popq %rcx
+	popq %rdx
+	popq %rsi
+	popq %rdi
     ret
 .size	Polyval_Htable,.-Polyval_Htable
 

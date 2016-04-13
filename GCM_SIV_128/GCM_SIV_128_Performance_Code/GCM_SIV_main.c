@@ -60,7 +60,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <wmmintrin.h>
-#include <openssl/aes.h>
+#include <string.h>
 #include "measurements.h"
 #include "GCM_SIV.h"
 
@@ -71,28 +71,28 @@
 //****************************************************************************				   
 int main(int argc, char *argv[])
 {
-	int L1, L2;
-	int init_AAD_bit_len;
-	int init_MSG_bit_len;
-	int init_AAD_byte_len;
-	int init_MSG_byte_len;
-	int padded_MSG_byte_len;
-    int padded_AAD_byte_len;	
-	int total_blocks; 
-	int i;
-	int enc_dec_flag;
-	unsigned char *BIG_BUF;
-	unsigned char *CT;
-	unsigned char *DT;
-	unsigned char *secureBuffer;
+	int L1=0, L2=0;
+	int init_AAD_bit_len=0;
+	int init_MSG_bit_len=0;
+	int init_AAD_byte_len=0;
+	int init_MSG_byte_len=0;
+	int padded_MSG_byte_len=0;
+    int padded_AAD_byte_len=0;	
+	int total_blocks=0; 
+	int i=0;
+	int enc_dec_flag=0;
+	unsigned char *BIG_BUF = NULL;
+	unsigned char *CT = NULL;
+	unsigned char *DT = NULL;
+	unsigned char *secureBuffer = NULL;
 	
 	ROUND_KEYS KS;
 	ROUND_KEYS KS_pseudo;	//Used in SINGLE_KEY mode for K1 and K2 derivation
 	ROUND_KEYS KS_dec;
 	
-	uint8_t K[16];
-	uint8_t H[16];
-	uint8_t SINGLE_KEY[16];
+	uint8_t K[16]={0};
+	uint8_t H[16]={0};
+	uint8_t SINGLE_KEY[16]={0};
 	uint8_t IV[16]={0};
 	uint8_t TAG[16]={0};  
 	uint8_t T[16]={0};  
@@ -100,8 +100,8 @@ int main(int argc, char *argv[])
 	uint8_t TxorIV_masked[16]={0};
 	uint8_t POLYVAL_dec[16]={0};		//POLYVAL calculation during decryption
 	uint8_t TAG_dec[16]={0};  			//TAG calculated for authentication
-	uint8_t Htbl[16*8];
-	uint8_t LENBLK[16];
+	uint8_t Htbl[16*8]={0};
+	uint8_t LENBLK[16]={0};
 	uint8_t ZERO_and_ONE[32]={0}; 
 	uint8_t ZERO[16]={0};
 	uint8_t AND_MASK[16]={0};

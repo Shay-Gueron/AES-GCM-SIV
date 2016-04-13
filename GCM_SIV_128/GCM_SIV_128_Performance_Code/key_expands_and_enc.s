@@ -75,6 +75,8 @@ AES_KS:
 # parameter 1: %rdi
 # parameter 2: %rsi
    #movl      $10, 240(%rsi)
+   pushq %rdi
+   pushq %rsi
    vmovdqu    (%rdi), %xmm1								# xmm1 = user key
    vmovdqu    %xmm1, (%rsi)								# rsi points to output
 
@@ -122,7 +124,8 @@ LOOP1_AVX:
    vpxor %xmm3, %xmm1, %xmm1
    vpxor %xmm2, %xmm1, %xmm1
    vmovdqu %xmm1, 32(%rsi)
-
+   popq %rsi
+   popq %rdi
    ret        
    
 #########################################################
@@ -149,9 +152,9 @@ LOOP1_AVX:
       vpslld $1, %xmm0, %xmm0
 	  KS_BLOCK KS1_REGA KS1_REGB AUXREG
       vaesenc  %xmm1, BLOCK1, BLOCK1
-.ifdef DUMP_KEYS
+
       vmovdqa %xmm1, \i*16(%rcx)   
-.endif      
+    
 .endm        
 
 .macro roundlast i
@@ -159,9 +162,9 @@ LOOP1_AVX:
       vaesenclast %xmm0, %xmm2, %xmm2
 	  KS_BLOCK KS1_REGA KS1_REGB AUXREG
       vaesenclast  %xmm1, BLOCK1, BLOCK1
-.ifdef DUMP_KEYS      
+      
       vmovdqa %xmm1, \i*16(%rcx)   
-.endif      
+    
 .endm        
 
 .globl AES_KS_ENC_x1
@@ -173,12 +176,18 @@ AES_KS_ENC_x1:
 # parameter 5: %r8							Pointer to initial key
 # parameter 5: %r9d							key length (unused for now)
 
-   movl      $10, 240(%rcx)					# key.rounds = 10
+  # movl      $10, 240(%rcx)					# key.rounds = 10
+   pushq %rdi
+   pushq %rsi
+   pushq %rdx
+   pushq %rcx
+   pushq %r8
+   pushq   %r9
    vmovdqu    (%r8), %xmm1					# xmm1 = first 16 bytes of random key
    vmovdqu  0*16(%rdi), BLOCK1
-.ifdef DUMP_KEYS   
+ 
    vmovdqa    %xmm1, (%rcx)					# KEY[0] = first 16 bytes of random key
-.endif   
+
    
    vpxor    %xmm1, BLOCK1, BLOCK1
    
@@ -200,7 +209,12 @@ AES_KS_ENC_x1:
    ROUNDLAST 10
    
    vmovdqu     BLOCK1, 0*16(%rsi)
-
+   popq  %r9
+   popq  %r8
+   popq  %rcx
+   popq  %rdx
+   popq  %rsi
+   popq  %rdi
    ret        
 
 #########################################################
@@ -260,6 +274,12 @@ AES_KS_no_mem_ENC_x2:
 # parameter 5: %r9d							key length (unused for now)
 
    #movl      $10, 240(%rcx)					# key.rounds = 10
+   pushq %rdi
+   pushq %rsi
+   pushq %rdx
+   pushq %rcx
+   pushq %r8
+   pushq %r9
    vmovdqu    (%r8), %xmm1					# xmm1 = first 16 bytes of random key
    vmovdqu  0*16(%rdi), BLOCK1
    vmovdqu  1*16(%rdi), BLOCK2
@@ -290,7 +310,12 @@ AES_KS_no_mem_ENC_x2:
    
    vmovdqu     BLOCK1, 0*16(%rsi)
    vmovdqu     BLOCK2, 0*16(%rdx)
-
+   popq  %r9
+   popq  %r8
+   popq  %rcx
+   popq  %rdx
+   popq  %rsi
+   popq  %rdi
    ret        
 
 ##########################################################
@@ -308,8 +333,10 @@ ECB_ENC_block:
 #parameter 2: CT  			%rsi	(pointer to 128 bit)
 #parameter 3: ks			%rdx	(pointer to ks)
 
-
-	push	%rbp								# store rbp
+	pushq   %rdx
+	pushq   %rdi
+	pushq   %rsi
+	pushq	%rbp								# store rbp
 	mov		%rsp, %rbp
 	
 	
@@ -332,7 +359,10 @@ ECB_ENC_block:
 
 
 	mov	%rbp, %rsp
-	pop	%rbp
+	popq	%rbp
+	popq    %rsi
+	popq    %rdi
+	popq    %rdx
 	ret
 
 	

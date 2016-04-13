@@ -130,6 +130,12 @@ ENC_MSG_x4:
     ret
 	
 .Lbegin:	   
+    pushq  %rdi
+	pushq  %rsi
+	pushq  %rdx
+	pushq  %rcx
+	pushq  %r8	  
+    pushq  %r10
 	movq      LEN, %r10
     shrq      $4, LEN							#LEN = num of blocks
     shlq      $60, %r10
@@ -254,7 +260,11 @@ LOOP2:
     jne       LOOP2
 	
 END:
-    
- 
+	popq %r10
+	popq %r8
+	popq %rcx
+	popq %rdx
+	popq %rsi
+	popq %rdi
     ret
 

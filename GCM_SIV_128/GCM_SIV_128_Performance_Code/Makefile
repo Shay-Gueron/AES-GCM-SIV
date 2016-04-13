@@ -1,7 +1,7 @@
-GCC = gcc -mpclmul -O3 -msse4 -maes  -mavx2
+GCC = gcc -mpclmul -O3 -maes  -mavx2
 ICC = icc
 FLAGS = -DRDTSC
-DEF= -DDETAILS -DLITTLE_ENDIAN_
+DEF= -DDETAILS -DADD_INFO
 #DEF= -DCOUNT
 
 

@@ -143,9 +143,13 @@ Polyval_Horner:
 	#We will start with L _GFMULS for POLYVAL(BIG_BUFFER)
 	#RES = _GFMUL(RES, H)
 	
-	
-	xor 		LOC, LOC 
-	shl 		$4, L						#L contains number of bytes to proceed
+	pushq %rdi
+	pushq %rsi
+	pushq %rdx
+	pushq %rcx
+	pushq %r10
+	xor 		%r10, %r10 
+	shl 		$4, %rcx						#L contains number of bytes to proceed
 	
 	vmovdqu  	(Hp), H						
 	vmovdqu		(T), RES
@@ -162,8 +166,12 @@ Polyval_Horner:
 
 	#calculation of T is over here. RES=T
 											
-	vmovdqu RES, (T)	
-	
+	vmovdqu RES, (%rdi)	
+	popq %r10
+	popq %rcx
+	popq %rdx
+	popq %rsi
+	popq %rdi
 ret
 
 	

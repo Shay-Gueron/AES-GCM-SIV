@@ -158,20 +158,28 @@ Decrypt_Htable:
    vpclmulqdq  $0x01, HTABLE_ROUNDS, TMP5, TMP3
    vpxor TMP3, TMP0, TMP0
 .endm
-
+	pushq %rdi
+	pushq %rsi
+	pushq %rdx
+	pushq %rcx
+	pushq %r8
+	pushq %r9
+	pushq %r10
+	pushq %r13
+	pushq %rax
 	
 	
-	mov $0, LEN
-	movw 	8(%rsp), LEN
-	
+	movq 	8+9*8(%rsp), LEN
+	movq $0xffffffff, %r13
+    andq    %r13, LEN
 	test  	LEN, LEN
     jnz   .Lbegin
-    ret
+    jmp .LDone
 
 .Lbegin:
 
     vzeroupper
-    mov      16(%rsp), secureBuffer
+    mov      16+9*8(%rsp), secureBuffer
 	vmovdqu  (POL), T
 
 	leaq 32(secureBuffer), secureBuffer
@@ -441,6 +449,16 @@ Decrypt_Htable:
 
 DATA_END:
     vmovdqu  T, (POL)
+.LDone:
+	popq %rax
+	popq %r13
+	popq %r10
+	popq %r9
+	popq %r8
+	popq %rcx
+	popq %rdx
+	popq %rsi
+	popq %rdi
     ret
 	
 .size Decrypt_Htable, .-Decrypt_Htable
