@@ -62,9 +62,9 @@ CTR_MASK:
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 ONE:
-.quad	1,0
+.quad   1,0
 TWO:
-.quad	2,0
+.quad   2,0
 poly:
 .quad 0x1, 0xc200000000000000 
 
@@ -101,26 +101,26 @@ poly:
 .set secureBuffer, %rax
 
 ###############################################################################
-# void Decrypt_Htable(unsigned char* CT, 				//input
-#				 	unsigned char* PT,					//output
-#				 	unsigned char POLYVAL_dec[16], 		//input/output
-#					unsigned char TAG[16],
-#				 	unsigned char Htable[16*8],
-#				 	unsigned char* KS, 					//Key Schedule for decryption
-#					int byte_len,
-#					unsigned char secureBuffer[16*8]);		
+# void Decrypt_Htable(unsigned char* CT,                //input
+#                   unsigned char* PT,                  //output
+#                   unsigned char POLYVAL_dec[16],      //input/output
+#                   unsigned char TAG[16],
+#                   unsigned char Htable[16*8],
+#                   unsigned char* KS,                  //Key Schedule for decryption
+#                   int byte_len,
+#                   unsigned char secureBuffer[16*8]);      
 
 .type Decrypt_Htable,@function
 .globl Decrypt_Htable
 .align 16
 Decrypt_Htable:
-# parameter 1: %rdi		CT    		 # input
-# parameter 2: %rsi		PT    		 # output
-# parameter 3: %rdx  	POL			 # input/output
-# parameter 4: %rcx  	TAG			 # TAG
-# parameter 5: %r8   	Htbl		 # H
-# parameter 6: %r9   	KS			 # KS
-# parameter 7: %rsp+8   LEN			 # LEN
+# parameter 1: %rdi     CT           # input
+# parameter 2: %rsi     PT           # output
+# parameter 3: %rdx     POL          # input/output
+# parameter 4: %rcx     TAG          # TAG
+# parameter 5: %r8      Htbl         # H
+# parameter 6: %r9      KS           # KS
+# parameter 7: %rsp+8   LEN          # LEN
 # parameter 8: %rsp+16  secureBuffer # secureBuffer
 
 .macro ROUND i
@@ -146,33 +146,33 @@ Decrypt_Htable:
 .endm
 
 .macro SCHOOLBOOK i
-   vmovdqu  \i*16-32(secureBuffer), TMP5
-   vmovdqu  \i*16-32(Htbl), HTABLE_ROUNDS
-
-   vpclmulqdq  $0x10, HTABLE_ROUNDS, TMP5, TMP3
-   vpxor TMP3, TMP0, TMP0
-   vpclmulqdq  $0x11, HTABLE_ROUNDS, TMP5, TMP3
-   vpxor TMP3, TMP1, TMP1
-   vpclmulqdq  $0x00, HTABLE_ROUNDS, TMP5, TMP3
-   vpxor TMP3, TMP2, TMP2
-   vpclmulqdq  $0x01, HTABLE_ROUNDS, TMP5, TMP3
-   vpxor TMP3, TMP0, TMP0
+    vmovdqu  \i*16-32(secureBuffer), TMP5
+    vmovdqu  \i*16-32(Htbl), HTABLE_ROUNDS
+   
+    vpclmulqdq  $0x10, HTABLE_ROUNDS, TMP5, TMP3
+    vpxor TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, HTABLE_ROUNDS, TMP5, TMP3
+    vpxor TMP3, TMP1, TMP1
+    vpclmulqdq  $0x00, HTABLE_ROUNDS, TMP5, TMP3
+    vpxor TMP3, TMP2, TMP2
+    vpclmulqdq  $0x01, HTABLE_ROUNDS, TMP5, TMP3
+    vpxor TMP3, TMP0, TMP0
 .endm
-	pushq %rdi
-	pushq %rsi
-	pushq %rdx
-	pushq %rcx
-	pushq %r8
-	pushq %r9
-	pushq %r10
-	pushq %r13
-	pushq %rax
-	
-	
-	movq 	8+9*8(%rsp), LEN
-	movq $0xffffffff, %r13
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    pushq %r9
+    pushq %r10
+    pushq %r13
+    pushq %rax
+    
+    
+    movq    8+9*8(%rsp), LEN
+    movq $0xffffffff, %r13
     andq    %r13, LEN
-	test  	LEN, LEN
+    test    LEN, LEN
     jnz   .Lbegin
     jmp .LDone
 
@@ -180,23 +180,23 @@ Decrypt_Htable:
 
     vzeroupper
     mov      16+9*8(%rsp), secureBuffer
-	vmovdqu  (POL), T
+    vmovdqu  (POL), T
 
-	leaq 32(secureBuffer), secureBuffer
-	leaq 32(Htbl), Htbl
-	
-	#make CTRBLKs from TAG
-	vmovdqu  	(TAG), CTR
-	vpand 		CTR_MASK(%rip), CTR, CTR		#CTR = TAG[127...32][00..00]
-	vpor   		OR_MASK(%rip), CTR, CTR			#CTR = [1]TAG[126...32][00..00]
-	
-	
+    leaq 32(secureBuffer), secureBuffer
+    leaq 32(Htbl), Htbl
+    
+    #make CTRBLKs from TAG
+    vmovdqu     (TAG), CTR
+    vpand       CTR_MASK(%rip), CTR, CTR        #CTR = TAG[127...32][00..00]
+    vpor        OR_MASK(%rip), CTR, CTR         #CTR = [1]TAG[126...32][00..00]
+    
+    
     #If less then 6 blocks, make singles
-	cmp      $96, LEN
+    cmp      $96, LEN
     jb       .LDataSingles
 
-	
-	#Decrypt the first six blocks
+    
+    #Decrypt the first six blocks
     sub   $96, LEN
     vmovdqa  CTR, CTR1
     vpaddq   ONE(%rip), CTR1, CTR2
@@ -206,7 +206,7 @@ Decrypt_Htable:
     vpaddq   ONE(%rip), CTR5, CTR6
     vpaddq   TWO(%rip), CTR5, CTR
 
-	
+    
     vpxor  (KS), CTR1, CTR1
     vpxor  (KS), CTR2, CTR2
     vpxor  (KS), CTR3, CTR3
@@ -223,9 +223,9 @@ Decrypt_Htable:
     ROUND 7
     ROUND 8
     ROUND 9
-	LASTROUND 10
-	
-	#Xor with CT
+    LASTROUND 10
+    
+    #Xor with CT
     vpxor  0*16(CT), CTR1, CTR1
     vpxor  1*16(CT), CTR2, CTR2
     vpxor  2*16(CT), CTR3, CTR3
@@ -248,118 +248,118 @@ Decrypt_Htable:
 .align 64
 .LDataOctets:
 
-        cmp      $96, LEN
-        jb       .LEndOctets
-        sub      $96, LEN
+    cmp      $96, LEN
+    jb       .LEndOctets
+    sub      $96, LEN
 
-        vmovdqu  CTR6, TMP5
-        vmovdqu  CTR5, 1*16-32(secureBuffer)
-        vmovdqu  CTR4, 2*16-32(secureBuffer)
-        vmovdqu  CTR3, 3*16-32(secureBuffer)
-        vmovdqu  CTR2, 4*16-32(secureBuffer)
-        vmovdqu  CTR1, 5*16-32(secureBuffer)
-       		
-		vmovdqa  CTR, CTR1
-		vpaddq   ONE(%rip), CTR1, CTR2
-		vpaddq   TWO(%rip), CTR1, CTR3
-		vpaddq   ONE(%rip), CTR3, CTR4
-		vpaddq   TWO(%rip), CTR3, CTR5
-		vpaddq   ONE(%rip), CTR5, CTR6
-		vpaddq   TWO(%rip), CTR5, CTR
-
-        vmovdqu (KS), TMP3
-        vpxor  TMP3, CTR1, CTR1
-        vpxor  TMP3, CTR2, CTR2
-        vpxor  TMP3, CTR3, CTR3
-        vpxor  TMP3, CTR4, CTR4
-        vpxor  TMP3, CTR5, CTR5
-        vpxor  TMP3, CTR6, CTR6
-       
-        vmovdqu     0*16-32(Htbl), TMP3
-        vpclmulqdq  $0x11, TMP3, TMP5, TMP1
-        vpclmulqdq  $0x00, TMP3, TMP5, TMP2 
-        vpclmulqdq  $0x01, TMP3, TMP5, TMP0
-        vpclmulqdq  $0x10, TMP3, TMP5, TMP3
-        vpxor       TMP3, TMP0, TMP0
-
-        ROUND 1
-        SCHOOLBOOK 1
-
-        ROUND 2
-        SCHOOLBOOK 2
-
-        ROUND 3
-        SCHOOLBOOK 3
-
-        ROUND 4
-        SCHOOLBOOK 4
-
-        ROUND 5
-        #SCHOOLBOOK 5
-
-        ROUND 6
-        #SCHOOLBOOK 6
-
-        ROUND 7
-
-        vmovdqu  5*16-32(secureBuffer), TMP5
-        vpxor T, TMP5, TMP5
-        vmovdqu  5*16-32(Htbl), TMP4
-
-        vpclmulqdq  $0x01, TMP4, TMP5, TMP3
-        vpxor TMP3, TMP0, TMP0
-        vpclmulqdq  $0x11, TMP4, TMP5, TMP3
-        vpxor TMP3, TMP1, TMP1
-        vpclmulqdq  $0x00, TMP4, TMP5, TMP3
-        vpxor TMP3, TMP2, TMP2
-        vpclmulqdq  $0x10, TMP4, TMP5, TMP3
-        vpxor TMP3, TMP0, TMP0
-
-        ROUND 8      
-
-        vpsrldq  $8, TMP0, TMP3
-        vpxor    TMP3, TMP1, TMP4
-        vpslldq  $8, TMP0, TMP3
-        vpxor    TMP3, TMP2, T
-
-        vmovdqa poly(%rip), TMP2
-
-        ROUND 9
-
-        vmovdqu  10*16(KS), TMP5
-       
-        vpalignr    $8, T, T, TMP1
-        vpclmulqdq  $0x10, TMP2, T, T
-        vpxor       T, TMP1, T
-
-        vpxor  0*16(CT), TMP5, TMP3
-        vaesenclast  TMP3, CTR1, CTR1
-        vpxor  1*16(CT), TMP5, TMP3
-        vaesenclast  TMP3, CTR2, CTR2
-        vpxor  2*16(CT), TMP5, TMP3
-        vaesenclast  TMP3, CTR3, CTR3
-        vpxor  3*16(CT), TMP5, TMP3
-        vaesenclast  TMP3, CTR4, CTR4
-        vpxor  4*16(CT), TMP5, TMP3
-        vaesenclast  TMP3, CTR5, CTR5
-        vpxor  5*16(CT), TMP5, TMP3
-        vaesenclast  TMP3, CTR6, CTR6
-       
-        vpalignr    $8, T, T, TMP1
-        vpclmulqdq  $0x10, TMP2, T, T
-        vpxor       T, TMP1, T
-
-        vmovdqu  CTR1, 0*16(PT)
-        vmovdqu  CTR2, 1*16(PT)
-        vmovdqu  CTR3, 2*16(PT)
-        vmovdqu  CTR4, 3*16(PT)
-        vmovdqu  CTR5, 4*16(PT)
-        vmovdqu  CTR6, 5*16(PT)
+    vmovdqu  CTR6, TMP5
+    vmovdqu  CTR5, 1*16-32(secureBuffer)
+    vmovdqu  CTR4, 2*16-32(secureBuffer)
+    vmovdqu  CTR3, 3*16-32(secureBuffer)
+    vmovdqu  CTR2, 4*16-32(secureBuffer)
+    vmovdqu  CTR1, 5*16-32(secureBuffer)
         
-        vpxor TMP4, T, T
+    vmovdqa  CTR, CTR1
+    vpaddq   ONE(%rip), CTR1, CTR2
+    vpaddq   TWO(%rip), CTR1, CTR3
+    vpaddq   ONE(%rip), CTR3, CTR4
+    vpaddq   TWO(%rip), CTR3, CTR5
+    vpaddq   ONE(%rip), CTR5, CTR6
+    vpaddq   TWO(%rip), CTR5, CTR
 
-        lea 96(CT), CT
-        lea 96(PT), PT
+    vmovdqu (KS), TMP3
+    vpxor  TMP3, CTR1, CTR1
+    vpxor  TMP3, CTR2, CTR2
+    vpxor  TMP3, CTR3, CTR3
+    vpxor  TMP3, CTR4, CTR4
+    vpxor  TMP3, CTR5, CTR5
+    vpxor  TMP3, CTR6, CTR6
+    
+    vmovdqu     0*16-32(Htbl), TMP3
+    vpclmulqdq  $0x11, TMP3, TMP5, TMP1
+    vpclmulqdq  $0x00, TMP3, TMP5, TMP2 
+    vpclmulqdq  $0x01, TMP3, TMP5, TMP0
+    vpclmulqdq  $0x10, TMP3, TMP5, TMP3
+    vpxor       TMP3, TMP0, TMP0
+
+    ROUND 1
+    SCHOOLBOOK 1
+
+    ROUND 2
+    SCHOOLBOOK 2
+
+    ROUND 3
+    SCHOOLBOOK 3
+
+    ROUND 4
+    SCHOOLBOOK 4
+
+    ROUND 5
+    #SCHOOLBOOK 5
+
+    ROUND 6
+    #SCHOOLBOOK 6
+
+    ROUND 7
+    
+    vmovdqu  5*16-32(secureBuffer), TMP5
+    vpxor T, TMP5, TMP5
+    vmovdqu  5*16-32(Htbl), TMP4
+    
+    vpclmulqdq  $0x01, TMP4, TMP5, TMP3
+    vpxor TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, TMP4, TMP5, TMP3
+    vpxor TMP3, TMP1, TMP1
+    vpclmulqdq  $0x00, TMP4, TMP5, TMP3
+    vpxor TMP3, TMP2, TMP2
+    vpclmulqdq  $0x10, TMP4, TMP5, TMP3
+    vpxor TMP3, TMP0, TMP0
+    
+    ROUND 8      
+    
+    vpsrldq  $8, TMP0, TMP3
+    vpxor    TMP3, TMP1, TMP4
+    vpslldq  $8, TMP0, TMP3
+    vpxor    TMP3, TMP2, T
+    
+    vmovdqa poly(%rip), TMP2
+    
+    ROUND 9
+    
+    vmovdqu  10*16(KS), TMP5
+    
+    vpalignr    $8, T, T, TMP1
+    vpclmulqdq  $0x10, TMP2, T, T
+    vpxor       T, TMP1, T
+    
+    vpxor  0*16(CT), TMP5, TMP3
+    vaesenclast  TMP3, CTR1, CTR1
+    vpxor  1*16(CT), TMP5, TMP3
+    vaesenclast  TMP3, CTR2, CTR2
+    vpxor  2*16(CT), TMP5, TMP3
+    vaesenclast  TMP3, CTR3, CTR3
+    vpxor  3*16(CT), TMP5, TMP3
+    vaesenclast  TMP3, CTR4, CTR4
+    vpxor  4*16(CT), TMP5, TMP3
+    vaesenclast  TMP3, CTR5, CTR5
+    vpxor  5*16(CT), TMP5, TMP3
+    vaesenclast  TMP3, CTR6, CTR6
+    
+    vpalignr    $8, T, T, TMP1
+    vpclmulqdq  $0x10, TMP2, T, T
+    vpxor       T, TMP1, T
+
+    vmovdqu  CTR1, 0*16(PT)
+    vmovdqu  CTR2, 1*16(PT)
+    vmovdqu  CTR3, 2*16(PT)
+    vmovdqu  CTR4, 3*16(PT)
+    vmovdqu  CTR5, 4*16(PT)
+    vmovdqu  CTR6, 5*16(PT)
+    
+    vpxor TMP4, T, T
+
+    lea 96(CT), CT
+    lea 96(PT), PT
     jmp  .LDataOctets
 
 .LEndOctets:
@@ -415,13 +415,13 @@ Decrypt_Htable:
 
 #Here we encrypt any remaining whole block
 .LDataSingles:
-	
-	#if there are no whole blocks
+    
+    #if there are no whole blocks
     cmp   $16, LEN
     jb    DATA_END
     sub   $16, LEN
 
-	vmovdqa CTR, TMP1
+    vmovdqa CTR, TMP1
     vpaddd  ONE(%rip), CTR, CTR
 
     vpxor    0*16(KS), TMP1, TMP1
@@ -450,17 +450,17 @@ Decrypt_Htable:
 DATA_END:
     vmovdqu  T, (POL)
 .LDone:
-	popq %rax
-	popq %r13
-	popq %r10
-	popq %r9
-	popq %r8
-	popq %rcx
-	popq %rdx
-	popq %rsi
-	popq %rdi
+    popq %rax
+    popq %r13
+    popq %r10
+    popq %r9
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
     ret
-	
+    
 .size Decrypt_Htable, .-Decrypt_Htable
 
 #########################
@@ -507,4 +507,4 @@ GFMUL_:
 
 
 
-	
+    

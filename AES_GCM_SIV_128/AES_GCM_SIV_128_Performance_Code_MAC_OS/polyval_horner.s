@@ -56,207 +56,122 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                #
 ###############################################################################
 
-.align  16
-CTR_MASK:
-.long    0x00000000,0xffffffff,0xffffffff,0xffffffff
-OR_MASK:
-.long    0x00000000,0x00000000,0x00000000,0x80000000
-one:
-.quad	1,0
-two:
-.quad	2,0
-three:
-.quad	3,0
-four:
-.quad	4,0
-
-.macro AES_ROUND i
-   vmovdqu  \i*16(KS), TMP
-   vaesenc  TMP, STATE1, STATE1
-   vaesenc  TMP, STATE2, STATE2
-   vaesenc  TMP, STATE3, STATE3
-   vaesenc  TMP, STATE4, STATE4
-
-.endm
-
-.macro AES_LASTROUND i
-   vmovdqu  \i*16(KS), TMP
-   vaesenclast  TMP, STATE1, STATE1
-   vaesenclast  TMP, STATE2, STATE2
-   vaesenclast  TMP, STATE3, STATE3
-   vaesenclast  TMP, STATE4, STATE4
-.endm
-
-.set CTR1, %xmm0
-.set CTR2, %xmm1
-.set CTR3, %xmm2
-.set CTR4, %xmm3
-.set ADDER, %xmm4
-
-.set STATE1, %xmm5
-.set STATE2, %xmm6
-.set STATE3, %xmm7
-.set STATE4, %xmm8
-
-.set TMP, %xmm12
-.set TMP2, %xmm13
-.set TMP3, %xmm14
-.set IV, %xmm15
-
-.set PT, %rdi
-.set CT, %rsi
-.set TAG, %rdx
-.set KS, %rcx
-.set LEN, %r8
+#.align  16
+ONE:
+.quad 1,0
+TWO:
+.quad 2,0
+.Lbswap_mask:
+.byte 15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
+shuff_mask:
+.quad 0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
+poly:
+.quad 0x1, 0xc200000000000000 
 
 
-#####################################################################
-# void ENC_MSG_x4(unsigned char* PT, 
-#				  unsigned char* CT, 
-#				  unsigned char* TAG, 
-#				  unsigned char* KS,
-#				  int byte_len);
-.globl ENC_MSG_x4
-ENC_MSG_x4:
+#####################
+#Used by _GFMUL     #
+#.set RES, %xmm0    #
+#.set H, %xmm1      #
+#.set TMP1, %xmm2   #
+#.set TMP2, %xmm3   #
+#.set TMP3, %xmm4   #
+#.set TMP4, %xmm5   #
+#################################################################
+# RES = _GFMUL(RES, H)
+# a = RES
+# b = H - remains unchanged
+# res = RES
+# uses also TMP1,TMP2,TMP3,TMP4
+# __m128i _GFMUL(__m128i A, __m128i B);
+#.type _GFMUL,@function
+.globl _GFMUL
+_GFMUL:  
+    vpclmulqdq  $0x00, %xmm1, %xmm0, %xmm2
+    vpclmulqdq  $0x11, %xmm1, %xmm0, %xmm5
+    vpclmulqdq  $0x10, %xmm1, %xmm0, %xmm3
+    vpclmulqdq  $0x01, %xmm1, %xmm0, %xmm4
+    vpxor       %xmm4, %xmm3, %xmm3
+    vpslldq     $8, %xmm3, %xmm4
+    vpsrldq     $8, %xmm3, %xmm3
+    vpxor       %xmm4, %xmm2, %xmm2
+    vpxor       %xmm3, %xmm5, %xmm5
 
-# parameter 1: %rdi     #PT
-# parameter 2: %rsi     #CT
-# parameter 3: %rdx     #TAG		[127 126 ... 0]  IV=[127...32]
-# parameter 4: %rcx     #KS
-# parameter 5: %r8      #LEN MSG_length in bytes
+    vpclmulqdq  $0x10, poly(%rip), %xmm2, %xmm3
+    vpshufd     $78, %xmm2, %xmm4
+    vpxor       %xmm4, %xmm3, %xmm2
+        
+    vpclmulqdq  $0x10, poly(%rip), %xmm2, %xmm3
+    vpshufd     $78, %xmm2, %xmm4
+    vpxor       %xmm4, %xmm3, %xmm2
 
-    test  LEN, LEN
-    jnz   .Lbegin
+    vpxor       %xmm5, %xmm2, %xmm0
     ret
-	
-.Lbegin:	   
-    pushq  %rdi
-	pushq  %rsi
-	pushq  %rdx
-	pushq  %rcx
-	pushq  %r8	  
-    pushq  %r10
-	movq      LEN, %r10
-    shrq      $4, LEN							#LEN = num of blocks
-    shlq      $60, %r10
-    je        NO_PARTS
-    addq      $1, LEN
-NO_PARTS:	
-	movq      LEN, %r10
-    shlq      $62, %r10
-    shrq      $62, %r10
-	
-	
-   	#make IV from TAG
-	vmovdqu		(TAG), IV
-	vpand 		CTR_MASK(%rip), IV, IV			#IV	  = TAG[127...32][00..00]
-	vpor   		 OR_MASK(%rip), IV, IV			#IV	  = [1]TAG[126...32][00..00]
-	
-	vmovdqu		four(%rip), ADDER				#Register to increment counters
-	vmovdqa     IV, CTR1			            #CTR1 = TAG[1][127...32][00..00]
-	vpaddq 		one(%rip)  ,   IV, CTR2			#CTR2 = TAG[1][127...32][00..01]
-	vpaddq 		two(%rip)  , IV, CTR3			#CTR3 = TAG[1][127...32][00..02]
-	vpaddq 		three(%rip),  IV, CTR4		    #CTR4 = TAG[1][127...32][00..03] 
-    
-	
-	    
-	shrq    $2, LEN
-    je      REMAINDER
-   							
-	subq    $64, CT
-    subq    $64, PT
+#.size _GFMUL, .-_GFMUL
 
-LOOP:
- 
-    addq    $64, CT   
-    addq    $64, PT 
 
-    vmovdqa CTR1, STATE1
-	vmovdqa CTR2, STATE2
-	vmovdqa CTR3, STATE3
-	vmovdqa CTR4, STATE4
-    
-	vpxor    (KS), STATE1, STATE1
-	vpxor    (KS), STATE2, STATE2
-	vpxor    (KS), STATE3, STATE3
-	vpxor    (KS), STATE4, STATE4
-    
-    AES_ROUND 1
-	vpaddq 		ADDER,  CTR1, CTR1
-    AES_ROUND 2
-	vpaddq 		ADDER,  CTR2, CTR2
-    AES_ROUND 3
-	vpaddq 		ADDER,  CTR3, CTR3
-    AES_ROUND 4
-	vpaddq 		ADDER,  CTR4, CTR4
-    
-	AES_ROUND 5    
-    AES_ROUND 6    
-    AES_ROUND 7
-    AES_ROUND 8
-    AES_ROUND 9
-	AES_LASTROUND 10
-	
-    #Xor with Plaintext
-    vpxor   0*16(PT), STATE1, STATE1
-    vpxor   1*16(PT), STATE2, STATE2
-    vpxor   2*16(PT), STATE3, STATE3
-    vpxor   3*16(PT), STATE4, STATE4
-   
-    dec LEN
 
-    vmovdqu STATE1, 0*16(CT)
-    vmovdqu STATE2, 1*16(CT)
-    vmovdqu STATE3, 2*16(CT)
-    vmovdqu STATE4, 3*16(CT)
- 
-    jne LOOP
-	
-	addq    $64,CT
-    addq    $64,PT
-   
-REMAINDER:
-   cmpq      $0, %r10
-   je   END
-   
-LOOP2:
-	
-	#enc each block separately
-	#CTR1 is the highest counter (even if no LOOP done)
-	
-	vmovdqa 	CTR1, STATE1
-	vpaddq 		one(%rip),  CTR1, CTR1					#inc counter
-	vpxor         (KS), STATE1, STATE1
-	vaesenc     16(KS), STATE1, STATE1
-	vaesenc    32(KS) , STATE1, STATE1
-    vaesenc    48(KS) , STATE1, STATE1
-    vaesenc    64(KS) , STATE1, STATE1
-    vaesenc    80(KS) , STATE1, STATE1
-    vaesenc    96(KS) , STATE1, STATE1
-    vaesenc    112(KS), STATE1, STATE1
-    vaesenc    128(KS), STATE1, STATE1
-    vaesenc    144(KS), STATE1, STATE1
-    vaesenclast  160(KS), STATE1, STATE1
-	
-	
-	#Xor with Plaintext
-    vpxor   (PT), STATE1, STATE1
-	
-	vmovdqu STATE1, (CT)
-	
-	addq    $16, PT
-	addq    $16, CT   
-     
-	
-	decq      %r10
-    jne       LOOP2
-	
-END:
-	popq %r10
-	popq %r8
-	popq %rcx
-	popq %rdx
-	popq %rsi
-	popq %rdi
+
+#.set T, %rdi
+#.set Hp, %rsi
+#.set INp, %rdx
+#.set L, %rcx
+#
+#.set LOC, %r10
+#.set LEN, %eax
+
+#void   Polyval_Horner(unsigned char T[16],         // output 
+#                       const unsigned char* H, // H
+#                       unsigned char* BUF,     // Buffer
+#                       unsigned int blocks);       // LEn2
+            
+            
+.globl _Polyval_Horner
+_Polyval_Horner:
+
+# parameter 1: %rdi     T       - pointers to POLYVAL output
+# parameter 2: %rsi     Hp      - pointer to H (user key)
+# parameter 3: %rdx     INp     - pointer to input
+# parameter 4: %rcx     L       - total number of blocks in input BUFFER
+    
+        
+    test  %rcx, %rcx
+    jnz   .LbeginPoly
+    ret
+    
+.LbeginPoly:    
+    #We will start with L _GFMULS for POLYVAL(BIG_BUFFER)
+    #%xmm0 = _GFMUL(%xmm0, %xmm1)
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r10
+    xor         %r10, %r10 
+    shl         $4, %rcx                        #L contains number of bytes to proceed
+    
+    vmovdqu     (%rsi), %xmm1                       
+    vmovdqu     (%rdi), %xmm0
+    
+.Lloop:
+
+    vpxor       (%rdx,%r10), %xmm0, %xmm0           #%xmm0 = %xmm0 + Xi
+    call _GFMUL                             #%xmm0 = %xmm0 * H
+    
+    
+    add     $16, %r10
+    cmp     %r10, %rcx
+    jne   .Lloop
+
+    #calculation of T is over here. %xmm0=T
+                                            
+    vmovdqu %xmm0, (%rdi)   
+    popq %r10
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
     ret
 
+    
