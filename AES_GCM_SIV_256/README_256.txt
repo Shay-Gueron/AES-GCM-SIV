@@ -1,9 +1,11 @@
 AES GCM SIV
 
-In the following package 2 different packages included:
+In the following package 3 different packages included:
 
-1. AES GCM SIV Package - ASM code - performance code.
+1. AES GCM SIV Package - ASM code - performance code - this versions was tested on linux based systems.
 2. AES GENEREL PURPOSE GCM SIV - C code - works on any computer.
+3. AES GCM SIV Package MAC OS- ASM code - performance code - version enabled for MAC OS using xcode, llvm and gcc.
+   The tested machine is using Apple LLVM Version 7.3.0 (clang-703.0.29) with target x86_64-apple-darwin15.3.0.
 
 Both of the codes were validated and both supply same output. 
 The Performance code has more details on output.

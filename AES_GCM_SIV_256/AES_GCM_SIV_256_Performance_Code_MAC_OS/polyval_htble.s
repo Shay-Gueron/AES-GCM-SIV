@@ -85,24 +85,24 @@ _INIT_Htable:
 #.set TMP0,%xmm1
 
 
-   vmovdqu	(%rsi), %xmm0
-   vmovdqu   %xmm0, %xmm1
-   vmovdqu   %xmm0, (%rdi)     # H 
-   call  GFMUL
-   vmovdqu  %xmm0, 16(%rdi)    # H^2 
-   call  GFMUL
-   vmovdqu  %xmm0, 32(%rdi)    # H^3
-   call  GFMUL
-   vmovdqu  %xmm0, 48(%rdi)    # H^4 
-   call  GFMUL
-   vmovdqu  %xmm0, 64(%rdi)    # H^5
-   call  GFMUL
-   vmovdqu  %xmm0, 80(%rdi)    # H^6 
-   call  GFMUL
-   vmovdqu  %xmm0, 96(%rdi)    # H^7 
-   call  GFMUL
-   vmovdqu  %xmm0, 112(%rdi)   # H^8  
-   ret
+    vmovdqu	(%rsi), %xmm0
+    vmovdqu   %xmm0, %xmm1
+    vmovdqu   %xmm0, (%rdi)     # H 
+    call  GFMUL
+    vmovdqu  %xmm0, 16(%rdi)    # H^2 
+    call  GFMUL
+    vmovdqu  %xmm0, 32(%rdi)    # H^3
+    call  GFMUL
+    vmovdqu  %xmm0, 48(%rdi)    # H^4 
+    call  GFMUL
+    vmovdqu  %xmm0, 64(%rdi)    # H^5
+    call  GFMUL
+    vmovdqu  %xmm0, 80(%rdi)    # H^6 
+    call  GFMUL
+    vmovdqu  %xmm0, 96(%rdi)    # H^7 
+    call  GFMUL
+    vmovdqu  %xmm0, 112(%rdi)   # H^8  
+    ret
 #.size INIT_Htable, .-INIT_Htable
 
 
@@ -122,20 +122,20 @@ _INIT_Htable_6:
 #.set TMP0,%xmm1
 
 
-   vmovdqu	(%rsi), %xmm0
-   vmovdqu   %xmm0, %xmm1
-   vmovdqu   %xmm0, (%rdi)     # H 
-   call  GFMUL
-   vmovdqu  %xmm0, 16(%rdi)    # H^2 
-   call  GFMUL
-   vmovdqu  %xmm0, 32(%rdi)    # H^3
-   call  GFMUL
-   vmovdqu  %xmm0, 48(%rdi)    # H^4 
-   call  GFMUL
-   vmovdqu  %xmm0, 64(%rdi)    # H^5
-   call  GFMUL
-   vmovdqu  %xmm0, 80(%rdi)    # H^6 
-   ret
+    vmovdqu	(%rsi), %xmm0
+    vmovdqu   %xmm0, %xmm1
+    vmovdqu   %xmm0, (%rdi)     # H 
+    call  GFMUL
+    vmovdqu  %xmm0, 16(%rdi)    # H^2 
+    call  GFMUL
+    vmovdqu  %xmm0, 32(%rdi)    # H^3
+    call  GFMUL
+    vmovdqu  %xmm0, 48(%rdi)    # H^4 
+    call  GFMUL
+    vmovdqu  %xmm0, 64(%rdi)    # H^5
+    call  GFMUL
+    vmovdqu  %xmm0, 80(%rdi)    # H^6 
+    ret
 #.size INIT_Htable_6, .-INIT_Htable_6
 
 ################################################################################
@@ -191,7 +191,7 @@ _Polyval_Htable:
 	pushq %rdx
 	pushq %rcx
 	pushq %r11
-	
+
     vpxor    %xmm9, %xmm9, %xmm9
     vmovdqu	(%rcx),%xmm1
 

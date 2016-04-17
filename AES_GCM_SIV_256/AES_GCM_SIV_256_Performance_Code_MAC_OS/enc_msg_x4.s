@@ -62,29 +62,29 @@ CTR_MASK:
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 one:
-.quad	1,0
+.quad   1,0
 two:
-.quad	2,0
+.quad   2,0
 three:
-.quad	3,0
+.quad   3,0
 four:
-.quad	4,0
+.quad   4,0
 
 .macro AES_ROUND i
-   vmovdqu  \i*16(%rcx), %xmm12
-   vaesenc  %xmm12, %xmm5, %xmm5
-   vaesenc  %xmm12, %xmm6, %xmm6
-   vaesenc  %xmm12, %xmm7, %xmm7
-   vaesenc  %xmm12, %xmm8, %xmm8
+    vmovdqu  \i*16(%rcx), %xmm12
+    vaesenc  %xmm12, %xmm5, %xmm5
+    vaesenc  %xmm12, %xmm6, %xmm6
+    vaesenc  %xmm12, %xmm7, %xmm7
+    vaesenc  %xmm12, %xmm8, %xmm8
 
 .endm
 
 .macro AES_LASTROUND i
-   vmovdqu  \i*16(%rcx), %xmm12
-   vaesenclast  %xmm12, %xmm5, %xmm5
-   vaesenclast  %xmm12, %xmm6, %xmm6
-   vaesenclast  %xmm12, %xmm7, %xmm7
-   vaesenclast  %xmm12, %xmm8, %xmm8
+    vmovdqu  \i*16(%rcx), %xmm12
+    vaesenclast  %xmm12, %xmm5, %xmm5
+    vaesenclast  %xmm12, %xmm6, %xmm6
+    vaesenclast  %xmm12, %xmm7, %xmm7
+    vaesenclast  %xmm12, %xmm8, %xmm8
 .endm
 
 #.set CTR1, %xmm0
@@ -112,58 +112,58 @@ four:
 
 #####################################################################
 # void ENC_MSG_x4(unsigned char* PT, 
-#				  unsigned char* CT, 
-#				  unsigned char* TAG, 
-#				  unsigned char* KS,
-#				  int byte_len);
+#                 unsigned char* CT, 
+#                 unsigned char* TAG, 
+#                 unsigned char* KS,
+#                 int byte_len);
 .globl _ENC_MSG_x4
 _ENC_MSG_x4:
 
 # parameter 1: %rdi     #PT
 # parameter 2: %rsi     #CT
-# parameter 3: %rdx     #TAG		[127 126 ... 0]  IV=[127...32]
+# parameter 3: %rdx     #TAG        [127 126 ... 0]  IV=[127...32]
 # parameter 4: %rcx     #KS
 # parameter 5: %r8      #LEN MSG_length in bytes
 
     test  %r8, %r8
     jnz   .Lbegin
     ret
-	
-.Lbegin:
+    
+.Lbegin:       
     pushq  %rdi
-	pushq  %rsi
-	pushq  %rdx
-	pushq  %rcx
-	pushq  %r8	  
-    pushq  %r10	
-	movq      %r8, %r10
-    shrq      $4, %r8							#%r8 = num of blocks
+    pushq  %rsi
+    pushq  %rdx
+    pushq  %rcx
+    pushq  %r8    
+    pushq  %r10
+    movq      %r8, %r10
+    shrq      $4, %r8                           #%r8 = num of blocks
     shlq      $60, %r10
     je        NO_PARTS
     addq      $1, %r8
-NO_PARTS:	
-	movq      %r8, %r10
+NO_PARTS:   
+    movq      %r8, %r10
     shlq      $62, %r10
     shrq      $62, %r10
-	
-	
-   	#make %xmm15 from %rdx
-	vmovdqu		(%rdx), %xmm15
-	vpand 		CTR_MASK(%rip), %xmm15, %xmm15			#%xmm15	  = %rdx[127...32][00..00]
-	vpor   		 OR_MASK(%rip), %xmm15, %xmm15			#%xmm15	  = [1]%rdx[126...32][00..00]
-	
-	vmovdqu		four(%rip), %xmm4				#Register to increment counters
-	vmovdqa     %xmm15, %xmm0			            #CTR1 = %rdx[1][127...32][00..00]
-	vpaddq 		one(%rip)  ,   %xmm15, %xmm1			#CTR2 = %rdx[1][127...32][00..01]
-	vpaddq 		two(%rip)  , %xmm15, %xmm2			#CTR3 = %rdx[1][127...32][00..02]
-	vpaddq 		three(%rip),  %xmm15, %xmm3		    #CTR4 = %rdx[1][127...32][00..03] 
     
-	
-	    
-	shrq    $2, %r8
+    
+    #make %xmm15 from %rdx
+    vmovdqu     (%rdx), %xmm15
+    vpand       CTR_MASK(%rip), %xmm15, %xmm15          #%xmm15   = %rdx[127...32][00..00]
+    vpor         OR_MASK(%rip), %xmm15, %xmm15          #%xmm15   = [1]%rdx[126...32][00..00]
+    
+    vmovdqu     four(%rip), %xmm4               #Register to increment counters
+    vmovdqa     %xmm15, %xmm0                       #CTR1 = %rdx[1][127...32][00..00]
+    vpaddq      one(%rip)  ,   %xmm15, %xmm1            #CTR2 = %rdx[1][127...32][00..01]
+    vpaddq      two(%rip)  , %xmm15, %xmm2          #CTR3 = %rdx[1][127...32][00..02]
+    vpaddq      three(%rip),  %xmm15, %xmm3         #CTR4 = %rdx[1][127...32][00..03] 
+    
+    
+        
+    shrq    $2, %r8
     je      REMAINDER
-   							
-	subq    $64, %rsi
+                            
+    subq    $64, %rsi
     subq    $64, %rdi
 
 LOOP:
@@ -172,31 +172,35 @@ LOOP:
     addq    $64, %rdi 
 
     vmovdqa %xmm0, %xmm5
-	vmovdqa %xmm1, %xmm6
-	vmovdqa %xmm2, %xmm7
-	vmovdqa %xmm3, %xmm8
+    vmovdqa %xmm1, %xmm6
+    vmovdqa %xmm2, %xmm7
+    vmovdqa %xmm3, %xmm8
     
-	vpxor    (%rcx), %xmm5, %xmm5
-	vpxor    (%rcx), %xmm6, %xmm6
-	vpxor    (%rcx), %xmm7, %xmm7
-	vpxor    (%rcx), %xmm8, %xmm8
+    vpxor    (%rcx), %xmm5, %xmm5
+    vpxor    (%rcx), %xmm6, %xmm6
+    vpxor    (%rcx), %xmm7, %xmm7
+    vpxor    (%rcx), %xmm8, %xmm8
     
     AES_ROUND 1
-	vpaddq 		%xmm4,  %xmm0, %xmm0
+    vpaddq      %xmm4,  %xmm0, %xmm0
     AES_ROUND 2
-	vpaddq 		%xmm4,  %xmm1, %xmm1
+    vpaddq      %xmm4,  %xmm1, %xmm1
     AES_ROUND 3
-	vpaddq 		%xmm4,  %xmm2, %xmm2
+    vpaddq      %xmm4,  %xmm2, %xmm2
     AES_ROUND 4
-	vpaddq 		%xmm4,  %xmm3, %xmm3
+    vpaddq      %xmm4,  %xmm3, %xmm3
     
-	AES_ROUND 5    
+    AES_ROUND 5    
     AES_ROUND 6    
     AES_ROUND 7
     AES_ROUND 8
     AES_ROUND 9
-	AES_LASTROUND 10
-	
+    AES_ROUND 10
+    AES_ROUND 11
+    AES_ROUND 12
+    AES_ROUND 13
+    AES_LASTROUND 14
+    
     #Xor with Plaintext
     vpxor   0*16(%rdi), %xmm5, %xmm5
     vpxor   1*16(%rdi), %xmm6, %xmm6
@@ -211,24 +215,24 @@ LOOP:
     vmovdqu %xmm8, 3*16(%rsi)
  
     jne LOOP
-	
-	addq    $64,%rsi
+    
+    addq    $64,%rsi
     addq    $64,%rdi
    
 REMAINDER:
-   cmpq      $0, %r10
-   je   END
+    cmpq      $0, %r10
+    je   END
    
 LOOP2:
-	
-	#enc each block separately
-	#CTR1 is the highest counter (even if no LOOP done)
-	
-	vmovdqa 	%xmm0, %xmm5
-	vpaddq 		one(%rip),  %xmm0, %xmm0					#inc counter
-	vpxor         (%rcx), %xmm5, %xmm5
-	vaesenc     16(%rcx), %xmm5, %xmm5
-	vaesenc    32(%rcx) , %xmm5, %xmm5
+    
+    #enc each block separately
+    #CTR1 is the highest counter (even if no LOOP done)
+    
+    vmovdqa     %xmm0, %xmm5
+    vpaddq      one(%rip),  %xmm0, %xmm0                    #inc counter
+    vpxor         (%rcx), %xmm5, %xmm5
+    vaesenc     16(%rcx), %xmm5, %xmm5
+    vaesenc    32(%rcx) , %xmm5, %xmm5
     vaesenc    48(%rcx) , %xmm5, %xmm5
     vaesenc    64(%rcx) , %xmm5, %xmm5
     vaesenc    80(%rcx) , %xmm5, %xmm5
@@ -236,27 +240,31 @@ LOOP2:
     vaesenc    112(%rcx), %xmm5, %xmm5
     vaesenc    128(%rcx), %xmm5, %xmm5
     vaesenc    144(%rcx), %xmm5, %xmm5
-    vaesenclast  160(%rcx), %xmm5, %xmm5
-	
-	
-	#Xor with Plaintext
+    vaesenc    160(%rcx), %xmm5, %xmm5
+    vaesenc    176(%rcx), %xmm5, %xmm5
+    vaesenc    192(%rcx), %xmm5, %xmm5
+    vaesenc    208(%rcx), %xmm5, %xmm5
+    vaesenclast  224(%rcx), %xmm5, %xmm5
+    
+    
+    #Xor with Plaintext
     vpxor   (%rdi), %xmm5, %xmm5
-	
-	vmovdqu %xmm5, (%rsi)
-	
-	addq    $16, %rdi
-	addq    $16, %rsi   
+    
+    vmovdqu %xmm5, (%rsi)
+    
+    addq    $16, %rdi
+    addq    $16, %rsi   
      
-	
-	decq      %r10
+    
+    decq      %r10
     jne       LOOP2
-	
+    
 END:
-	popq %r10
-	popq %r8
-	popq %rcx
-	popq %rdx
-	popq %rsi
-	popq %rdi
+    popq %r10
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
     ret
 
