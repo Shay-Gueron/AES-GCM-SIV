@@ -6,7 +6,7 @@ In the following package 4 different packages included:
 2. AES GENEREL PURPOSE GCM SIV - C code - works on any computer.
 3. AES GCM SIV Package MAC OS- ASM code - performance code - version enabled for MAC OS using xcode, llvm and gcc.
    The tested machine is using Apple LLVM Version 7.3.0 (clang-703.0.29) with target x86_64-apple-darwin15.3.0.
-4. AES GCM SIV C Intrinsics Code - C code - version with about the similar performance to the performance code - more compatible version.
+4. AES GCM SIV C Intrinsics Code - C code - version with about the similar performance to the performance code - more portability version.
 
 Both of the codes were validated and both supply same output. 
 The Performance code has more details on output.
@@ -19,7 +19,7 @@ as sample - so it will be easy to verify and check with each other.
 
 Please read each README for further details.
 
-Results on performance code:
+Results on performance code (using Performance code version on Fixed frequency):
                 2 KEY DEC	
               	HSW [C/B]   BDW [C/B]    SKL [C/B]
 AAD=0 MSG=1024	1.47        1.00        0.83
