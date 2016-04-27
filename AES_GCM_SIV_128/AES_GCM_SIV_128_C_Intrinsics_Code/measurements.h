@@ -1,9 +1,10 @@
+/*
 ###############################################################################
 # AES-GCM-SIV developers and authors:                                         #
 #                                                                             #
 # Shay Gueron,    University of Haifa, Israel and                             #
 #                 Intel Corporation, Israel Development Center, Haifa, Israel #
-# Adam Langley,   Google.                                                     #
+# Adam Langley,   Google                                                      #
 # Yehuda Lindell, Bar Ilan University                                         #
 ###############################################################################
 #                                                                             #
@@ -22,10 +23,8 @@
 #                                                                             #
 # Copyright (c) 2016, Shay Gueron                                             #
 #                                                                             #
-# All rights reserved.                                                        #
 #                                                                             #
-# Permission to use this code is granted only for the purpose of evaluating   #
-# AES-GCM-SIV.                                                                #
+# Permission to use this code for AES-GCM-SIV is granted.                     #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
 # modification, are permitted provided that the following conditions are      #
@@ -57,17 +56,74 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS          #
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                #
 ###############################################################################
+*/
 
-To compile, use the makefile in 2 ways:
-1. make DEF=-DDETAILS -DLITTLE_ENDIAN_   - If printouts needed
-2. make DEF=-DCOUNT	     - If measurement needed    
-3. make DEF=-DCOUNT -DADD_INFO	     - If measurement needed + additional info
-4. make DEF=-DCOUNT -DADD_INFO	     - If measurement needed + additional info
-By default printouts are made.
+#ifndef MEASURE_H
+#define MEASURE_H
+
+#ifndef RDTSC
+#define MEASURE(x) (x)
+#endif
 
 
-The executables receive 2 parameters
+/* This part defines the functions and MACROS needed to measure using RDTSC */
+#ifdef RDTSC
+   
+   #ifndef REPEAT     
+      #define REPEAT 500
+   #endif
+   
+   #ifndef OUTER_REPEAT
+      #define OUTER_REPEAT 30
+   #endif
 
-The parameters are: GCM_SIV_ENC A B (GCM_SIV_DEC A B)
-A - AAD length in bytes
-B - MSG length in bytes
+   #ifndef WARMUP
+      #define WARMUP REPEAT/4
+   #endif
+
+    unsigned long long RDTSC_start_clk, RDTSC_end_clk;
+    double RDTSC_total_clk;
+    double RDTSC_TEMP_CLK;
+    int RDTSC_MEASURE_ITERATOR;
+    int RDTSC_OUTER_ITERATOR;
+
+inline static unsigned long get_Clks(void)
+{
+    unsigned hi, lo;
+    __asm__ __volatile__ ("rdtscp\n\t" : "=a"(lo), "=d"(hi)::"rcx");
+    return ( (unsigned long)lo)^( ((unsigned long)hi)<<32 );
+}
+
+   /* 
+   This MACRO measures the number of cycles "x" runs. This is the flow:
+      1) it sets the priority to FIFO, to avoid time slicing if possible.
+      2) it repeats "x" WARMUP times, in order to warm the cache.
+      3) it reads the Time Stamp Counter at the beginning of the test.
+      4) it repeats "x" REPEAT number of times.
+      5) it reads the Time Stamp Counter again at the end of the test
+      6) it calculates the average number of cycles per one iteration of "x", by calculating the total number of cycles, and dividing it by REPEAT
+    */      
+   #define RDTSC_MEASURE(x)                                                                         \
+   for(RDTSC_MEASURE_ITERATOR=0; RDTSC_MEASURE_ITERATOR< WARMUP; RDTSC_MEASURE_ITERATOR++)          \
+      {                                                                                             \
+         {x};                                                                                       \
+      }                                                                                    		    \
+	RDTSC_total_clk = 1.7976931348623157e+308;                                                      \
+	for(RDTSC_OUTER_ITERATOR=0;RDTSC_OUTER_ITERATOR<OUTER_REPEAT; RDTSC_OUTER_ITERATOR++){          \
+      RDTSC_start_clk = get_Clks();                                                                 \
+      for (RDTSC_MEASURE_ITERATOR = 0; RDTSC_MEASURE_ITERATOR < REPEAT; RDTSC_MEASURE_ITERATOR++)   \
+      {                                                                                             \
+         {x};                                                                                       \
+      }                                                                                             \
+      RDTSC_end_clk = get_Clks();                                                                   \
+      RDTSC_TEMP_CLK = (double)(RDTSC_end_clk-RDTSC_start_clk)/REPEAT;                              \
+		if(RDTSC_total_clk>RDTSC_TEMP_CLK) RDTSC_total_clk = RDTSC_TEMP_CLK;				        \
+	}
+
+   
+    #define MEASURE(x) RDTSC_MEASURE(x)
+  
+
+#endif
+
+#endif

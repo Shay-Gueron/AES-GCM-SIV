@@ -1,4 +1,4 @@
-GCC = gcc -mpclmul -O3 -maes  -mavx2
+GCC = gcc -mpclmul -O3 -maes  -mavx -w
 ICC = icc
 FLAGS = -DRDTSC
 #DEF= -DDETAILS -DADD_INFO

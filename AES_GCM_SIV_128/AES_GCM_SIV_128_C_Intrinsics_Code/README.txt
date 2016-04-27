@@ -65,9 +65,10 @@ To compile, use the makefile in 2 ways:
 4. make DEF=-DCOUNT -DADD_INFO	     - If measurement needed + additional info
 By default printouts are made.
 
+add flag -DLITTLE_ENDIAN_ for little endian output (Big Endian is default)
+
 
 The executables receive 2 parameters
-
 The parameters are: GCM_SIV_ENC A B (GCM_SIV_DEC A B)
 A - AAD length in bytes
 B - MSG length in bytes

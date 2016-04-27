@@ -68,6 +68,6 @@ By default printouts are made.
 
 The executables receive 2 parameters
 
-The parameters are: GCM_SIV_ENC A B
+The parameters are: GCM_SIV_ENC A B (GCM_SIV_DEC A B)
 A - AAD length in bytes
 B - MSG length in bytes
