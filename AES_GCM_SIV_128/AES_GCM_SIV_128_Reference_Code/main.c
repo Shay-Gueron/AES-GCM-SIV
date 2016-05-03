@@ -122,11 +122,11 @@ int main(int argc, char *argv[])
     uint8_t *CIPHERTEXT = NULL;
     uint8_t *decrypted_CT = NULL;
 	
-	uint8_t TAG[16];
-	uint8_t K1[16];
-	uint8_t K2[16];
-	uint8_t N[16];
-	
+	uint8_t TAG[16] = {0};
+	uint8_t K1[16] = {0};
+	uint8_t K2[16] = {0};
+	uint8_t N[16] = {0};
+	int i = 0;
 	int res = 0;
 	uint64_t aad_len, in_len;
 	uint64_t msg_pad = 0;
@@ -153,7 +153,11 @@ int main(int argc, char *argv[])
     CIPHERTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
     decrypted_CT = 	 (uint8_t*)malloc(in_len + msg_pad);
     AAD =  			 (uint8_t*)malloc(aad_len + aad_pad);
-	
+	for (i=0; i<(in_len+msg_pad); i++)
+	{
+		CIPHERTEXT[i] = 0;
+		decrypted_CT[i] = 0;
+	}	
 #ifdef DETAILS	
 	init_buffers(PLAINTEXT, AAD, K1, K2, N, aad_len, in_len, aad_pad, msg_pad);
 	printf("*****************************");
@@ -164,6 +168,8 @@ int main(int argc, char *argv[])
 	print_buffers(PLAINTEXT, AAD, K1, K2, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
 #else
 	int count;
+	for (i=0; i<(aad_len+aad_pad); i++)
+		AAD[i] = 0;
 	for (count = 0; count < 40; count ++) {
 		printf("Random test number %d:\n", count+1);
 		rand_vec(PLAINTEXT, in_len);
