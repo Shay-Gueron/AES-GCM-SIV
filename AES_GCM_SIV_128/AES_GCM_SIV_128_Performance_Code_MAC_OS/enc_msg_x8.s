@@ -58,8 +58,6 @@
 
 
 #.align  16
-CTR_MASK:
-.long    0x00000000,0xffffffff,0xffffffff,0xffffffff
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 one:
@@ -177,18 +175,17 @@ NO_PARTS:
 	
 	#make IV from TAG
 	vmovdqu		(%rdx), %xmm1
-	vpand CTR_MASK(%rip), %xmm1, %xmm1			#TMP1= IV = TAG[127...32][00..00]
 	vpor OR_MASK(%rip), %xmm1, %xmm1				#TMP1= IV = [1]TAG[126...32][00..00]
     
 	#store counter8 in the stack
-	vpaddq 		seven(%rip), %xmm1, %xmm0			
+	vpaddd 		seven(%rip), %xmm1, %xmm0			
 	vmovdqu 	%xmm0, 		 (%rsp)				#CTR8 = TAG[127...32][00..07]
-	vpaddq 		one(%rip),   %xmm1, %xmm9			#CTR2 = TAG[127...32][00..01]
-	vpaddq 		two(%rip), %xmm1, %xmm10			#CTR3 = TAG[127...32][00..02]
-	vpaddq 		three(%rip),  %xmm1, %xmm11			#CTR4 = TAG[127...32][00..03] 
-	vpaddq 		four(%rip),	 %xmm1, %xmm12			#CTR5 = TAG[127...32][00..04] 
-	vpaddq 		five(%rip),   %xmm1, %xmm13			#CTR6 = TAG[127...32][00..05] 
-	vpaddq 		six(%rip), %xmm1, %xmm14			#CTR7 = TAG[127...32][00..06]
+	vpaddd 		one(%rip),   %xmm1, %xmm9			#CTR2 = TAG[127...32][00..01]
+	vpaddd 		two(%rip), %xmm1, %xmm10			#CTR3 = TAG[127...32][00..02]
+	vpaddd 		three(%rip),  %xmm1, %xmm11			#CTR4 = TAG[127...32][00..03] 
+	vpaddd 		four(%rip),	 %xmm1, %xmm12			#CTR5 = TAG[127...32][00..04] 
+	vpaddd 		five(%rip),   %xmm1, %xmm13			#CTR6 = TAG[127...32][00..05] 
+	vpaddd 		six(%rip), %xmm1, %xmm14			#CTR7 = TAG[127...32][00..06]
 	vmovdqa 	%xmm1, %xmm0			#CTR1 = TAG[127...32][00..00]			 
 	    
 	shrq    $3, %r8 
@@ -224,22 +221,22 @@ LOOP:
 	
 	AES_ROUND 1
 	vmovdqu 	(%rsp), %xmm14					#deal with CTR8
-	vpaddq		eight(%rip), %xmm14, %xmm14
+	vpaddd		eight(%rip), %xmm14, %xmm14
 	vmovdqu 	%xmm14, (%rsp)
     AES_ROUND 2
-    vpsubq		one(%rip), %xmm14, %xmm14			#CTR7
+    vpsubd		one(%rip), %xmm14, %xmm14			#CTR7
 	AES_ROUND 3
-	vpaddq 		eight(%rip),  %xmm0, %xmm0		#CTR1
+	vpaddd 		eight(%rip),  %xmm0, %xmm0		#CTR1
     AES_ROUND 4
-	vpaddq 		eight(%rip),  %xmm9, %xmm9		#CTR2
+	vpaddd 		eight(%rip),  %xmm9, %xmm9		#CTR2
 	AES_ROUND 5
-    vpaddq 		eight(%rip),  %xmm10, %xmm10		#CTR3
+    vpaddd 		eight(%rip),  %xmm10, %xmm10		#CTR3
     AES_ROUND 6   
-	vpaddq 		eight(%rip),  %xmm11, %xmm11		#CTR4
+	vpaddd 		eight(%rip),  %xmm11, %xmm11		#CTR4
     AES_ROUND 7
-	vpaddq 		eight(%rip),  %xmm12, %xmm12		#CTR5
+	vpaddd 		eight(%rip),  %xmm12, %xmm12		#CTR5
     AES_ROUND 8
-	vpaddq 		eight(%rip),  %xmm13, %xmm13		#CTR6
+	vpaddd 		eight(%rip),  %xmm13, %xmm13		#CTR6
     AES_ROUND 9
 	AES_LASTROUND 10
 	
@@ -283,7 +280,7 @@ LOOP2:
 	#enc each block separately
 	#CTR1 is the highest counter (even if no LOOP done)
 	vmovdqa 	%xmm0, %xmm1
-	vpaddq 		one(%rip),  %xmm9, %xmm9					#inc counter
+	vpaddd 		one(%rip),  %xmm9, %xmm9					#inc counter
 	
 	vpxor         (%rcx), %xmm1, %xmm1
 	vaesenc     16(%rcx), %xmm1, %xmm1

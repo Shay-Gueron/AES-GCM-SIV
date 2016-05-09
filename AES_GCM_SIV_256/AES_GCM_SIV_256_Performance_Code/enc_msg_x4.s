@@ -57,8 +57,6 @@
 ###############################################################################
 
 .align  16
-CTR_MASK:
-.long    0x00000000,0xffffffff,0xffffffff,0xffffffff
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 one:
@@ -149,14 +147,13 @@ NO_PARTS:
 	
    	#make IV from TAG
 	vmovdqu		(TAG), IV
-	vpand 		CTR_MASK(%rip), IV, IV			#IV	  = TAG[127...32][00..00]
 	vpor   		 OR_MASK(%rip), IV, IV			#IV	  = [1]TAG[126...32][00..00]
 	
 	vmovdqu		four(%rip), ADDER				#Register to increment counters
 	vmovdqa     IV, CTR1			            #CTR1 = TAG[1][127...32][00..00]
-	vpaddq 		one(%rip)  ,   IV, CTR2			#CTR2 = TAG[1][127...32][00..01]
-	vpaddq 		two(%rip)  , IV, CTR3			#CTR3 = TAG[1][127...32][00..02]
-	vpaddq 		three(%rip),  IV, CTR4		    #CTR4 = TAG[1][127...32][00..03] 
+	vpaddd 		one(%rip)  ,   IV, CTR2			#CTR2 = TAG[1][127...32][00..01]
+	vpaddd 		two(%rip)  , IV, CTR3			#CTR3 = TAG[1][127...32][00..02]
+	vpaddd 		three(%rip),  IV, CTR4		    #CTR4 = TAG[1][127...32][00..03] 
     
 	
 	    
@@ -182,13 +179,13 @@ LOOP:
 	vpxor    (KS), STATE4, STATE4
     
     AES_ROUND 1
-	vpaddq 		ADDER,  CTR1, CTR1
+	vpaddd 		ADDER,  CTR1, CTR1
     AES_ROUND 2
-	vpaddq 		ADDER,  CTR2, CTR2
+	vpaddd 		ADDER,  CTR2, CTR2
     AES_ROUND 3
-	vpaddq 		ADDER,  CTR3, CTR3
+	vpaddd 		ADDER,  CTR3, CTR3
     AES_ROUND 4
-	vpaddq 		ADDER,  CTR4, CTR4
+	vpaddd 		ADDER,  CTR4, CTR4
     
 	AES_ROUND 5    
     AES_ROUND 6    
@@ -229,7 +226,7 @@ LOOP2:
 	#CTR1 is the highest counter (even if no LOOP done)
 	
 	vmovdqa 	CTR1, STATE1
-	vpaddq 		one(%rip),  CTR1, CTR1					#inc counter
+	vpaddd 		one(%rip),  CTR1, CTR1					#inc counter
 	vpxor         (KS), STATE1, STATE1
 	vaesenc     16(KS), STATE1, STATE1
 	vaesenc    32(KS) , STATE1, STATE1

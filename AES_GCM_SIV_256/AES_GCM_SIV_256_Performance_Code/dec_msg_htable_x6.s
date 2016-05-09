@@ -57,8 +57,6 @@
 ###############################################################################
 
 .align  16
-CTR_MASK:
-.long    0x00000000,0xffffffff,0xffffffff,0xffffffff
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 ONE:
@@ -187,7 +185,6 @@ Decrypt_Htable:
 	
 	#make CTRBLKs from TAG
 	vmovdqu  	(TAG), CTR
-	vpand 		CTR_MASK(%rip), CTR, CTR		#CTR = TAG[127...32][00..00]
 	vpor   		OR_MASK(%rip), CTR, CTR			#CTR = [1]TAG[126...32][00..00]
 	
 	
@@ -199,12 +196,12 @@ Decrypt_Htable:
 	#Decrypt the first six blocks
     sub   $96, LEN
     vmovdqa  CTR, CTR1
-    vpaddq   ONE(%rip), CTR1, CTR2
-    vpaddq   TWO(%rip), CTR1, CTR3
-    vpaddq   ONE(%rip), CTR3, CTR4
-    vpaddq   TWO(%rip), CTR3, CTR5
-    vpaddq   ONE(%rip), CTR5, CTR6
-    vpaddq   TWO(%rip), CTR5, CTR
+    vpaddd   ONE(%rip), CTR1, CTR2
+    vpaddd   TWO(%rip), CTR1, CTR3
+    vpaddd   ONE(%rip), CTR3, CTR4
+    vpaddd   TWO(%rip), CTR3, CTR5
+    vpaddd   ONE(%rip), CTR5, CTR6
+    vpaddd   TWO(%rip), CTR5, CTR
 
 	
     vpxor  (KS), CTR1, CTR1
@@ -264,12 +261,12 @@ Decrypt_Htable:
         vmovdqu  CTR1, 5*16-32(secureBuffer)
        		
 		vmovdqa  CTR, CTR1
-		vpaddq   ONE(%rip), CTR1, CTR2
-		vpaddq   TWO(%rip), CTR1, CTR3
-		vpaddq   ONE(%rip), CTR3, CTR4
-		vpaddq   TWO(%rip), CTR3, CTR5
-		vpaddq   ONE(%rip), CTR5, CTR6
-		vpaddq   TWO(%rip), CTR5, CTR
+		vpaddd   ONE(%rip), CTR1, CTR2
+		vpaddd   TWO(%rip), CTR1, CTR3
+		vpaddd   ONE(%rip), CTR3, CTR4
+		vpaddd   TWO(%rip), CTR3, CTR5
+		vpaddd   ONE(%rip), CTR5, CTR6
+		vpaddd   TWO(%rip), CTR5, CTR
 
         vmovdqu (KS), TMP3
         vpxor  TMP3, CTR1, CTR1

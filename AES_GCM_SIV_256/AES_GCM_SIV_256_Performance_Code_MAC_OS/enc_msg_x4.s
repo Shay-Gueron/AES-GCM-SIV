@@ -57,8 +57,6 @@
 ###############################################################################
 
 #.align  16
-CTR_MASK:
-.long    0x00000000,0xffffffff,0xffffffff,0xffffffff
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 one:
@@ -149,14 +147,13 @@ NO_PARTS:
     
     #make %xmm15 from %rdx
     vmovdqu     (%rdx), %xmm15
-    vpand       CTR_MASK(%rip), %xmm15, %xmm15          #%xmm15   = %rdx[127...32][00..00]
     vpor         OR_MASK(%rip), %xmm15, %xmm15          #%xmm15   = [1]%rdx[126...32][00..00]
     
     vmovdqu     four(%rip), %xmm4               #Register to increment counters
     vmovdqa     %xmm15, %xmm0                       #CTR1 = %rdx[1][127...32][00..00]
-    vpaddq      one(%rip)  ,   %xmm15, %xmm1            #CTR2 = %rdx[1][127...32][00..01]
-    vpaddq      two(%rip)  , %xmm15, %xmm2          #CTR3 = %rdx[1][127...32][00..02]
-    vpaddq      three(%rip),  %xmm15, %xmm3         #CTR4 = %rdx[1][127...32][00..03] 
+    vpaddd      one(%rip)  ,   %xmm15, %xmm1            #CTR2 = %rdx[1][127...32][00..01]
+    vpaddd      two(%rip)  , %xmm15, %xmm2          #CTR3 = %rdx[1][127...32][00..02]
+    vpaddd      three(%rip),  %xmm15, %xmm3         #CTR4 = %rdx[1][127...32][00..03] 
     
     
         
@@ -182,13 +179,13 @@ LOOP:
     vpxor    (%rcx), %xmm8, %xmm8
     
     AES_ROUND 1
-    vpaddq      %xmm4,  %xmm0, %xmm0
+    vpaddd      %xmm4,  %xmm0, %xmm0
     AES_ROUND 2
-    vpaddq      %xmm4,  %xmm1, %xmm1
+    vpaddd      %xmm4,  %xmm1, %xmm1
     AES_ROUND 3
-    vpaddq      %xmm4,  %xmm2, %xmm2
+    vpaddd      %xmm4,  %xmm2, %xmm2
     AES_ROUND 4
-    vpaddq      %xmm4,  %xmm3, %xmm3
+    vpaddd      %xmm4,  %xmm3, %xmm3
     
     AES_ROUND 5    
     AES_ROUND 6    
@@ -229,7 +226,7 @@ LOOP2:
     #CTR1 is the highest counter (even if no LOOP done)
     
     vmovdqa     %xmm0, %xmm5
-    vpaddq      one(%rip),  %xmm0, %xmm0                    #inc counter
+    vpaddd      one(%rip),  %xmm0, %xmm0                    #inc counter
     vpxor         (%rcx), %xmm5, %xmm5
     vaesenc     16(%rcx), %xmm5, %xmm5
     vaesenc    32(%rcx) , %xmm5, %xmm5

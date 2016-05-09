@@ -84,18 +84,16 @@ void Decrypt_Htable(unsigned char* CT,
                     int byte_len,					
                     unsigned char secureBuffer[16*8])
 {
-    __m128i T, CTR, CTR_MASK, OR_MASK, ONE,TWO;
+    __m128i T, CTR, OR_MASK, ONE,TWO;
 	__m128i register CTR1, CTR2,CTR3,CTR4,CTR5,sCTR1,sCTR2,sCTR3,sCTR4,sCTR5,sCTR6, CTR6, POLY, TMP0,TMP1, TMP2, TMP3,TMP4;
 	int i;
 	int count = 0;
     T	= _mm_loadu_si128(((__m128i*)POLYVAL_dec));
 	CTR = _mm_loadu_si128(((__m128i*)pTAG));
-	CTR_MASK = _mm_setr_epi32(0x00000000,0xFFFFFFFF,0xFFFFFFFF, 0xFFFFFFFF);
 	OR_MASK = _mm_setr_epi32(0,0,0,0x80000000);
 	POLY = _mm_setr_epi32(0x1,0,0,0xc2000000);
 	ONE = _mm_setr_epi32(1,0,0,0);
 	TWO = _mm_setr_epi32(2,0,0,0);
-	CTR = _mm_and_si128(CTR_MASK, CTR);
 	CTR = _mm_or_si128(CTR, OR_MASK);
 	
 	if (byte_len >=96)

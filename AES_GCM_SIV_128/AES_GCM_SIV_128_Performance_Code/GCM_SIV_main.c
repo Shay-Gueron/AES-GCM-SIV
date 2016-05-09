@@ -231,8 +231,7 @@ int main(int argc, char *argv[])
 
 
     INIT_Htable_6(Htbl, H);
-    AES_KS_ENC_x1(IV, ENC_KEY , 16, (unsigned char *)&KS_dec, K);
-    AES_KS(ENC_KEY, (unsigned char *)&KS_dec);
+
     
     
 //*********************************** START - DECRYPT **********************************************    
@@ -247,12 +246,11 @@ int main(int argc, char *argv[])
 
     
     #ifdef WITH_INIT
-    if (L2 >= 6) { //Need Htable
         INIT_Htable_6(Htbl, H);
+	#endif
         AES_KS_ENC_x1(IV, ENC_KEY , 16, (unsigned char *)&KS_dec, K);                           //ENC_KEY = AES_K (IV,K)
         AES_KS(ENC_KEY, (unsigned char *)&KS_dec);
-    }   
-    #endif
+
     
     Polyval_Horner(POLYVAL_dec, H, BIG_BUF, L1);                                                    //POLYVAL(padded_AAD)
     Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, Htbl, (unsigned char *)&KS_dec, padded_MSG_byte_len, secureBuffer);
@@ -451,64 +449,73 @@ void print_buffer_BE(uint8_t *in, int length)
 void print_counters_from_TAG_BE(uint8_t *in, int num_of_counters)
 {
    int i,j;
-   int count=0;
+   uint32_t count=0;
    in[15] |= 0x80;
    if (num_of_counters == 0) {
-        printf("\n");
-        return;
-    }
+		printf("\n");
+		return;
+	}
    printf("\n");
+   ((uint8_t*)&count)[0] = in[0];
+   ((uint8_t*)&count)[1] = in[1];
+   ((uint8_t*)&count)[2] = in[2];
+   ((uint8_t*)&count)[3] = in[3];
    for(i=0; i<num_of_counters; i++)
    {
-      printf("                                ");
-      if (num_of_counters<256)
-        printf("%02x000000",count++);
-      else
-        if (num_of_counters<(1<<16))
-            printf("%04x0000",count++);
-        else
-          if (num_of_counters<(1<<24))
-            printf("%06x00",count++);
-          else
-            printf("%08x",count++);
-      for(j=4; j<16; j++) {
-        printf("%02x", in[j]);
-      }
-    printf("\n");
-      
+	  printf("                                ");
+	  if (count<256)
+		printf("%02x000000",((uint8_t*)&count)[0]);
+	  else
+		if (count<(1<<16))
+		{
+			printf("%02x%02x0000",((uint8_t*)&count)[0],((uint8_t*)&count)[1]);
+		}
+	    else
+	      if (count<(1<<24))
+		    printf("%02x%02x%02x00",((uint8_t*)&count)[0], ((uint8_t*)&count)[1], ((uint8_t*)&count)[2]);
+		  else
+		    printf("%02x%02x%02x%02x",((uint8_t*)&count)[0], ((uint8_t*)&count)[1], ((uint8_t*)&count)[2], ((uint8_t*)&count)[3]);
+	  for(j=4; j<16; j++) {
+		printf("%02x", in[j]);
+	  }
+	printf("\n");
+	count++;
    }
 }
 
 void print_counters_from_TAG_LE(uint8_t *in, int num_of_counters)
 {
    int i,j;
-   int count=0;
+   uint32_t count=0;
    in[15] |= 0x80;
    if (num_of_counters == 0) {
-        printf("\n");
-        return;
-    }
+		printf("\n");
+		return;
+	}
    printf("\n");
-
+   ((uint8_t*)&count)[0] = in[0];
+   ((uint8_t*)&count)[1] = in[1];
+   ((uint8_t*)&count)[2] = in[2];
+   ((uint8_t*)&count)[3] = in[3];
    for(i=0; i<num_of_counters; i++)
    {
-      printf("                                ");
+	  printf("                                ");
 
-      for(j=15; j>=4; j--) {
-        printf("%02x", in[j]);
-      }
-      if (num_of_counters<256)
-          printf("000000%02x",count++);
-      else
-          if (num_of_counters<(1<<16))
-            printf("0000%04x",count++);
-          else
-            if (num_of_counters<(1<<24))
-              printf("00%06x",count++);
-            else
-              printf("%08x",count++);
-    printf("\n");
-      
+	  for(j=15; j>=4; j--) {
+		printf("%02x", in[j]);
+	  }
+      if (count<256)
+		  printf("000000%02x",count++);
+	  else
+		  if (count<(1<<16))
+			printf("0000%04x",count++);
+	      else
+	        if (count<(1<<24))
+		      printf("00%06x",count++);
+		    else
+		      printf("%08x",count++);
+	printf("\n");
+	  
    }
 }
 

@@ -81,7 +81,7 @@ void ENC_MSG_x8(const unsigned char *PT,
                       const unsigned char *KS,
                       int length)
 {
-    __m128i or_mask, TWO,ctr_block, ctr_mask, tmp, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, ONE;
+    __m128i or_mask, TWO,ctr_block, tmp, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, ONE;
     int i,j,remainder_loc;
     if (length%16)
         length = length/16 + 1;
@@ -90,21 +90,19 @@ void ENC_MSG_x8(const unsigned char *PT,
 	TWO = _mm_setr_epi32(2,0,0,0);
 	ctr_block = _mm_setzero_si128();
 	ctr_block = _mm_loadu_si128(((__m128i*)TAG));
-	ctr_mask = _mm_setr_epi32(0x00000000,0xFFFFFFFF,0xFFFFFFFF, 0xFFFFFFFF);   
 	or_mask = _mm_setr_epi32(0,0,0,0x80000000);
-	ctr_block = _mm_and_si128(ctr_block, ctr_mask);
 	ctr_block = _mm_or_si128(ctr_block, or_mask);
 	for (i=0; i< (length-length%8); i=i+8)
 	{
 		tmp = ctr_block;
-		tmp1 = _mm_add_epi64(ctr_block, ONE);
-		tmp2 = _mm_add_epi64(ctr_block, TWO);
-		tmp3 = _mm_add_epi64(tmp2, ONE);
-		tmp4 = _mm_add_epi64(tmp2, TWO);
-		tmp5 = _mm_add_epi64(tmp4, ONE);
-		tmp6 = _mm_add_epi64(tmp4, TWO);
-		tmp7 = _mm_add_epi64(tmp6, ONE);
-		ctr_block = _mm_add_epi64(tmp6, TWO);
+		tmp1 = _mm_add_epi32(ctr_block, ONE);
+		tmp2 = _mm_add_epi32(ctr_block, TWO);
+		tmp3 = _mm_add_epi32(tmp2, ONE);
+		tmp4 = _mm_add_epi32(tmp2, TWO);
+		tmp5 = _mm_add_epi32(tmp4, ONE);
+		tmp6 = _mm_add_epi32(tmp4, TWO);
+		tmp7 = _mm_add_epi32(tmp6, ONE);
+		ctr_block = _mm_add_epi32(tmp6, TWO);
 		tmp = _mm_xor_si128(tmp, ((__m128i*)KS)[0]);
 		tmp1 = _mm_xor_si128(tmp1, ((__m128i*)KS)[0]);
 		tmp2 = _mm_xor_si128(tmp2, ((__m128i*)KS)[0]);
@@ -156,7 +154,7 @@ void ENC_MSG_x8(const unsigned char *PT,
     for(i=0; i < (length%8); i++)
 	{
 		tmp = ctr_block;
-        ctr_block = _mm_add_epi64(ctr_block, ONE);
+        ctr_block = _mm_add_epi32(ctr_block, ONE);
         tmp = _mm_xor_si128(tmp, ((__m128i*)KS)[0]);
 
             for(j=1; j <14; j++) {

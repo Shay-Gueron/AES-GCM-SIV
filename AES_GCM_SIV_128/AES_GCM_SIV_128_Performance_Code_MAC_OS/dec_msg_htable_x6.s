@@ -57,8 +57,6 @@
 ###############################################################################
 
 #.align  16
-CTR_MASK:
-.long    0x00000000,0xffffffff,0xffffffff,0xffffffff
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 ONE:
@@ -188,7 +186,6 @@ _Decrypt_Htable:
 	
 	#make %xmm15BLKs from %rcx
 	vmovdqu  	(%rcx), %xmm15
-	vpand 		CTR_MASK(%rip), %xmm15, %xmm15		#%xmm15 = %rcx[127...32][00..00]
 	vpor   		OR_MASK(%rip), %xmm15, %xmm15			#%xmm15 = [1]%rcx[126...32][00..00]
 	
 	
@@ -200,12 +197,12 @@ _Decrypt_Htable:
 	#Decrypt the first six blocks
     sub   $96, %r10
     vmovdqa  %xmm15, %xmm7
-    vpaddq   ONE(%rip), %xmm7, %xmm8
-    vpaddq   TWO(%rip), %xmm7, %xmm9
-    vpaddq   ONE(%rip), %xmm9, %xmm10
-    vpaddq   TWO(%rip), %xmm9, %xmm11
-    vpaddq   ONE(%rip), %xmm11, %xmm12
-    vpaddq   TWO(%rip), %xmm11, %xmm15
+    vpaddd   ONE(%rip), %xmm7, %xmm8
+    vpaddd   TWO(%rip), %xmm7, %xmm9
+    vpaddd   ONE(%rip), %xmm9, %xmm10
+    vpaddd   TWO(%rip), %xmm9, %xmm11
+    vpaddd   ONE(%rip), %xmm11, %xmm12
+    vpaddd   TWO(%rip), %xmm11, %xmm15
 
 	
     vpxor  (%r9), %xmm7, %xmm7
@@ -261,12 +258,12 @@ _Decrypt_Htable:
         vmovdqu  %xmm7, 5*16-32(%rax)
        		
 		vmovdqa  %xmm15, %xmm7
-		vpaddq   ONE(%rip), %xmm7, %xmm8
-		vpaddq   TWO(%rip), %xmm7, %xmm9
-		vpaddq   ONE(%rip), %xmm9, %xmm10
-		vpaddq   TWO(%rip), %xmm9, %xmm11
-		vpaddq   ONE(%rip), %xmm11, %xmm12
-		vpaddq   TWO(%rip), %xmm11, %xmm15
+		vpaddd   ONE(%rip), %xmm7, %xmm8
+		vpaddd   TWO(%rip), %xmm7, %xmm9
+		vpaddd   ONE(%rip), %xmm9, %xmm10
+		vpaddd   TWO(%rip), %xmm9, %xmm11
+		vpaddd   ONE(%rip), %xmm11, %xmm12
+		vpaddd   TWO(%rip), %xmm11, %xmm15
 
         vmovdqu (%r9), %xmm4
         vpxor  %xmm4, %xmm7, %xmm7

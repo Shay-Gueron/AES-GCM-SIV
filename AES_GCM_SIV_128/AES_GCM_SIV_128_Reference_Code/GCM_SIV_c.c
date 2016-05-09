@@ -166,7 +166,7 @@ void AES_128_CTR(uint8_t* out, uint8_t* in, uint32_t* CTR, int mlen, uint32_t* k
         P+=4;
         C+=4;
         // CTR[3] = bswap_32(bswap_32(CTR[3]) + 1);
-		CTR[0] = CTR[0] +1;
+		CTR[0] = ((CTR[0] +1) % (0xFFFFFFFF));
     }
     if(i*16 < mlen)
     {
@@ -288,7 +288,7 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	CTR[0] = ((uint64_t*)TAG)[0];
 	CTR[1] = ((uint64_t*)TAG)[1];
 	((uint8_t*)CTR)[15] |= 128;
-	((uint32_t*)CTR)[0] = 0;
+
 	
 #ifdef DETAILS
 	printf("\nLENBLK =                        "); print16((uint8_t*)LENBLK);
@@ -326,7 +326,6 @@ int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	CTR[0] = ((uint64_t*)TAG)[0];
 	CTR[1] = ((uint64_t*)TAG)[1];
 	((uint8_t*)CTR)[15] |= 128;
-	((uint32_t*)CTR)[0] = 0;
 	
 	AES_128_Key_Expansion(K2, (uint32_t*)KS);
 	AES_128_Encrypt((uint32_t*)KEY_ENC, (uint32_t*)N, (uint32_t*)KS);

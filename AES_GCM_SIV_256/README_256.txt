@@ -22,17 +22,17 @@ Please read each README for further details.
 Results on performance code (using Performance code version on Fixed frequency):
                 2 KEY DEC	
               	HSW [C/B]   BDW [C/B]    SKL [C/B]
-AAD=0 MSG=1024	1.74        1.34        1.07
-AAD=0 MSG=2048	1.52        1.14        0.96
-AAD=0 MSG=4096	1.49        1.09        0.93
-AAD=0 MSG=8192	1.44        1.04        0.90
-AAD=0 MSG=16384	1.44        1.03        0.89
+AAD=0 MSG=1024	1.98        1.49        1.19
+AAD=0 MSG=2048	1.68        1.20        1.02
+AAD=0 MSG=4096	1.54        1.13        0.96
+AAD=0 MSG=8192	1.48        1.07        0.92
+AAD=0 MSG=16384	1.45        1.04        0.90
 
 
                 2 KEY ENC	
                 HSW [C/B]   BDW [C/B]   SKL [C/B]
-AAD=0 MSG=1024	1.85        1.50        1.43
-AAD=0 MSG=2048	1.68        1.33        1.30
-AAD=0 MSG=4096	1.59        1.24        1.24
-AAD=0 MSG=8192	1.55        1.19        1.21
-AAD=0 MSG=16384	1.53        1.17        1.20
+AAD=0 MSG=1024	1.90        1.60        1.53
+AAD=0 MSG=2048	1.71        1.37        1.32
+AAD=0 MSG=4096	1.61        1.26        1.25
+AAD=0 MSG=8192	1.56        1.20        1.22
+AAD=0 MSG=16384	1.54        1.17        1.20

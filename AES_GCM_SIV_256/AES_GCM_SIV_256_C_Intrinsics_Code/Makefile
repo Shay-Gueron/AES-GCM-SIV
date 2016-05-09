@@ -1,8 +1,8 @@
 GCC = gcc -mpclmul -O3 -maes  -mavx -w
 ICC = icc
 FLAGS = -DRDTSC
-#DEF= -DDETAILS -DADD_INFO
-DEF= -DCOUNT
+DEF= -DDETAILS -DLITTLE_ENDIAN_
+#DEF= -DCOUNT
 
 
 ALL:  GHASH 

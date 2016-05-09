@@ -177,7 +177,7 @@ void AES_256_CTR(uint8_t* out, uint8_t* in, uint32_t* CTR, int mlen, uint32_t* k
         P+=4;
         C+=4;
         // CTR[3] = bswap_32(bswap_32(CTR[3]) + 1);
-		CTR[0] = CTR[0] +1;
+		CTR[0] = ((CTR[0] +1) % (0xFFFFFFFF));
     }
     if(i*16 < mlen)
     {
@@ -272,19 +272,12 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	uint64_t TxorN[2] = {0};
 	uint64_t CTR[2] = {0};
 	uint64_t KS[30];
-	uint8_t N_split[32] = {0};
 	uint8_t KEY_ENC[32] = {0};
 	uint64_t msg_pad = 0;
 	uint64_t aad_pad = 0;
 	uint64_t LENBLK[2] = {(AAD_len<<3), (MSG_len<<3)};
     int i;
-	for (i=0; i<16; i++)
-	{
-	    N_split[i] = N[i];
-		N_split[i+16] = N[i];
-	}
-	N_split[0] = N_split[0] & 0xfe;
-	N_split[16] = N_split[16] | 0x1;
+	
 	if ((AAD_len % 16) != 0) {
 		aad_pad = 16 - (AAD_len % 16);
 	}
@@ -299,14 +292,13 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	((uint64_t*)TAG)[1] = TxorN[1] = T[1] ^ ((uint64_t*)N)[1];
 	TAG[15] &= 127;
 	AES_256_Key_Expansion(K2, (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)KEY_ENC, (uint32_t*)&N_split[0], (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)(&KEY_ENC[16]), (uint32_t*)(&N_split[16]), (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)(&KEY_ENC[16]), (uint32_t*)N, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)KEY_ENC, (uint32_t*)(&KEY_ENC[16]), (uint32_t*)KS);
 	AES_256_Key_Expansion(KEY_ENC, (uint32_t*)KS);	
 	AES_256_Encrypt((uint32_t*)TAG, (uint32_t*)TAG, (uint32_t*)KS);
 	CTR[0] = ((uint64_t*)TAG)[0];
 	CTR[1] = ((uint64_t*)TAG)[1];
 	((uint8_t*)CTR)[15] |= 128;
-	((uint32_t*)CTR)[0] = 0;
 	
 #ifdef DETAILS
 	printf("\nLENBLK =                        "); print16((uint8_t*)LENBLK);
@@ -336,15 +328,8 @@ int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	uint64_t aad_pad = 0;
 	uint8_t KEY_ENC[32] = {0};
 	uint64_t LENBLK[2] = {(AAD_len<<3), (MSG_len<<3)};
-	uint8_t N_split[32] = {0};
 	int i;
-	for (i=0; i<16; i++)
-	{
-	    N_split[i] = N[i];
-		N_split[i+16] = N[i];
-	}
-	N_split[0] = N_split[0] & 0xfe;
-	N_split[16] = N_split[16] | 0x1;	
+
 	if ((AAD_len % 16) != 0) {
 		aad_pad = 16 - (AAD_len % 16);
 	}
@@ -355,11 +340,10 @@ int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	CTR[0] = ((uint64_t*)TAG)[0];
 	CTR[1] = ((uint64_t*)TAG)[1];
 	((uint8_t*)CTR)[15] |= 128;
-	((uint32_t*)CTR)[0] = 0;
 	
 	AES_256_Key_Expansion(K2, (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)KEY_ENC, (uint32_t*)&N_split[0], (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)(&KEY_ENC[16]), (uint32_t*)(&N_split[16]), (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)(&KEY_ENC[16]), (uint32_t*)N, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)KEY_ENC, (uint32_t*)(&KEY_ENC[16]), (uint32_t*)KS);
 	#ifdef DETAILS
 	printf("\nEncryption_Key =                "); print16(KEY_ENC);
 	printf("\n                                "); print16(KEY_ENC+16);
