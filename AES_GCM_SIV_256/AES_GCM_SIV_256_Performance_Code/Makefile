@@ -16,5 +16,5 @@ GHASH:
 
 
 clean:
-	rm GCM_SIV_DEC
-	rm GCM_SIV_ENC
+	rm -f GCM_SIV_DEC
+	rm -f GCM_SIV_ENC

@@ -3,7 +3,8 @@ ICC = icc
 FLAGS = -DRDTSC
 #DEF= -DDETAILS -DADD_INFO
 DEF= -DCOUNT
-FLAGS+= -Wa,-q
+# The following line should be added for Macports-installed GCC
+#FLAGS+= -Wa,-q
 
 ALL:  GHASH 
 	
@@ -14,5 +15,5 @@ GHASH:
 
 
 clean:
-	rm GCM_SIV_DEC
-	rm GCM_SIV_ENC
+	rm -f GCM_SIV_DEC
+	rm -f GCM_SIV_ENC
