@@ -20,19 +20,19 @@ as sample - so it will be easy to verify and check with each other.
 Please read each README for further details.
 
 Results on performance code (using Performance code version on Fixed frequency):
-                2 KEY DEC	
+                Decryption	
               	HSW [C/B]   BDW [C/B]    SKL [C/B]
-AAD=0 MSG=1024	1.47        1.00        0.83
-AAD=0 MSG=2048	1.30        0.85        0.71
-AAD=0 MSG=4096	1.27        0.81        0.68
-AAD=0 MSG=8192	1.23        0.77        0.65
-AAD=0 MSG=16384	1.22        0.76        0.64
+AAD=0 MSG=1024	1.88        1.30        1.09
+AAD=0 MSG=2048	1.50        1.00        0.85
+AAD=0 MSG=4096	1.38        0.88        0.74
+AAD=0 MSG=8192	1.29        0.80        0.68
+AAD=0 MSG=16384	1.26        0.78        0.66
 
 
-                2 KEY ENC	
+                Encryption	
                 HSW [C/B]   BDW [C/B]   SKL [C/B]
-AAD=0 MSG=1024	1.50        1.16        1.11
-AAD=0 MSG=2048	1.37        1.03        1.02
-AAD=0 MSG=4096	1.30        0.96        0.97
-AAD=0 MSG=8192	1.27        0.93        0.95
-AAD=0 MSG=16384	1.26        0.91        0.94
+AAD=0 MSG=1024	1.78        1.35        1.32
+AAD=0 MSG=2048	1.50        1.12        1.12
+AAD=0 MSG=4096	1.37        1.01        1.02
+AAD=0 MSG=8192	1.31        0.95        0.98
+AAD=0 MSG=16384	1.27        0.92        0.95

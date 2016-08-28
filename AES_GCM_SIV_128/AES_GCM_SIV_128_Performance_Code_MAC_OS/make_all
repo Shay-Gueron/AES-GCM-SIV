@@ -1,0 +1,29 @@
+make DEF='-DDETAILS -DLITTLE_ENDIAN_'
+mv GCM_SIV_ENC ./executables_with_printouts_LE/
+mv GCM_SIV_DEC ./executables_with_printouts_LE/
+cd ./executables_with_printouts_LE/
+scrpt_2keys > output_le1.txt
+cd ..
+make DEF='-DDETAILS -DLITTLE_ENDIAN_ -DADD_INFO'
+mv GCM_SIV_ENC ./executables_with_printouts_ADD_INFO_LE/
+mv GCM_SIV_DEC ./executables_with_printouts_ADD_INFO_LE/
+cd ./executables_with_printouts_ADD_INFO_LE
+./scrpt_2keys > output_add_info_le1.txt
+cd ..
+make DEF='-DDETAILS'
+mv GCM_SIV_ENC ./executables_with_printouts_BE/
+mv GCM_SIV_DEC ./executables_with_printouts_BE/
+cd ./executables_with_printouts_BE
+./scrpt_2keys > output_be1.txt
+cd ..
+make DEF='-DDETAILS -DADD_INFO'
+cp GCM_SIV_ENC ./executables_with_printouts
+cp GCM_SIV_DEC ./executables_with_printouts
+mv GCM_SIV_ENC ./executables_with_printouts_ADD_INFO_BE/
+mv GCM_SIV_DEC ./executables_with_printouts_ADD_INFO_BE/
+cd ./executables_with_printouts_ADD_INFO_BE
+./scrpt_2keys > output_add_info_be1.txt
+cd ..
+make DEF='-DCOUNT'
+mv GCM_SIV_ENC ./executables_measure/
+mv GCM_SIV_DEC ./executables_measure/

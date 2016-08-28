@@ -86,17 +86,16 @@
 void print16(uint8_t *in);
 void print_buffer(uint8_t *in, int length);
 void rand_vec(uint8_t *in, int length);
-void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, uint8_t* N, uint64_t aad_len, 
+void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, uint64_t aad_len, 
 				  uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad);
-void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, uint8_t* N, uint64_t aad_len, 
+void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, uint64_t aad_len, 
                    uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad, int flag);
 
 
 				
 void SIV_GCM_ENC_2_Keys(uint8_t* CT, 				// Output
 						uint8_t TAG[16], 			// Output
-						uint8_t K1[16], 
-						uint8_t K2[16],
+						uint8_t K1[32], 
 						uint8_t N[16],
 						uint8_t* AAD, 
 						uint8_t* MSG, 
@@ -105,8 +104,7 @@ void SIV_GCM_ENC_2_Keys(uint8_t* CT, 				// Output
 				
 int SIV_GCM_DEC_2_Keys(uint8_t* MSG, 				// Output
 						uint8_t TAG[16], 			
-						uint8_t K1[16], 
-						uint8_t K2[16],
+						uint8_t K1[32], 
 						uint8_t N[16],
 						uint8_t* AAD, 
 						uint8_t* CT, 
@@ -125,7 +123,6 @@ int main(int argc, char *argv[])
 	int i =0;
 	uint8_t TAG[16] = {0};
 	uint8_t K1[32] ={0};
-	uint8_t K2[32] = {0};
 	uint8_t N[16] ={0};
 	
 	int res = 0;
@@ -161,13 +158,13 @@ int main(int argc, char *argv[])
 	}	
 #ifdef DETAILS	
 
-	init_buffers(PLAINTEXT, AAD, K1, K2, N, aad_len, in_len, aad_pad, msg_pad);
+	init_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad);
 	printf("*****************************");
 	printf("\nPerforming SIV_GCM - Two Keys:");
 	printf("\n*****************************\n\n");
 	printf("AAD_len = %d bytes\n", aad_len);
 	printf("MSG_len = %d bytes\n", in_len);
-	print_buffers(PLAINTEXT, AAD, K1, K2, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
+	print_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
 #else
 	for (i=0; i<(aad_len+aad_pad); i++)
 		AAD[i] = 0;
@@ -176,14 +173,13 @@ int main(int argc, char *argv[])
 	for (count = 0; count < 40; count ++) {
 		printf("Random test number %d:\n", count+1);
 		rand_vec(PLAINTEXT, in_len);
-		rand_vec(K1, 16);
-		rand_vec(K2, 16);
+		rand_vec(K1, 32);
 		rand_vec(N, 16);
 #endif
 	
 //Check SIV_GCM 2 keys	
-	GCM_SIV_ENC_2_Keys(CIPHERTEXT, TAG, K1, K2, N, AAD, PLAINTEXT, aad_len, in_len);
-	res = GCM_SIV_DEC_2_Keys(decrypted_CT, TAG, K1, K2, N, AAD, CIPHERTEXT, aad_len, in_len);
+	GCM_SIV_ENC_2_Keys(CIPHERTEXT, TAG, K1, N, AAD, PLAINTEXT, aad_len, in_len);
+	res = GCM_SIV_DEC_2_Keys(decrypted_CT, TAG, K1, N, AAD, CIPHERTEXT, aad_len, in_len);
 	
 #ifdef DETAILS	
 	printf("\nAAD =                           "); print_buffer(AAD, aad_len);
@@ -267,18 +263,16 @@ void print_buffer(uint8_t *in, int length)
    }
 }
 
-void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, uint8_t* N, 
+void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, 
 				  uint64_t aad_len, uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad)
 {
 	int i, j;
 	for(i=0; i<16; i++) {
 		K1[i] = 0;
-		K2[i] = 0;
-		K2[i+16] = 0;
+		K1[i+16] = 0;
 		N[i] 	= 0;
 	}
-	K1[0]=3;
-	K2[0]=1;
+	K1[0]=1;
 	N[0]=3;
 	
 	//Init AAD [00..1][00..2]...[000 aad_len]
@@ -299,7 +293,7 @@ void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, ui
 	
 }
 
-void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, uint8_t* N, 
+void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, 
 					uint64_t aad_len, uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad, int flag)
 {
 	printf("                                            BYTES ORDER         \n");
@@ -313,9 +307,8 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* K2, u
 	printf("                                --------------------------------\n\n");
 	
 
-	printf("K1 = H =                        "); print16(K1);
-	printf("K2 = K =                        "); print16(K2);
-	printf("                                "); print16(K2+16);
+	printf("K1 = K =                        "); print16(K1);
+	printf("                                "); print16(K1+16);
 
 	
 	printf("NONCE =                         "); print16(N);

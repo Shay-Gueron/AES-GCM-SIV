@@ -9,8 +9,7 @@ MSG_len = 256 bytes
                                 00010203040506070809101112131415
                                 --------------------------------
 
-K1 = H =                        03000000000000000000000000000000
-K2 = K =                        01000000000000000000000000000000
+K1 = K =                        01000000000000000000000000000000
 NONCE =                         03000000000000000000000000000000
 
 AAD =                           
@@ -51,40 +50,40 @@ PADDED_MSG =                    01000000000000000000000000000000
                                 0f000000000000000000000000000000
                                 10000000000000000000000000000000
 
+Record_Hash_Key =               57d4b7aec8de993e30a6861b61e6ce4e
+
+Record_Enc_Key =                40163363796658e1400b1aaa02aad8a6
+
 LENBLK =                        00000000000000000008000000000000
 
-POLYVAL =                       86550ddeb6cf55d4a8dfefe7ff61c794
+POLYVAL =                       fface15a5fa6a25cf2e8d7d1e6b4ae7c
 
-POLYVAL_xor_NONCE =             85550ddeb6cf55d4a8dfefe7ff61c794
+TAG =                           852659f8b9d9757b3b9ef64a58f76bec
 
-with_MSbit_cleared =            85550ddeb6cf55d4a8dfefe7ff61c714
+CTRBLK =                        852659f8b9d9757b3b9ef64a58f76bec
 
-TAG =                           9980dc026415c776e19370fb9e7f9907
+Encryption_Key =                40163363796658e1400b1aaa02aad8a6
 
-CTRBLK =                        9980dc026415c776e19370fb9e7f9987
-
-Encryption_Key =                57d4b7aec8de993e30a6861b61e6ce4e
-
-TAG' =                          9980dc026415c776e19370fb9e7f9907
+TAG' =                          852659f8b9d9757b3b9ef64a58f76bec
 
 AAD =                           
 
-CIPHERTEXT =                    605bbd0d1989a37a31c252102bd7d6f2
-                                fef151371d265d31c79b91074f1dce65
-                                a445341f6627e287e2000eb384b0f741
-                                f467efa242dd3afc69869007329b4e47
-                                0c0f89c9ab1a39992d6a983a246b3320
-                                66b705f7e441b85e3a0998d58f8ccb9f
-                                c5c7156e5b7ff45143fe34b6f7767d62
-                                17b19deb69958aeebbbef96cf89adadf
-                                16cc3ea9284c1e35f40695ebb51c2cfb
-                                e7642b367fba377e3ac97446cda9dd42
-                                12f2da570572cfc52379ec66f29b2ead
-                                4c29a07bf35cb745453887d789fe3d4a
-                                5ac61458615ba2a05042287007c252ad
-                                da46eebaa2d97e883ac691d79f93a243
-                                2a3765f016a663d459293031a8e5e7b4
-                                4f3cce7ffa0a98024ceb6f81fa3941a9
+CIPHERTEXT =                    2845ebc3b74eb9625221b4dc387be3bb
+                                be6231ab9ae2b07bca433df498522c30
+                                e29a43e54031d9b28fe4d283c26b1625
+                                5accf4d670a88504aca719fdd8ec4f3b
+                                41bd6e356b75f61a26fbc5b8d25bd71a
+                                348c0e5410af11350ee2a09001e7daab
+                                e6275e605cda31af0cede22205ca13b9
+                                80124f1dcb25b529f98e2ee735c4bd07
+                                6d983b7a856d08e629972620f16b0e1a
+                                0d1c7c3acfdb7aa79e66d3a60986f47b
+                                b06b2dd6273a50761288d563e6c7967e
+                                215eadbb02cf97738c146f52b719d2ec
+                                f467572237fe37b96937a2ab1ef4291a
+                                a068e6a8eeb622eae32a20614da292b4
+                                8c072922a7f63eaec5acdaf531c31564
+                                74f439545ba898ac9f4e9bf6c6c39f5d
 
 Decrypted MSG =                 01000000000000000000000000000000
                                 02000000000000000000000000000000

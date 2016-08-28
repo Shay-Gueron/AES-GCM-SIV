@@ -150,25 +150,23 @@ void print_buffers_LE(int init_AAD_byte_len,
                     unsigned char* BIG_BUF); 
                     
 void print_res_buffers_BE(int init_AAD_byte_len, int init_MSG_byte_len,
-                            unsigned char* H,
-                            unsigned char* K,
-                            unsigned char* T,
-                            unsigned char* TxorIV,
-                            unsigned char* TxorIV_masked,
-                            unsigned char* TAG,
-                            unsigned char* BIG_BUF,
-                            unsigned char* CT);     
-                            
+							unsigned char* H,
+							unsigned char* K,
+							unsigned char* T,
+							unsigned char* T_masked,
+							unsigned char* TAG,
+							unsigned char* BIG_BUF,
+							unsigned char* CT); 	
+							
 void print_res_buffers_LE(int init_AAD_byte_len, int init_MSG_byte_len,
-                            unsigned char* H,
-                            unsigned char* K,
-                            unsigned char* T,
-                            unsigned char* TxorIV,
-                            unsigned char* TxorIV_masked,
-                            unsigned char* TAG,
-                            unsigned char* BIG_BUF,
-                            unsigned char* CT);     
-                    
+							unsigned char* H,
+							unsigned char* K,
+							unsigned char* T,
+							unsigned char* T_masked,
+							unsigned char* TAG,
+							unsigned char* BIG_BUF,
+							unsigned char* CT); 	
+					
 void init_lengths(int init_AAD_byte_len, 
                 int init_MSG_byte_len, 
                 int* init_AAD_bit_len, 
@@ -179,13 +177,12 @@ void init_lengths(int init_AAD_byte_len,
                 int* L1, int* L2);
                 
 void init_buffers(int total_blocks, int init_MSG_bit_len, int init_AAD_bit_len, 
-                unsigned char* BIG_BUF, 
-                unsigned char* LENBLK,
-                unsigned char* SINGLE_KEY, 
-                unsigned char* K, 
-                unsigned char* H, 
-                unsigned char* IV, 
-                unsigned char* AND_MASK);
+				unsigned char* BIG_BUF, 
+				unsigned char* LENBLK,
+				unsigned char* SINGLE_KEY, 
+				unsigned char* K, 
+				unsigned char* IV, 
+				unsigned char* AND_MASK);
 
 
 void AES256_KS(unsigned char* key, unsigned char* KS);

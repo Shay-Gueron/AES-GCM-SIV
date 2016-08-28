@@ -91,13 +91,14 @@ int main(int argc, char *argv[])
     ROUND_KEYS KS_dec;
     
     uint8_t K[16]={0};
-    uint8_t H[16]={0};
+	uint8_t Record_Hash_Key[16] = {0};
+	uint8_t Record_Enc_Key[16] = {0};
     uint8_t SINGLE_KEY[16]={0};
     uint8_t IV[16]={0};
     uint8_t TAG[16]={0};  
     uint8_t T[16]={0};  
-    uint8_t TxorIV[16]={0};  
-    uint8_t TxorIV_masked[16]={0};
+
+    uint8_t T_masked[16]={0};
     uint8_t POLYVAL_dec[16]={0};        //POLYVAL calculation during decryption
     uint8_t TAG_dec[16]={0};            //TAG calculated for authentication
     uint8_t Htbl[16*8]={0};
@@ -106,7 +107,10 @@ int main(int argc, char *argv[])
     uint8_t ZERO[16]={0};
     uint8_t AND_MASK[16]={0};
     uint8_t H_and_K[32]={0};
-    uint8_t ENC_KEY[16] = {0};
+    
+	uint8_t *T1, *T2;
+	T1 = Record_Hash_Key;
+	T2 = Record_Enc_Key;
     //Get Input
     if(argc == 1 || argc == 2) {
       init_AAD_byte_len = 0;
@@ -136,10 +140,11 @@ int main(int argc, char *argv[])
                 BIG_BUF,
                 LENBLK,
                 SINGLE_KEY, 
-                K, H, IV, 
+                K, IV, 
                 ZERO_and_ONE,
                 AND_MASK);
-    
+	AES_KS_ENC_x1(IV, Record_Hash_Key , 16, (unsigned char *)&KS, K);                           //T1 = AES_K (IV)
+    INIT_Htable(Htbl, Record_Hash_Key);  
 #ifdef DETAILS  
     print_lengths(init_AAD_byte_len, 
                   init_AAD_bit_len, 
@@ -155,7 +160,7 @@ int main(int argc, char *argv[])
                     init_MSG_byte_len, 
                     total_blocks,
                     SINGLE_KEY,
-                    K,H,IV,
+                    K,Record_Hash_Key,IV,
                     BIG_BUF); 
     #else
     print_buffers_LE(init_AAD_byte_len, 
@@ -163,14 +168,13 @@ int main(int argc, char *argv[])
                     init_MSG_byte_len, 
                     total_blocks,
                     SINGLE_KEY,
-                    K,H,IV,
+                    K,Record_Hash_Key,IV,
                     BIG_BUF); 
     #endif
                     
 #endif  
 
 
-        INIT_Htable(Htbl, H);
     
 //*********************************** START - ENCRYPT **********************************************    
 #ifdef COUNT
@@ -184,26 +188,25 @@ int main(int argc, char *argv[])
     
     if (total_blocks <= 8) { //HORNER
     
-        Polyval_Horner(T, H, BIG_BUF, total_blocks);                                            //T = POLYVAL(padded_AADAAD||padded_MSG||LENBLK)
-        *((__m128i*)TxorIV) = _mm_xor_si128(*((__m128i*)IV), *((__m128i*)T));                   //TxorIV
-        *((__m128i*)TxorIV_masked) = _mm_and_si128(*((__m128i*)AND_MASK), *((__m128i*)TxorIV)); //TxorIV_masked = [0]TxorIV[120..0]  (MS bit is cleared)
-        //AES_KS_ENC_x1(TxorIV_masked, TAG, 16, (unsigned char *)&KS, K);                           //TAG = AES_K (TxorIV_masked)
-        AES_KS_ENC_x1(IV, ENC_KEY , 16, (unsigned char *)&KS, K);                           //ENC_KEY = AES_K (IV)
-        AES_KS_ENC_x1(TxorIV_masked, TAG, 16,(unsigned char *)&KS, ENC_KEY);                                //TAG = AES_ENC_KEY (TxorIV_masked)
+        AES_KS_ENC_x1(IV, T1 , 16, (unsigned char *)&KS, K);                           //T1 = AES_K (IV) -- T1 = Record_Hash_Key
+		ECB_ENC_block(T1, T2, (unsigned char *)&KS);									// T2 = AES_K (T1) -- T2 = Record_Enc_Key
+		Polyval_Horner(T, Record_Hash_Key, BIG_BUF, total_blocks);                                            //T = POLYVAL(padded_AADAAD||padded_MSG||LENBLK)
+        *((__m128i*)T_masked) = _mm_and_si128(*((__m128i*)AND_MASK), *((__m128i*)T)); //T_masked = [0]T[127..0]  (MS bit is cleared)
+        //AES_KS_ENC_x1(T_masked, TAG, 16, (unsigned char *)&KS, K);                           //TAG = AES_K (T_masked)
+        AES_KS_ENC_x1(T_masked, TAG, 16,(unsigned char *)&KS, Record_Enc_Key);                                //TAG = AES_Record_Enc_Key (T_masked)
         ENC_MSG_x4(BIG_BUF+L1*16, CT, TAG, (unsigned char *)&KS, padded_MSG_byte_len);          //CT = AES_K (CTRBLCK) xor MSG      
     
     }
     else { //Htable
         
-        #ifdef WITH_INIT
-        INIT_Htable(Htbl, H);
-        #endif
+        AES_KS_ENC_x1(IV, T1, 16, (unsigned char *)&KS, K);                            //T1 = AES_K (IV) -- T1 = Record_Hash_Key
+		ECB_ENC_block(T1, T2, (unsigned char *)&KS);									// T2 = AES_K (T1) -- T2 = Record_Enc_Key
+        INIT_Htable(Htbl, Record_Hash_Key);
         Polyval_Htable(Htbl, BIG_BUF, total_blocks*16, T);                                      //T = POLYVAL(padded_AADAAD||padded_MSG||LENBLK)
-        *((__m128i*)TxorIV) = _mm_xor_si128(*((__m128i*)IV), *((__m128i*)T));                   //TxorIV
-        *((__m128i*)TxorIV_masked) = _mm_and_si128(*((__m128i*)AND_MASK), *((__m128i*)TxorIV)); //TxorIV_masked = [0]TxorIV[120..0]  (MS bit is cleared)
-        //AES_KS_ENC_x1(TxorIV_masked, TAG, 16, (unsigned char *)&KS, K);                           //TAG = AES_K (TxorIV_masked)
-        AES_KS_ENC_x1(IV, ENC_KEY, 16, (unsigned char *)&KS, K);                            //ENC_KEY = AES_K (IV)
-        AES_KS_ENC_x1(TxorIV_masked, TAG, 16, (unsigned char *)&KS, ENC_KEY);                                //TAG = AES_ENC_KEY (TxorIV_masked)
+        *((__m128i*)T_masked) = _mm_and_si128(*((__m128i*)AND_MASK), *((__m128i*)T)); //T_masked = [0]T[127..0]  (MS bit is cleared)
+        //AES_KS_ENC_x1(T_masked, TAG, 16, (unsigned char *)&KS, K);                           //TAG = AES_K (T_masked)
+        
+        AES_KS_ENC_x1(T_masked, TAG, 16, (unsigned char *)&KS, Record_Enc_Key);                                //TAG = AES_Record_Enc_Key (T_masked)
         ENC_MSG_x8(BIG_BUF+L1*16, CT, TAG, (unsigned char *)&KS, padded_MSG_byte_len);          //CT = AES_K (CTRBLCK) xor MSG      
     }
     
@@ -220,17 +223,17 @@ int main(int argc, char *argv[])
 #ifdef DETAILS
     #ifndef LITTLE_ENDIAN_
     print_res_buffers_BE(init_AAD_byte_len, init_MSG_byte_len,
-                        H, K, T, TxorIV, TxorIV_masked, TAG, BIG_BUF, CT);  
-    printf("Encryption_Key=                 ");print16_BE(ENC_KEY);
+                        Record_Hash_Key, K, T, T_masked, TAG, BIG_BUF, CT);  
+    printf("Encryption_Key=                 ");print16_BE(Record_Enc_Key);
     #else
     print_res_buffers_LE(init_AAD_byte_len, init_MSG_byte_len,
-                        H, K, T, TxorIV, TxorIV_masked, TAG, BIG_BUF, CT);
-    printf("Encryption_Key=                 ");print16_LE(ENC_KEY);
+                        Record_Hash_Key, K, T, T_masked, TAG, BIG_BUF, CT);
+    printf("Encryption_Key=                 ");print16_LE(Record_Enc_Key);
     #endif
 #endif
 
 
-    INIT_Htable_6(Htbl, H);
+  
     
     
 //*********************************** START - DECRYPT **********************************************    
@@ -244,18 +247,16 @@ int main(int argc, char *argv[])
 
 
     
-    #ifdef WITH_INIT
-        INIT_Htable_6(Htbl, H);
-	#endif
-        AES_KS_ENC_x1(IV, ENC_KEY , 16, (unsigned char *)&KS_dec, K);                           //ENC_KEY = AES_K (IV,K)
-        AES_KS(ENC_KEY, (unsigned char *)&KS_dec);
 
-    
-    Polyval_Horner(POLYVAL_dec, H, BIG_BUF, L1);                                                    //POLYVAL(padded_AAD)
+	AES_KS_ENC_x1(IV, T1 , 16, (unsigned char *)&KS_dec, K);                           //T1 = AES_K (IV) -- T1 = Record_Hash_Key
+	ECB_ENC_block(T1, T2, (unsigned char *)&KS_dec);									// T2 = AES_K (T1) -- T2 = Record_Enc_Key
+    AES_KS(Record_Enc_Key, (unsigned char *)&KS_dec);
+    INIT_Htable_6(Htbl, Record_Hash_Key);
+    Polyval_Horner(POLYVAL_dec, Record_Hash_Key, BIG_BUF, L1);                                                    //POLYVAL(padded_AAD)
     Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, Htbl, (unsigned char *)&KS_dec, padded_MSG_byte_len, secureBuffer);
-    Polyval_Horner(POLYVAL_dec, H, LENBLK, 1);                                                      //POLYVAL(padded_AAD||padded_MSG||LENBLK)
+    Polyval_Horner(POLYVAL_dec, Record_Hash_Key, LENBLK, 1);                                                      //POLYVAL(padded_AAD||padded_MSG||LENBLK)
     //Calculate TAG_dec
-    *((__m128i*)POLYVAL_dec) = _mm_xor_si128(*((__m128i*)IV), *((__m128i*)POLYVAL_dec));            //POLYVAL xor IV
+//    *((__m128i*)POLYVAL_dec) = _mm_xor_si128(*((__m128i*)IV), *((__m128i*)POLYVAL_dec));            //POLYVAL xor IV
     *((__m128i*)POLYVAL_dec) = _mm_and_si128(*((__m128i*)AND_MASK), *((__m128i*)POLYVAL_dec));      //MSbit cleared
     ECB_ENC_block(POLYVAL_dec, TAG_dec, (unsigned char *)&KS_dec);                                  //TAG_dec = AES_K (POLYVAL_masked)
 
@@ -451,9 +452,9 @@ void print_counters_from_TAG_BE(uint8_t *in, int num_of_counters)
    uint32_t count=0;
    in[15] |= 0x80;
    if (num_of_counters == 0) {
-        printf("\n");
-        return;
-    }
+		printf("\n");
+		return;
+	}
    printf("\n");
    ((uint8_t*)&count)[0] = in[0];
    ((uint8_t*)&count)[1] = in[1];
@@ -461,23 +462,23 @@ void print_counters_from_TAG_BE(uint8_t *in, int num_of_counters)
    ((uint8_t*)&count)[3] = in[3];
    for(i=0; i<num_of_counters; i++)
    {
-      printf("                                ");
+	  printf("                                ");
 	  if (count<256)
 		printf("%02x000000",((uint8_t*)&count)[0]);
-      else
+	  else
 		if (count<(1<<16))
 		{
 			printf("%02x%02x0000",((uint8_t*)&count)[0],((uint8_t*)&count)[1]);
 		}
-        else
+	    else
 	      if (count<(1<<24))
 		    printf("%02x%02x%02x00",((uint8_t*)&count)[0], ((uint8_t*)&count)[1], ((uint8_t*)&count)[2]);
-          else
+		  else
 		    printf("%02x%02x%02x%02x",((uint8_t*)&count)[0], ((uint8_t*)&count)[1], ((uint8_t*)&count)[2], ((uint8_t*)&count)[3]);
-      for(j=4; j<16; j++) {
-        printf("%02x", in[j]);
-      }
-    printf("\n");
+	  for(j=4; j<16; j++) {
+		printf("%02x", in[j]);
+	  }
+	printf("\n");
 	count++;
    }
 }
@@ -488,9 +489,9 @@ void print_counters_from_TAG_LE(uint8_t *in, int num_of_counters)
    uint32_t count=0;
    in[15] |= 0x80;
    if (num_of_counters == 0) {
-        printf("\n");
-        return;
-    }
+		printf("\n");
+		return;
+	}
    printf("\n");
    ((uint8_t*)&count)[0] = in[0];
    ((uint8_t*)&count)[1] = in[1];
@@ -498,23 +499,23 @@ void print_counters_from_TAG_LE(uint8_t *in, int num_of_counters)
    ((uint8_t*)&count)[3] = in[3];
    for(i=0; i<num_of_counters; i++)
    {
-      printf("                                ");
+	  printf("                                ");
 
-      for(j=15; j>=4; j--) {
-        printf("%02x", in[j]);
-      }
+	  for(j=15; j>=4; j--) {
+		printf("%02x", in[j]);
+	  }
       if (count<256)
-          printf("000000%02x",count++);
-      else
+		  printf("000000%02x",count++);
+	  else
 		  if (count<(1<<16))
-            printf("0000%04x",count++);
-          else
+			printf("0000%04x",count++);
+	      else
 	        if (count<(1<<24))
-              printf("00%06x",count++);
-            else
-              printf("%08x",count++);
-    printf("\n");
-      
+		      printf("00%06x",count++);
+		    else
+		      printf("%08x",count++);
+	printf("\n");
+	  
    }
 }
 
@@ -544,7 +545,6 @@ void init_buffers(int total_blocks, int init_MSG_bit_len, int init_AAD_bit_len,
                 unsigned char* LENBLK,
                 unsigned char* SINGLE_KEY, 
                 unsigned char* K, 
-                unsigned char* H, 
                 unsigned char* IV, 
                 unsigned char* ZERO_and_ONE,
                 unsigned char* AND_MASK) 
@@ -553,13 +553,12 @@ void init_buffers(int total_blocks, int init_MSG_bit_len, int init_AAD_bit_len,
     for(i=0; i<16; i++) {
         SINGLE_KEY[i] = 0;
         K[i]    = 0;
-        H[i]    = 0;
+        
         IV[i]   = 0;
         AND_MASK[i] = 255;
     }
     SINGLE_KEY[0] = 3;
     K[0]=1;
-    H[0]=3;
     IV[0]=3;
     AND_MASK[15] = 127;     //AND_MASK= 011111..11
     ZERO_and_ONE[0] = 0;
@@ -628,9 +627,9 @@ void print_buffers_BE(int init_AAD_byte_len,
     printf("                                --------------------------------\n");
 
 
-    printf("K1 = H =                        "); print16_BE(H);
-    printf("K2 = K =                        "); print16_BE(K);
+    printf("K =                             "); print16_BE(K);
     printf("NONCE =                         "); print16_BE(IV);
+	printf("Record_Hash_Key =               "); print16_BE(H);
     printf("AAD =                           ");print_buffer_BE(BIG_BUF, init_AAD_byte_len);
     printf("MSG =                           ");print_buffer_BE(BIG_BUF+padded_AAD_byte_len, init_MSG_byte_len);
     printf("PADDED_AAD_and_MSG =            ");print_buffer_BE(BIG_BUF, (total_blocks-1)*16);
@@ -656,9 +655,9 @@ void print_buffers_LE(int init_AAD_byte_len,
     printf("                                MSB--------------------------LSB\n");
     printf("                                15141312111009080706050403020100\n");
     printf("                                --------------------------------\n");
-    printf("K1 = H =                        "); print16_LE(H);
-    printf("K2 = K =                        "); print16_LE(K);
+    printf("K =                             "); print16_LE(K);
     printf("NONCE =                         "); print16_LE(IV);
+	printf("Record_Hash_Key =               "); print16_LE(H);
     printf("AAD =                           ");print_buffer_LE(BIG_BUF, init_AAD_byte_len);
     printf("MSG =                           ");print_buffer_LE(BIG_BUF+padded_AAD_byte_len, init_MSG_byte_len);
     printf("PADDED_AAD_and_MSG =            ");print_buffer_LE(BIG_BUF, (total_blocks-1)*16);
@@ -671,16 +670,14 @@ void print_res_buffers_BE(int init_AAD_byte_len, int init_MSG_byte_len,
                             unsigned char* H,
                             unsigned char* K,
                             unsigned char* T,
-                            unsigned char* TxorIV,
-                            unsigned char* TxorIV_masked,
+                            unsigned char* T_masked,
                             unsigned char* TAG,
                             unsigned char* BIG_BUF,
                             unsigned char* CT)
 {
     
     printf("POLYVAL =                       "); print_buffer_BE(T,16);
-    printf("POLYVAL_xor_NONCE  =            "); print_buffer_BE(TxorIV,16);
-    printf("with MSBit cleared =            "); print16_BE(TxorIV_masked);
+    printf("with MSBit cleared =            "); print16_BE(T_masked);
     printf("TAG =                           "); print16_BE(TAG);
     printf("AAD =                           ");print_buffer_BE(BIG_BUF, init_AAD_byte_len);
     printf("CT  =                           "); print_buffer_BE(CT, init_MSG_byte_len);
@@ -690,8 +687,7 @@ void print_res_buffers_LE(int init_AAD_byte_len, int init_MSG_byte_len,
                             unsigned char* H,
                             unsigned char* K,
                             unsigned char* T,
-                            unsigned char* TxorIV,
-                            unsigned char* TxorIV_masked,
+                            unsigned char* T_masked,
                             unsigned char* TAG,
                             unsigned char* BIG_BUF,
                             unsigned char* CT)
@@ -699,8 +695,7 @@ void print_res_buffers_LE(int init_AAD_byte_len, int init_MSG_byte_len,
 
     
     printf("POLYVAL =                       "); print_buffer_LE(T,16);
-    printf("POLYVAL_xor_NONCE  =            "); print_buffer_LE(TxorIV,16);
-    printf("with MSBit cleared =            "); print16_LE(TxorIV_masked);
+    printf("with MSBit cleared =            "); print16_LE(T_masked);
     printf("TAG =                           "); print16_LE(TAG);
     printf("AAD =                           ");print_buffer_LE(BIG_BUF, init_AAD_byte_len);
     printf("CT  =                           "); print_buffer_LE(CT, init_MSG_byte_len);

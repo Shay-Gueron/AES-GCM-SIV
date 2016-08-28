@@ -265,14 +265,15 @@ void POLYVAL(uint64_t* input, uint64_t* H, uint64_t len, uint64_t* result)
 }
 
 
-void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2[32], uint8_t N[16], uint8_t* AAD, uint8_t* MSG, 
+void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[32], uint8_t N[16], uint8_t* AAD, uint8_t* MSG, 
 						uint64_t AAD_len, uint64_t MSG_len)
 {
 	uint64_t T[2] = {0};
-	uint64_t TxorN[2] = {0};
+	uint64_t T_masked[2] = {0};
 	uint64_t CTR[2] = {0};
 	uint64_t KS[30];
-	uint8_t KEY_ENC[32] = {0};
+	uint8_t Record_Enc_Key[32] = {0};
+	uint8_t Record_Hash_Key[16] = {0};
 	uint64_t msg_pad = 0;
 	uint64_t aad_pad = 0;
 	uint64_t LENBLK[2] = {(AAD_len<<3), (MSG_len<<3)};
@@ -284,17 +285,20 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	if ((MSG_len % 16) != 0) {
 		msg_pad = 16 - (MSG_len % 16);
 	}
-
-	POLYVAL((uint64_t*)AAD, (uint64_t*)K1, AAD_len + aad_pad, T);
-	POLYVAL((uint64_t*)MSG, (uint64_t*)K1, MSG_len + msg_pad, T);
-	POLYVAL(LENBLK, (uint64_t*)K1, 16, T);    
-	((uint64_t*)TAG)[0] = TxorN[0] = T[0] ^ ((uint64_t*)N)[0];
-	((uint64_t*)TAG)[1] = TxorN[1] = T[1] ^ ((uint64_t*)N)[1];
+	AES_256_Key_Expansion(K1, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)Record_Hash_Key, (uint32_t*)N, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)(&Record_Enc_Key[16]), (uint32_t*)Record_Hash_Key, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)Record_Enc_Key, (uint32_t*)(&Record_Enc_Key[16]), (uint32_t*)KS);
+	POLYVAL((uint64_t*)AAD, (uint64_t*)Record_Hash_Key, AAD_len + aad_pad, T);
+	POLYVAL((uint64_t*)MSG, (uint64_t*)Record_Hash_Key, MSG_len + msg_pad, T);
+	POLYVAL(LENBLK, (uint64_t*)Record_Hash_Key, 16, T);    
+	((uint64_t*)TAG)[0] = T_masked[0] = T[0];
+	((uint64_t*)TAG)[1] = T_masked[1] = T[1];
 	TAG[15] &= 127;
-	AES_256_Key_Expansion(K2, (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)(&KEY_ENC[16]), (uint32_t*)N, (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)KEY_ENC, (uint32_t*)(&KEY_ENC[16]), (uint32_t*)KS);
-	AES_256_Key_Expansion(KEY_ENC, (uint32_t*)KS);	
+	
+	
+	
+	AES_256_Key_Expansion(Record_Enc_Key, (uint32_t*)KS);	
 	AES_256_Encrypt((uint32_t*)TAG, (uint32_t*)TAG, (uint32_t*)KS);
 	CTR[0] = ((uint64_t*)TAG)[0];
 	CTR[1] = ((uint64_t*)TAG)[1];
@@ -303,11 +307,10 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 #ifdef DETAILS
 	printf("\nLENBLK =                        "); print16((uint8_t*)LENBLK);
 	printf("\nPOLYVAL =                       "); print16((uint8_t*)T);
-	printf("\nPOLYVAL_xor_NONCE =             "); print16((uint8_t*)TxorN);
 #endif
-	((uint8_t*)TxorN)[15] =  ((uint8_t*)TxorN)[15] & 127;
+	((uint8_t*)T_masked)[15] =  ((uint8_t*)T)[15] & 127;
 #ifdef DETAILS
-	printf("\nwith_MSbit_cleared =            "); print16((uint8_t*)TxorN);
+	printf("\nwith_MSbit_cleared =            "); print16((uint8_t*)T_masked);
 	printf("\nTAG =                           "); print16(TAG);
 	printf("\nCTRBLK =                        "); print16((uint8_t*)CTR);
 #endif
@@ -317,7 +320,7 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 
 
 
-int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2[32], uint8_t N[16], uint8_t* AAD, uint8_t* CT, 
+int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[32], uint8_t N[16], uint8_t* AAD, uint8_t* CT, 
 						uint64_t AAD_len, uint64_t MSG_len)
 {
 	uint64_t T[2] = {0};
@@ -326,7 +329,8 @@ int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	uint64_t KS[30];
 	uint64_t msg_pad = 0;
 	uint64_t aad_pad = 0;
-	uint8_t KEY_ENC[32] = {0};
+	uint8_t Record_Enc_Key[32] = {0};
+	uint8_t Record_Hash_Key[16] = {0};
 	uint64_t LENBLK[2] = {(AAD_len<<3), (MSG_len<<3)};
 	int i;
 
@@ -341,22 +345,24 @@ int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t K2
 	CTR[1] = ((uint64_t*)TAG)[1];
 	((uint8_t*)CTR)[15] |= 128;
 	
-	AES_256_Key_Expansion(K2, (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)(&KEY_ENC[16]), (uint32_t*)N, (uint32_t*)KS);
-	AES_256_Encrypt((uint32_t*)KEY_ENC, (uint32_t*)(&KEY_ENC[16]), (uint32_t*)KS);
+	AES_256_Key_Expansion(K1, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)Record_Hash_Key, (uint32_t*)N, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)(&Record_Enc_Key[16]), (uint32_t*)Record_Hash_Key, (uint32_t*)KS);
+	AES_256_Encrypt((uint32_t*)Record_Enc_Key, (uint32_t*)(&Record_Enc_Key[16]), (uint32_t*)KS);
 	#ifdef DETAILS
-	printf("\nEncryption_Key =                "); print16(KEY_ENC);
-	printf("\n                                "); print16(KEY_ENC+16);
+	printf("\nRecord_Hash_Key =               "); print16(Record_Hash_Key);
+	printf("\nEncryption_Key =                "); print16(Record_Enc_Key);
+	printf("\n                                "); print16(Record_Enc_Key+16);
     #endif
-	AES_256_Key_Expansion(KEY_ENC, (uint32_t*)KS);
+	AES_256_Key_Expansion(Record_Enc_Key, (uint32_t*)KS);
 	AES_256_CTR(MSG, CT, (uint32_t*)CTR, MSG_len + msg_pad, (uint32_t*)KS);
 	
-	POLYVAL((uint64_t*)AAD, (uint64_t*)K1, AAD_len + aad_pad, T);
-	POLYVAL((uint64_t*)MSG, (uint64_t*)K1, MSG_len + msg_pad, T);
-	POLYVAL(LENBLK, (uint64_t*)K1, 16, T);
+	POLYVAL((uint64_t*)AAD, (uint64_t*)Record_Hash_Key, AAD_len + aad_pad, T);
+	POLYVAL((uint64_t*)MSG, (uint64_t*)Record_Hash_Key, MSG_len + msg_pad, T);
+	POLYVAL(LENBLK, (uint64_t*)Record_Hash_Key, 16, T);
 	
-	new_TAG[0] = T[0] ^ ((uint64_t*)N)[0];
-	new_TAG[1] = T[1] ^ ((uint64_t*)N)[1];
+	new_TAG[0] = T[0];
+	new_TAG[1] = T[1];
 	((uint8_t*)new_TAG)[15] &= 127;
 	AES_256_Encrypt((uint32_t*)new_TAG, (uint32_t*)new_TAG, (uint32_t*)KS); 
 
