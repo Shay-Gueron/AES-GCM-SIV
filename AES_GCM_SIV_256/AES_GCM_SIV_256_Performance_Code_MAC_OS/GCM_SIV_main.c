@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
 	ECB_ENC_block(T1, T2 , (unsigned char *)&KS_dec);    		//T2 = AES_K (T1) - T2 = Record_Enc_Key[255:128]
 	ECB_ENC_block(T2, T3 , (unsigned char *)&KS_dec);    		//T3 = AES_K (T2) - T3 = Record_Enc_Key[127:0]
 	INIT_Htable_6(Htbl, Record_Hash_Key);
-	AES_256_KS(Record_Enc_Key, (unsigned char *)&KS_dec);
+	AES256_KS(Record_Enc_Key, (unsigned char *)&KS_dec);
 	
 	
 	Polyval_Horner(POLYVAL_dec, Record_Hash_Key, BIG_BUF, L1);													//POLYVAL(padded_AAD)
