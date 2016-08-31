@@ -1,0 +1,1964 @@
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 0)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 0
+MSG_bit_len  = 0
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 0
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 0
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           
+PADDED_AAD_and_MSG =            
+LENBLK =                        00000000000000000000000000000000
+
+Computing POLYVAL on a
+buffer of 0 blocks + LENBLK.
+POLYVAL =                       00000000000000000000000000000000
+with MSBit cleared =            00000000000000000000000000000000
+TAG =                           f0e408cc879c37419236ffee36cf7ceb
+AAD =                           
+CT  =                           
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 8)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 8
+MSG_bit_len  = 64
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                                           0000000000000001
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+LENBLK =                        00000000000000400000000000000000
+
+Computing POLYVAL on a
+buffer of 1 blocks + LENBLK.
+POLYVAL =                       0582d0adfdc9247cf43f087a9ff68968
+with MSBit cleared =            0582d0adfdc9247cf43f087a9ff68968
+TAG =                           08fa6c644f03fdcdf58132b7079ea6a0
+AAD =                           
+CT  =                                           c3b40f6f2a383fab
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                88fa6c644f03fdcdf58132b7079ea6a0
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 12)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 12
+MSG_bit_len  = 96
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                                   000000000000000000000001
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+LENBLK =                        00000000000000600000000000000000
+
+Computing POLYVAL on a
+buffer of 1 blocks + LENBLK.
+POLYVAL =                       f33bd9c86240fe5b2a8ff6e11f4f93e3
+with MSBit cleared =            733bd9c86240fe5b2a8ff6e11f4f93e3
+TAG =                           f1a9cca00b14f545bd7c9cda70baf3cd
+AAD =                           
+CT  =                                   9721da53b923ca33f0818dbe
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                f1a9cca00b14f545bd7c9cda70baf3cd
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 16)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 16
+MSG_bit_len  = 128
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+LENBLK =                        00000000000000800000000000000000
+
+Computing POLYVAL on a
+buffer of 1 blocks + LENBLK.
+POLYVAL =                       7414e7f0bcfdf8ac339d0f239c60d651
+with MSBit cleared =            7414e7f0bcfdf8ac339d0f239c60d651
+TAG =                           aa3e7cc328f697cf3021c69189d719be
+AAD =                           
+CT  =                           7240199298e9ffae7ae2db16715be046
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                aa3e7cc328f697cf3021c69189d719be
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 32)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 32
+MSG_bit_len  = 256
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+                                00000000000000000000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000001000000000000000000
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       be6ae350604c8fbc074e03b151b4f96f
+with MSBit cleared =            3e6ae350604c8fbc074e03b151b4f96f
+TAG =                           0fc4fb7eec0f7caf570605344094c516
+AAD =                           
+CT  =                           ff8a2e4a6b6df50330b042f39ebedd23
+                                7ab64b25042950b41a5e70fd7c7d5c03
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                8fc4fb7eec0f7caf570605344094c516
+                                8fc4fb7eec0f7caf570605344094c517
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 48)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 48
+MSG_bit_len  = 384
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 48
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 3
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+LENBLK =                        00000000000001800000000000000000
+
+Computing POLYVAL on a
+buffer of 3 blocks + LENBLK.
+POLYVAL =                       fe408d325a518fb4e0ffa78b019ca650
+with MSBit cleared =            7e408d325a518fb4e0ffa78b019ca650
+TAG =                           d0f3ca1ffde0615eb0f3201c84b4edab
+AAD =                           
+CT  =                           87d1635ac4052cb5750e285f94c804b1
+                                33047d20713d91d9681950b152057f2c
+                                53ffd3c9e8776b0182f7cdeea3f178f9
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                d0f3ca1ffde0615eb0f3201c84b4edab
+                                d0f3ca1ffde0615eb0f3201c84b4edac
+                                d0f3ca1ffde0615eb0f3201c84b4edad
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 64)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 64
+MSG_bit_len  = 512
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 64
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 4
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        00000000000002000000000000000000
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       98f6b4e5ed5899080b086b4171a5054c
+with MSBit cleared =            18f6b4e5ed5899080b086b4171a5054c
+TAG =                           19dc263934c138a776b43be0f567ed3c
+AAD =                           
+CT  =                           7e4d0e1fc8904cea9c0cc8f414bdf2e3
+                                10a741e4d35ca9a5f50c7c9ab17eb8ed
+                                6da8b5ee3fb908f09f9a5e111d19b183
+                                2f2922904725321e2dde89db0a3e2a01
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                99dc263934c138a776b43be0f567ed3c
+                                99dc263934c138a776b43be0f567ed3d
+                                99dc263934c138a776b43be0f567ed3e
+                                99dc263934c138a776b43be0f567ed3f
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 8)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 8
+MSG_bit_len  = 64
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                                           0000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000400000000000000008
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       9caecd54c6e3421b2786480332ec6ead
+with MSBit cleared =            1caecd54c6e3421b2786480332ec6ead
+TAG =                           1caa6d12885f31dfb5f8a6762c959bac
+AAD =                                                         01
+CT  =                                           3c41b0c3162cca4d
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                9caa6d12885f31dfb5f8a6762c959bac
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 12)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 12
+MSG_bit_len  = 96
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                                   000000000000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000600000000000000008
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       6a17c431596a983cf936b698b2557426
+with MSBit cleared =            6a17c431596a983cf936b698b2557426
+TAG =                           71cb0e39050a797d0771729255616d75
+AAD =                                                         01
+CT  =                                   60a615e1df855b8b06a90cee
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                f1cb0e39050a797d0771729255616d75
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 16)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 16
+MSG_bit_len  = 128
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000800000000000000008
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       ed38fa0987d79ecbe0244f5a317a3194
+with MSBit cleared =            6d38fa0987d79ecbe0244f5a317a3194
+TAG =                           eac1fbc563b6c7c8ecdb861c718f2cac
+AAD =                                                         01
+CT  =                           914f7d7efa31f0199db80c5c78db0e59
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                eac1fbc563b6c7c8ecdb861c718f2cac
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 32)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 32
+MSG_bit_len  = 256
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+                                00000000000000000000000000000003
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+LENBLK =                        00000000000001000000000000000008
+
+Computing POLYVAL on a
+buffer of 3 blocks + LENBLK.
+POLYVAL =                       10dadf4741844ffdf2121fbc649abaf7
+with MSBit cleared =            10dadf4741844ffdf2121fbc649abaf7
+TAG =                           aca142b8fb04b12f600e193e6406b4a9
+AAD =                                                         01
+CT  =                           21d87dc473862ab863d4985f4f02f2dc
+                                3c33cb2960a2cfb8767ccc8bac8c7459
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                aca142b8fb04b12f600e193e6406b4a9
+                                aca142b8fb04b12f600e193e6406b4aa
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 48)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 48
+MSG_bit_len  = 384
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 48
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 3
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        00000000000001800000000000000008
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       72343be5f25e2a02076dce121afa650e
+with MSBit cleared =            72343be5f25e2a02076dce121afa650e
+TAG =                           6dac54f9d33826948009352cade9df3d
+AAD =                                                         01
+CT  =                           0dd186c84e6e3616feadddb106652179
+                                68d5ada6b5f991004cf75952990b40c9
+                                de86beb2d976aa33b81ac3f63021610a
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                edac54f9d33826948009352cade9df3d
+                                edac54f9d33826948009352cade9df3e
+                                edac54f9d33826948009352cade9df3f
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 64)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 64
+MSG_bit_len  = 512
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 64
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 4
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+                                00000000000000000000000000000005
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+                                00000000000000000000000000000005
+LENBLK =                        00000000000002000000000000000008
+
+Computing POLYVAL on a
+buffer of 5 blocks + LENBLK.
+POLYVAL =                       c91e7f245cd45ab9656f019b60a7bdaa
+with MSBit cleared =            491e7f245cd45ab9656f019b60a7bdaa
+TAG =                           419a6fc3d7709b88e85ed231ee59cbab
+AAD =                                                         01
+CT  =                           3f817006a9e50d0af3490c2467eb3595
+                                f8229a45339a9da72c524ccb1fe715a6
+                                65cf89766e70ddec5eb1f00b656da5c6
+                                b9b17405b466536ba7fe13467281a210
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                c19a6fc3d7709b88e85ed231ee59cbab
+                                c19a6fc3d7709b88e85ed231ee59cbac
+                                c19a6fc3d7709b88e85ed231ee59cbad
+                                c19a6fc3d7709b88e85ed231ee59cbae
+
+
+
+--------------------- TWO_KEYS     (AAD = 12, MSG = 4)---------
+
+AAD_byte_len = 12
+AAD_bit_len  = 96
+MSG_byte_len = 4
+MSG_bit_len  = 32
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                   000000000000000000000001
+MSG =                                                   00000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000200000000000000060
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       bf11c18fbbd4614fcdb21258745f59d0
+with MSBit cleared =            3f11c18fbbd4614fcdb21258745f59d0
+TAG =                           eeab8d0632240f75a6f71659bcf2da53
+AAD =                                   000000000000000000000001
+CT  =                                                   a0ba1196
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                eeab8d0632240f75a6f71659bcf2da53
+
+
+
+--------------------- TWO_KEYS     (AAD = 18, MSG = 20)---------
+
+AAD_byte_len = 18
+AAD_bit_len  = 144
+MSG_byte_len = 20
+MSG_bit_len  = 160
+padded_AAD_byte_len = 32
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 2
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           00000000000000000000000000000001
+                                                            0002
+MSG =                           00000000000000000000000000000003
+                                                        00000004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        00000000000000a00000000000000090
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       72209fbf60a4550716cc2728498a58dc
+with MSBit cleared =            72209fbf60a4550716cc2728498a58dc
+TAG =                           3164b127b659d664a3db8ac2d88751f6
+AAD =                           00000000000000000000000000000001
+                                                            0002
+CT  =                           885ea4380cf375f74765aa4db5a1e378
+                                                        875cea7a
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                b164b127b659d664a3db8ac2d88751f6
+                                b164b127b659d664a3db8ac2d88751f7
+
+
+
+--------------------- TWO_KEYS     (AAD = 20, MSG = 18)---------
+
+AAD_byte_len = 20
+AAD_bit_len  = 160
+MSG_byte_len = 18
+MSG_bit_len  = 144
+padded_AAD_byte_len = 32
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 2
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           00000000000000000000000000000001
+                                                        00000002
+MSG =                           00000000000000000000000000000003
+                                                            0004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        000000000000009000000000000000a0
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       3bc022236cc690c657c12b295922f826
+with MSBit cleared =            3bc022236cc690c657c12b295922f826
+TAG =                           2f1f4dfd55ff6779c6db79435a13c06a
+AAD =                           00000000000000000000000000000001
+                                                        00000002
+CT  =                           dd402d87a3e1627d0620bf0487d2d3c6
+                                                            4ba4
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                af1f4dfd55ff6779c6db79435a13c06a
+                                af1f4dfd55ff6779c6db79435a13c06b
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 0)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 0
+MSG_bit_len  = 0
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 0
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 0
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           
+PADDED_AAD_and_MSG =            
+LENBLK =                        00000000000000000000000000000000
+
+Computing POLYVAL on a
+buffer of 0 blocks + LENBLK.
+POLYVAL =                       00000000000000000000000000000000
+with MSBit cleared =            00000000000000000000000000000000
+TAG =                           f0e408cc879c37419236ffee36cf7ceb
+AAD =                           
+CT  =                           
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 8)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 8
+MSG_bit_len  = 64
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                                           0000000000000001
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+LENBLK =                        00000000000000400000000000000000
+
+Computing POLYVAL on a
+buffer of 1 blocks + LENBLK.
+POLYVAL =                       0582d0adfdc9247cf43f087a9ff68968
+with MSBit cleared =            0582d0adfdc9247cf43f087a9ff68968
+TAG =                           08fa6c644f03fdcdf58132b7079ea6a0
+AAD =                           
+CT  =                                           c3b40f6f2a383fab
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                88fa6c644f03fdcdf58132b7079ea6a0
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 12)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 12
+MSG_bit_len  = 96
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                                   000000000000000000000001
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+LENBLK =                        00000000000000600000000000000000
+
+Computing POLYVAL on a
+buffer of 1 blocks + LENBLK.
+POLYVAL =                       f33bd9c86240fe5b2a8ff6e11f4f93e3
+with MSBit cleared =            733bd9c86240fe5b2a8ff6e11f4f93e3
+TAG =                           f1a9cca00b14f545bd7c9cda70baf3cd
+AAD =                           
+CT  =                                   9721da53b923ca33f0818dbe
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                f1a9cca00b14f545bd7c9cda70baf3cd
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 16)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 16
+MSG_bit_len  = 128
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+LENBLK =                        00000000000000800000000000000000
+
+Computing POLYVAL on a
+buffer of 1 blocks + LENBLK.
+POLYVAL =                       7414e7f0bcfdf8ac339d0f239c60d651
+with MSBit cleared =            7414e7f0bcfdf8ac339d0f239c60d651
+TAG =                           aa3e7cc328f697cf3021c69189d719be
+AAD =                           
+CT  =                           7240199298e9ffae7ae2db16715be046
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                aa3e7cc328f697cf3021c69189d719be
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 32)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 32
+MSG_bit_len  = 256
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+                                00000000000000000000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000001000000000000000000
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       be6ae350604c8fbc074e03b151b4f96f
+with MSBit cleared =            3e6ae350604c8fbc074e03b151b4f96f
+TAG =                           0fc4fb7eec0f7caf570605344094c516
+AAD =                           
+CT  =                           ff8a2e4a6b6df50330b042f39ebedd23
+                                7ab64b25042950b41a5e70fd7c7d5c03
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                8fc4fb7eec0f7caf570605344094c516
+                                8fc4fb7eec0f7caf570605344094c517
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 48)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 48
+MSG_bit_len  = 384
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 48
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 3
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+LENBLK =                        00000000000001800000000000000000
+
+Computing POLYVAL on a
+buffer of 3 blocks + LENBLK.
+POLYVAL =                       fe408d325a518fb4e0ffa78b019ca650
+with MSBit cleared =            7e408d325a518fb4e0ffa78b019ca650
+TAG =                           d0f3ca1ffde0615eb0f3201c84b4edab
+AAD =                           
+CT  =                           87d1635ac4052cb5750e285f94c804b1
+                                33047d20713d91d9681950b152057f2c
+                                53ffd3c9e8776b0182f7cdeea3f178f9
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                d0f3ca1ffde0615eb0f3201c84b4edab
+                                d0f3ca1ffde0615eb0f3201c84b4edac
+                                d0f3ca1ffde0615eb0f3201c84b4edad
+
+
+
+--------------------- TWO_KEYS     (AAD = 0, MSG = 64)---------
+
+AAD_byte_len = 0
+AAD_bit_len  = 0
+MSG_byte_len = 64
+MSG_bit_len  = 512
+padded_AAD_byte_len = 0
+padded_MSG_byte_len = 64
+L1 blocks AAD(padded)  = 0
+L2 blocks MSG(padded)  = 4
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           
+MSG =                           00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        00000000000002000000000000000000
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       98f6b4e5ed5899080b086b4171a5054c
+with MSBit cleared =            18f6b4e5ed5899080b086b4171a5054c
+TAG =                           19dc263934c138a776b43be0f567ed3c
+AAD =                           
+CT  =                           7e4d0e1fc8904cea9c0cc8f414bdf2e3
+                                10a741e4d35ca9a5f50c7c9ab17eb8ed
+                                6da8b5ee3fb908f09f9a5e111d19b183
+                                2f2922904725321e2dde89db0a3e2a01
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                99dc263934c138a776b43be0f567ed3c
+                                99dc263934c138a776b43be0f567ed3d
+                                99dc263934c138a776b43be0f567ed3e
+                                99dc263934c138a776b43be0f567ed3f
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 8)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 8
+MSG_bit_len  = 64
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                                           0000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000400000000000000008
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       9caecd54c6e3421b2786480332ec6ead
+with MSBit cleared =            1caecd54c6e3421b2786480332ec6ead
+TAG =                           1caa6d12885f31dfb5f8a6762c959bac
+AAD =                                                         01
+CT  =                                           3c41b0c3162cca4d
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                9caa6d12885f31dfb5f8a6762c959bac
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 12)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 12
+MSG_bit_len  = 96
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                                   000000000000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000600000000000000008
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       6a17c431596a983cf936b698b2557426
+with MSBit cleared =            6a17c431596a983cf936b698b2557426
+TAG =                           71cb0e39050a797d0771729255616d75
+AAD =                                                         01
+CT  =                                   60a615e1df855b8b06a90cee
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                f1cb0e39050a797d0771729255616d75
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 16)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 16
+MSG_bit_len  = 128
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000800000000000000008
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       ed38fa0987d79ecbe0244f5a317a3194
+with MSBit cleared =            6d38fa0987d79ecbe0244f5a317a3194
+TAG =                           eac1fbc563b6c7c8ecdb861c718f2cac
+AAD =                                                         01
+CT  =                           914f7d7efa31f0199db80c5c78db0e59
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                eac1fbc563b6c7c8ecdb861c718f2cac
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 32)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 32
+MSG_bit_len  = 256
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+                                00000000000000000000000000000003
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+LENBLK =                        00000000000001000000000000000008
+
+Computing POLYVAL on a
+buffer of 3 blocks + LENBLK.
+POLYVAL =                       10dadf4741844ffdf2121fbc649abaf7
+with MSBit cleared =            10dadf4741844ffdf2121fbc649abaf7
+TAG =                           aca142b8fb04b12f600e193e6406b4a9
+AAD =                                                         01
+CT  =                           21d87dc473862ab863d4985f4f02f2dc
+                                3c33cb2960a2cfb8767ccc8bac8c7459
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                aca142b8fb04b12f600e193e6406b4a9
+                                aca142b8fb04b12f600e193e6406b4aa
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 48)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 48
+MSG_bit_len  = 384
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 48
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 3
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        00000000000001800000000000000008
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       72343be5f25e2a02076dce121afa650e
+with MSBit cleared =            72343be5f25e2a02076dce121afa650e
+TAG =                           6dac54f9d33826948009352cade9df3d
+AAD =                                                         01
+CT  =                           0dd186c84e6e3616feadddb106652179
+                                68d5ada6b5f991004cf75952990b40c9
+                                de86beb2d976aa33b81ac3f63021610a
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                edac54f9d33826948009352cade9df3d
+                                edac54f9d33826948009352cade9df3e
+                                edac54f9d33826948009352cade9df3f
+
+
+
+--------------------- TWO_KEYS     (AAD = 1, MSG = 64)---------
+
+AAD_byte_len = 1
+AAD_bit_len  = 8
+MSG_byte_len = 64
+MSG_bit_len  = 512
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 64
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 4
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                                         01
+MSG =                           00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+                                00000000000000000000000000000005
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+                                00000000000000000000000000000005
+LENBLK =                        00000000000002000000000000000008
+
+Computing POLYVAL on a
+buffer of 5 blocks + LENBLK.
+POLYVAL =                       c91e7f245cd45ab9656f019b60a7bdaa
+with MSBit cleared =            491e7f245cd45ab9656f019b60a7bdaa
+TAG =                           419a6fc3d7709b88e85ed231ee59cbab
+AAD =                                                         01
+CT  =                           3f817006a9e50d0af3490c2467eb3595
+                                f8229a45339a9da72c524ccb1fe715a6
+                                65cf89766e70ddec5eb1f00b656da5c6
+                                b9b17405b466536ba7fe13467281a210
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                c19a6fc3d7709b88e85ed231ee59cbab
+                                c19a6fc3d7709b88e85ed231ee59cbac
+                                c19a6fc3d7709b88e85ed231ee59cbad
+                                c19a6fc3d7709b88e85ed231ee59cbae
+
+
+
+--------------------- TWO_KEYS     (AAD = 12, MSG = 4)---------
+
+AAD_byte_len = 12
+AAD_bit_len  = 96
+MSG_byte_len = 4
+MSG_bit_len  = 32
+padded_AAD_byte_len = 16
+padded_MSG_byte_len = 16
+L1 blocks AAD(padded)  = 1
+L2 blocks MSG(padded)  = 1
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                                   000000000000000000000001
+MSG =                                                   00000002
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+LENBLK =                        00000000000000200000000000000060
+
+Computing POLYVAL on a
+buffer of 2 blocks + LENBLK.
+POLYVAL =                       bf11c18fbbd4614fcdb21258745f59d0
+with MSBit cleared =            3f11c18fbbd4614fcdb21258745f59d0
+TAG =                           eeab8d0632240f75a6f71659bcf2da53
+AAD =                                   000000000000000000000001
+CT  =                                                   a0ba1196
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                eeab8d0632240f75a6f71659bcf2da53
+
+
+
+--------------------- TWO_KEYS     (AAD = 18, MSG = 20)---------
+
+AAD_byte_len = 18
+AAD_bit_len  = 144
+MSG_byte_len = 20
+MSG_bit_len  = 160
+padded_AAD_byte_len = 32
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 2
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           00000000000000000000000000000001
+                                                            0002
+MSG =                           00000000000000000000000000000003
+                                                        00000004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        00000000000000a00000000000000090
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       72209fbf60a4550716cc2728498a58dc
+with MSBit cleared =            72209fbf60a4550716cc2728498a58dc
+TAG =                           3164b127b659d664a3db8ac2d88751f6
+AAD =                           00000000000000000000000000000001
+                                                            0002
+CT  =                           885ea4380cf375f74765aa4db5a1e378
+                                                        875cea7a
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                b164b127b659d664a3db8ac2d88751f6
+                                b164b127b659d664a3db8ac2d88751f7
+
+
+
+--------------------- TWO_KEYS     (AAD = 20, MSG = 18)---------
+
+AAD_byte_len = 20
+AAD_bit_len  = 160
+MSG_byte_len = 18
+MSG_bit_len  = 144
+padded_AAD_byte_len = 32
+padded_MSG_byte_len = 32
+L1 blocks AAD(padded)  = 2
+L2 blocks MSG(padded)  = 2
+                                            BYTES ORDER         
+                                MSB--------------------------LSB
+                                15141312111009080706050403020100
+                                --------------------------------
+K1 = K =                        00000000000000000000000000000001
+                                00000000000000000000000000000000
+Record_Hash_Key                 aef587f4dc05c8d45cfd99fbcf3587c8
+NONCE =                         00000000000000000000000000000003
+AAD =                           00000000000000000000000000000001
+                                                        00000002
+MSG =                           00000000000000000000000000000003
+                                                            0004
+PADDED_AAD_and_MSG =            00000000000000000000000000000001
+                                00000000000000000000000000000002
+                                00000000000000000000000000000003
+                                00000000000000000000000000000004
+LENBLK =                        000000000000009000000000000000a0
+
+Computing POLYVAL on a
+buffer of 4 blocks + LENBLK.
+POLYVAL =                       3bc022236cc690c657c12b295922f826
+with MSBit cleared =            3bc022236cc690c657c12b295922f826
+TAG =                           2f1f4dfd55ff6779c6db79435a13c06a
+AAD =                           00000000000000000000000000000001
+                                                        00000002
+CT  =                           dd402d87a3e1627d0620bf0487d2d3c6
+                                                            4ba4
+Encryption_Key =                4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+
+***************************
+         APPENDIX          
+***************************
+KEY_SCHEDULE (Encryption_Key)   4b4e7460d4ca60fae44d02467a835dd9
+                                be7670f0b023bd94e56d05db1479375f
+                                8de47355c6aa0735126067cff62d6589
+                                a228701c1c5e00ecac7dbd784910b8a3
+                                33394275bedd3120787736156a1751da
+                                980959b63a2129aa267f29468a02943e
+                                d1c21555e2fb57205c26660024515015
+                                30709498a879cd2e9258e484b427cdc2
+                                0d4a254adc88301f3e73673f6255013f
+                                69a04f2659d0dbbef1a9169063f1f214
+                                7a1d93c17757b68babdf869495ace1ab
+                                788cac64112ce34248fc38fcb9552e6c
+                                708526c40a98b5057dcf038ed610851a
+                                c99eaeaab11202cea03ee18ce8c2d970
+                                7d1f1ef10d9a383507028d307acd8ebe
+
+CTRBLKS (with MSbit set to 1)        
+                                af1f4dfd55ff6779c6db79435a13c06a
+                                af1f4dfd55ff6779c6db79435a13c06b
