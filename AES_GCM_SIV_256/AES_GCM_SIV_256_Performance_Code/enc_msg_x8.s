@@ -61,22 +61,23 @@
 OR_MASK:
 .long    0x00000000,0x00000000,0x00000000,0x80000000
 one:
-.quad	1,0
+.quad   1,0
 two:
-.quad	2,0
+.quad   2,0
 three:
-.quad	3,0
+.quad   3,0
 four:
-.quad	4,0
+.quad   4,0
 five:
-.quad	5,0
+.quad   5,0
 six:
-.quad	6,0
+.quad   6,0
 seven:
-.quad	7,0
+.quad   7,0
 eight:
-.quad	8,0
-
+.quad   8,0
+CONST_Vector:
+.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
   
 
 .set STATE1, %xmm1
@@ -106,137 +107,141 @@ eight:
 .set PT, %rdi
 .set CT, %rsi
 .set TAG, %rdx
-
+.set gTMP, %r11
 .macro AES_ROUND i
-   vmovdqu  \i*16(KS), SCHED
-   vaesenc  SCHED, STATE1, STATE1
-   vaesenc  SCHED, STATE2, STATE2
-   vaesenc  SCHED, STATE3, STATE3
-   vaesenc  SCHED, STATE4, STATE4
-   vaesenc  SCHED, STATE5, STATE5
-   vaesenc  SCHED, STATE6, STATE6
-   vaesenc  SCHED, STATE7, STATE7
-   vaesenc  SCHED, STATE8, STATE8
+    vmovdqu  \i*16(KS), SCHED
+    vaesenc  SCHED, STATE1, STATE1
+    vaesenc  SCHED, STATE2, STATE2
+    vaesenc  SCHED, STATE3, STATE3
+    vaesenc  SCHED, STATE4, STATE4
+    vaesenc  SCHED, STATE5, STATE5
+    vaesenc  SCHED, STATE6, STATE6
+    vaesenc  SCHED, STATE7, STATE7
+    vaesenc  SCHED, STATE8, STATE8
 .endm
 
 .macro AES_LASTROUND i
-   vmovdqu  \i*16(KS), SCHED
-   vaesenclast  SCHED, STATE1, STATE1
-   vaesenclast  SCHED, STATE2, STATE2
-   vaesenclast  SCHED, STATE3, STATE3
-   vaesenclast  SCHED, STATE4, STATE4
-   vaesenclast  SCHED, STATE5, STATE5
-   vaesenclast  SCHED, STATE6, STATE6
-   vaesenclast  SCHED, STATE7, STATE7
-   vaesenclast  SCHED, STATE8, STATE8
+    vmovdqu  \i*16(KS), SCHED
+    vaesenclast  SCHED, STATE1, STATE1
+    vaesenclast  SCHED, STATE2, STATE2
+    vaesenclast  SCHED, STATE3, STATE3
+    vaesenclast  SCHED, STATE4, STATE4
+    vaesenclast  SCHED, STATE5, STATE5
+    vaesenclast  SCHED, STATE6, STATE6
+    vaesenclast  SCHED, STATE7, STATE7
+    vaesenclast  SCHED, STATE8, STATE8
 .endm
 
 #####################################################################
 # void ENC_MSG_x8(unsigned char* PT, 
-#				  unsigned char* CT, 
-#				  unsigned char* TAG, 
-#				  unsigned char* KS,
-#				  int byte_len);
+#                 unsigned char* CT, 
+#                 unsigned char* TAG, 
+#                 unsigned char* KS,
+#                 int byte_len);
 .globl ENC_MSG_x8
 ENC_MSG_x8:
 
 # parameter 1: %rdi     #PT
 # parameter 2: %rsi     #CT
-# parameter 3: %rdx     #TAG		[127 126 ... 0]  IV=[127...32]
+# parameter 3: %rdx     #TAG        [127 126 ... 0]  IV=[127...32]
 # parameter 4: %rcx     #KS
 # parameter 5: %r8      #LEN MSG_length in bytes
 
-	test  LEN, LEN
+    test  LEN, LEN
     jnz   .Lbegin
     ret
-	
-.Lbegin:
-    pushq   %rbp
-    movq    %rsp, %rbp
+.Lbegin:    
     pushq   %rdi
-	pushq   %rsi
-	pushq   %rdx
-	pushq   %rcx
-	pushq   %r8
-	pushq   %r10
-	#Place in stack
- 	subq    $16, %rsp
+    pushq   %rsi
+    pushq   %rdx
+    pushq   %rcx
+    pushq   %r8
+    pushq   %r10
+	pushq  %r11
+	pushq  %r12
+	pushq  %r13
+	pushq %rax
+	pushq   %rbp
+    movq    %rsp, %rbp
+    #Place in stack
+    subq    $128, %rsp #changed from 16 to 32 in order to save buffer for remaining bytes.
     andq    $-64, %rsp
-	
-	movq      LEN, %r10
-    shrq      $4, LEN							#LEN = num of blocks
+    xorq   	  gTMP, gTMP
+    movq      LEN, %r10
+    shrq      $4, LEN                           #LEN = num of blocks
     shlq      $60, %r10
     je        NO_PARTS
-    addq      $1, LEN
-NO_PARTS:	
-	movq      LEN, %r10
+	shrq	  $60, %r10
+    movq      %r10, gTMP
+NO_PARTS:   
+    movq      LEN, %r10
     shlq      $61, %r10
     shrq      $61, %r10
-	
-	#make IV from TAG
-	vmovdqu		(TAG), TMP1
-	vpor OR_MASK(%rip), TMP1, TMP1				#TMP1= IV = [1]TAG[126...32][00..00]
     
-	#store counter8 in the stack
-	vpaddd 		seven(%rip), TMP1, CTR1			
-	vmovdqu 	CTR1, 		 (%rsp)				#CTR8 = TAG[127...32][00..07]
-	vpaddd 		one(%rip),   TMP1, CTR2			#CTR2 = TAG[127...32][00..01]
-	vpaddd 		two(%rip), TMP1, CTR3			#CTR3 = TAG[127...32][00..02]
-	vpaddd 		three(%rip),  TMP1, CTR4			#CTR4 = TAG[127...32][00..03] 
-	vpaddd 		four(%rip),	 TMP1, CTR5			#CTR5 = TAG[127...32][00..04] 
-	vpaddd 		five(%rip),   TMP1, CTR6			#CTR6 = TAG[127...32][00..05] 
-	vpaddd 		six(%rip), TMP1, CTR7			#CTR7 = TAG[127...32][00..06]
-	vmovdqa 	TMP1, CTR1			#CTR1 = TAG[127...32][00..00]			 
-	    
-	shrq    $3, LEN
+    #make IV from TAG
+    vmovdqu     (TAG), TMP1
+    vpor OR_MASK(%rip), TMP1, TMP1              #TMP1= IV = [1]TAG[126...32][00..00]
+    
+    #store counter8 in the stack
+    vpaddd      seven(%rip), TMP1, CTR1         
+    vmovdqu     CTR1,        (%rsp)             #CTR8 = TAG[127...32][00..07]
+    vpaddd      one(%rip),   TMP1, CTR2         #CTR2 = TAG[127...32][00..01]
+    vpaddd      two(%rip), TMP1, CTR3           #CTR3 = TAG[127...32][00..02]
+    vpaddd      three(%rip),  TMP1, CTR4            #CTR4 = TAG[127...32][00..03] 
+    vpaddd      four(%rip),  TMP1, CTR5         #CTR5 = TAG[127...32][00..04] 
+    vpaddd      five(%rip),   TMP1, CTR6            #CTR6 = TAG[127...32][00..05] 
+    vpaddd      six(%rip), TMP1, CTR7           #CTR7 = TAG[127...32][00..06]
+    vmovdqa     TMP1, CTR1          #CTR1 = TAG[127...32][00..00]            
+        
+    shrq    $3, LEN
     je      REMAINDER
-   							
-	subq    $128, CT
+                            
+    subq    $128, CT
     subq    $128, PT
 
 LOOP:
  
     addq    $128, CT   
     addq    $128, PT 
-	
-    vmovdqa CTR1, STATE1
-	vmovdqa CTR2, STATE2
-	vmovdqa CTR3, STATE3
-	vmovdqa CTR4, STATE4
-	vmovdqa CTR5, STATE5
-	vmovdqa CTR6, STATE6
-	vmovdqa CTR7, STATE7
-	#move from stack
-	vmovdqu (%rsp), STATE8
-	
-	vpxor    (KS), STATE1, STATE1
-	vpxor    (KS), STATE2, STATE2
-	vpxor    (KS), STATE3, STATE3
-	vpxor    (KS), STATE4, STATE4
-	vpxor    (KS), STATE5, STATE5
-	vpxor    (KS), STATE6, STATE6
-	vpxor    (KS), STATE7, STATE7
-	vpxor    (KS), STATE8, STATE8
     
-	
-	AES_ROUND 1
-	vmovdqu 	(%rsp), CTR7					#deal with CTR8
-	vpaddd		eight(%rip), CTR7, CTR7
-	vmovdqu 	CTR7, (%rsp)
+    vmovdqa CTR1, STATE1
+    vmovdqa CTR2, STATE2
+    vmovdqa CTR3, STATE3
+    vmovdqa CTR4, STATE4
+    vmovdqa CTR5, STATE5
+    vmovdqa CTR6, STATE6
+    vmovdqa CTR7, STATE7
+    #move from stack
+    vmovdqu (%rsp), STATE8
+    
+    vpxor    (KS), STATE1, STATE1
+    vpxor    (KS), STATE2, STATE2
+    vpxor    (KS), STATE3, STATE3
+    vpxor    (KS), STATE4, STATE4
+    vpxor    (KS), STATE5, STATE5
+    vpxor    (KS), STATE6, STATE6
+    vpxor    (KS), STATE7, STATE7
+    vpxor    (KS), STATE8, STATE8
+    
+    
+    AES_ROUND 1
+    vmovdqu     (%rsp), CTR7                    #deal with CTR8
+    vpaddd      eight(%rip), CTR7, CTR7
+    vmovdqu     CTR7, (%rsp)
     AES_ROUND 2
-    vpsubd		one(%rip), CTR7, CTR7			#CTR7
-	AES_ROUND 3
-	vpaddd 		eight(%rip),  CTR1, CTR1		#CTR1
+    vpsubd      one(%rip), CTR7, CTR7           #CTR7
+    AES_ROUND 3
+    vpaddd      eight(%rip),  CTR1, CTR1        #CTR1
     AES_ROUND 4
-	vpaddd 		eight(%rip),  CTR2, CTR2		#CTR2
-	AES_ROUND 5
-    vpaddd 		eight(%rip),  CTR3, CTR3		#CTR3
+    vpaddd      eight(%rip),  CTR2, CTR2        #CTR2
+    AES_ROUND 5
+    vpaddd      eight(%rip),  CTR3, CTR3        #CTR3
     AES_ROUND 6   
-	vpaddd 		eight(%rip),  CTR4, CTR4		#CTR4
+    vpaddd      eight(%rip),  CTR4, CTR4        #CTR4
     AES_ROUND 7
-	vpaddd 		eight(%rip),  CTR5, CTR5		#CTR5
+    vpaddd      eight(%rip),  CTR5, CTR5        #CTR5
     AES_ROUND 8
-	vpaddd 		eight(%rip),  CTR6, CTR6		#CTR6
+    vpaddd      eight(%rip),  CTR6, CTR6        #CTR6
     AES_ROUND 9
 	AES_ROUND 10
 	AES_ROUND 11
@@ -245,12 +250,12 @@ LOOP:
 	AES_LASTROUND 14
 	
    
-	#Xor with Plaintext
+    #Xor with Plaintext
     vpxor   0*16(PT), STATE1, STATE1
     vpxor   1*16(PT), STATE2, STATE2
     vpxor   2*16(PT), STATE3, STATE3
     vpxor   3*16(PT), STATE4, STATE4
-	vpxor   4*16(PT), STATE5, STATE5
+    vpxor   4*16(PT), STATE5, STATE5
     vpxor   5*16(PT), STATE6, STATE6
     vpxor   6*16(PT), STATE7, STATE7
     vpxor   7*16(PT), STATE8, STATE8
@@ -262,33 +267,33 @@ LOOP:
     vmovdqu STATE2, 1*16(CT)
     vmovdqu STATE3, 2*16(CT)
     vmovdqu STATE4, 3*16(CT)
-	vmovdqu STATE5, 4*16(CT)
+    vmovdqu STATE5, 4*16(CT)
     vmovdqu STATE6, 5*16(CT)
     vmovdqu STATE7, 6*16(CT)
     vmovdqu STATE8, 7*16(CT)
  
     jne LOOP
-	
-	#vmovdqu (%rsp), CTR1
-	#vpsubq 	seven(%rip),  CTR1, CTR1
-	
-	addq    $128,CT
+    
+    #vmovdqu (%rsp), CTR1
+    #vpsubq     seven(%rip),  CTR1, CTR1
+    
+    addq    $128,CT
     addq    $128,PT
    
 REMAINDER:
    cmpq      $0, %r10
-   je   END
-   
+   je   END_FULL_BLOCKS
+
 LOOP2:
-	
-	#enc each block separately
-	#CTR1 is the highest counter (even if no LOOP done)
-	vmovdqa 	CTR1, STATE1
-	vpaddd 		one(%rip),  CTR1, CTR1					#inc counter
-	
-	vpxor         (KS), STATE1, STATE1
-	vaesenc     16(KS), STATE1, STATE1
-	vaesenc    32(KS) , STATE1, STATE1
+    
+    #enc each block separately
+    #CTR1 is the highest counter (even if no LOOP done)
+    vmovdqa     CTR1, STATE1
+    vpaddd      one(%rip),  CTR1, CTR1                  #inc counter
+    
+    vpxor         (KS), STATE1, STATE1
+    vaesenc     16(KS), STATE1, STATE1
+    vaesenc    32(KS) , STATE1, STATE1
     vaesenc    48(KS) , STATE1, STATE1
     vaesenc    64(KS) , STATE1, STATE1
     vaesenc    80(KS) , STATE1, STATE1
@@ -305,23 +310,79 @@ LOOP2:
 	
 	#Xor with Plaintext
     vpxor   (PT), STATE1, STATE1
-	
-	vmovdqu STATE1, (CT)
-	
-	addq    $16, PT
-	addq    $16, CT   
+    
+    vmovdqu STATE1, (CT)
+    
+    addq    $16, PT
+    addq    $16, CT   
      
-	
-	decq      %r10
+    
+    decq      %r10
     jne       LOOP2
-	
+END_FULL_BLOCKS:
+    cmpq      $0, gTMP
+	je END
+    movq $0, (%rsp)
+    movq $0, 8(%rsp)
+	vpxor         (KS), CTR1, STATE1
+	vaesenc     16(KS), STATE1, STATE1
+	movq gTMP, %r10 # r10 = len left
+	movq gTMP, %r8 # r8 = len left
+	vaesenc    32(KS) , STATE1, STATE1
+    shr $2, %r10 # number of double words possible 
+	shlq $62, %r8 
+	movq %r10, %r13
+	vaesenc    48(KS) , STATE1, STATE1
+    shlq $4, %r10  # r10 = offset to mask of const
+	shrq $62, %r8 ###r8= last 16 bytes %4
+	vaesenc    64(KS) , STATE1, STATE1
+    vaesenc    80(KS) , STATE1, STATE1
+    leaq CONST_Vector(%rip), %r12
+	vmovdqu (%r12, %r10),  CTR3
+	vaesenc    96(KS) , STATE1, STATE1
+	vpmaskmovd (PT), CTR3, CTR2
+    vaesenc    112(KS), STATE1, STATE1
+        vaesenc    128(KS), STATE1, STATE1
+	shlq $2, %r13
+    vaesenc    144(KS), STATE1, STATE1
+        vaesenc    160(KS), STATE1, STATE1
+	addq %r13, PT
+    vaesenc    176(KS), STATE1, STATE1
+        vaesenc    192(KS), STATE1, STATE1
+	movl (PT), %r10d
+    vaesenc    208(KS), STATE1, STATE1
+    vaesenclast  224(KS), STATE1, STATE1
+	cmp $0, %r8
+	je .NoAddedBytes_Enc_X8
+	movl %r10d, (%rsp, %r13)
+	vpxor (%rsp), CTR2, CTR2
+.NoAddedBytes_Enc_X8:
+	vpxor CTR2, STATE1, STATE1
+	vpmaskmovd STATE1, CTR3, (CT)
+	vmovdqu STATE1, (%rsp)
+	movl (%rsp,%r13), %eax
+	cmp $0, %r8
+	je END
+.bytesloop:
+	movb %al, (CT, %r13)
+    inc %r13
+	dec %r8
+	shrq $8, %rax
+	cmp $0, %r8
+	jne .bytesloop
 END:
-	popq   %r10
-	popq   %r8
+	addq $128, %rsp
+	movq    %rbp, %rsp
+    popq    %rbp
+	popq    %rax
+	popq   %r13
+	popq   %r12
+	popq   %r11
+    popq   %r10
+    popq   %r8
     popq   %rcx
-	popq   %rdx
-	popq   %rsi
-	popq   %rdi
-    movq    %rbp, %rsp
-    popq    %rbp    
+    popq   %rdx
+    popq   %rsi
+    popq   %rdi
+       
     ret

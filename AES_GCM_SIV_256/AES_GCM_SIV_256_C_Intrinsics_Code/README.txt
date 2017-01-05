@@ -65,7 +65,7 @@ To compile, use the makefile in 2 ways:
 4. make DEF=-DCOUNT -DADD_INFO	     - If measurement needed + additional info
 By default printouts are made.
 
-
+Please use gcc with version 5.2+ (can be modified on the makefile)
 The executables receive 2 parameters
 
 The parameters are: GCM_SIV_ENC A B (GCM_SIV_DEC A B)

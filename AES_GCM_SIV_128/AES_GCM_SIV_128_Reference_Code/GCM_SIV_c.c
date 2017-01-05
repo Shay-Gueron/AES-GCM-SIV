@@ -70,6 +70,8 @@
 # endif
 #endif
 
+#define XOR_WITH_NONCE
+
 static const uint32_t rcon[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
 void AES_128_Key_Expansion(const unsigned char *userkey, uint32_t* ks)
@@ -279,7 +281,10 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t N[
 	POLYVAL((uint64_t*)AAD, (uint64_t*)HASH_KEY, AAD_len + aad_pad, T);
 	POLYVAL((uint64_t*)MSG, (uint64_t*)HASH_KEY, MSG_len + msg_pad, T);
 	POLYVAL(LENBLK, (uint64_t*)HASH_KEY, 16, T);
-
+	#ifdef XOR_WITH_NONCE
+	((uint64_t*)T)[0] ^= ((uint64_t*)N)[0];
+	((uint64_t*)T)[1] ^= ((uint64_t*)N)[1];
+	#endif
 	((uint8_t*)T)[15] &= 127;
 	
 	AES_128_Encrypt((uint32_t*)TAG, (uint32_t*)T, (uint32_t*)KS); 
@@ -293,7 +298,7 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t N[
 	printf("\nRecord_Hash_Key =               "); print16((uint8_t*)HASH_KEY);
 	printf("\nRecord_Enc_Key =                "); print16((uint8_t*)ENC_KEY);
 	printf("\nLENBLK =                        "); print16((uint8_t*)LENBLK);
-	printf("\nPOLYVAL =                       "); print16((uint8_t*)T);
+	printf("\nPOLYVAL xor N =                 "); print16((uint8_t*)T);
 	printf("\nTAG =                           "); print16(TAG);
 	printf("\nCTRBLK =                        "); print16((uint8_t*)CTR);
 #endif
@@ -341,6 +346,10 @@ int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t N[
 	
 	new_TAG[0] = T[0];
 	new_TAG[1] = T[1];
+	#ifdef XOR_WITH_NONCE
+	((uint64_t*)new_TAG)[0] ^= ((uint64_t*)N)[0];
+	((uint64_t*)new_TAG)[1] ^= ((uint64_t*)N)[1];
+	#endif
 	((uint8_t*)new_TAG)[15] &= 127;
 	AES_128_Encrypt((uint32_t*)new_TAG, (uint32_t*)new_TAG, (uint32_t*)KS); 
 

@@ -56,7 +56,6 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                #
 ###############################################################################
 
-
 .align  16
 ONE:
 .quad 1,0
@@ -67,8 +66,9 @@ TWO:
 shuff_mask:
 .quad 0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
 poly:
-.quad 0x1, 0xc200000000000000 
-
+.quad 0x1, 0xc200000000000000
+CONST_Vector:
+.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
 
 #####################
 #Used by _GFMUL		#
@@ -87,7 +87,7 @@ poly:
 # __m128i _GFMUL(__m128i A, __m128i B);
 .type _GFMUL,@function
 .globl _GFMUL
-_GFMUL:  
+_GFMUL:
     vpclmulqdq  $0x00, H, RES, TMP1
     vpclmulqdq  $0x11, H, RES, TMP4
     vpclmulqdq  $0x10, H, RES, TMP2
@@ -101,7 +101,7 @@ _GFMUL:
     vpclmulqdq  $0x10, poly(%rip), TMP1, TMP2
     vpshufd     $78, TMP1, TMP3
     vpxor       TMP3, TMP2, TMP1
-        
+
     vpclmulqdq  $0x10, poly(%rip), TMP1, TMP2
     vpshufd     $78, TMP1, TMP3
     vpxor       TMP3, TMP2, TMP1
@@ -121,12 +121,12 @@ _GFMUL:
 .set LOC, %r10
 .set LEN, %eax
 
-#void   Polyval_Horner(unsigned char T[16],  		// output 
+#void   Polyval_Horner(unsigned char T[16],  		// output
 #					    const unsigned char* H,	// H
 #						unsigned char* BUF,		// Buffer
 #						unsigned int blocks);		// LEn2
-			
-			
+
+
 .globl Polyval_Horner
 Polyval_Horner:
 
@@ -134,45 +134,239 @@ Polyval_Horner:
 # parameter 2: %rsi		Hp 	 	- pointer to H (user key)
 # parameter 3: %rdx		INp 	- pointer to input
 # parameter 4: %rcx		L 	 	- total number of blocks in input BUFFER
-	
-		
+
+
 	test  L, L
     jnz   .LbeginPoly
     ret
-	
-.LbeginPoly:	
+
+.LbeginPoly:
 	#We will start with L _GFMULS for POLYVAL(BIG_BUFFER)
 	#RES = _GFMUL(RES, H)
-	
+
 	pushq %rdi
 	pushq %rsi
 	pushq %rdx
 	pushq %rcx
-	pushq %r10	
-	xor 		LOC, LOC 
-	shl 		$4, L						#L contains number of bytes to proceed
-	
-	vmovdqu  	(Hp), H						
+	pushq %r8
+	pushq %r9
+	pushq %r10
+	pushq %r12
+	pushq %r13
+	pushq %rax
+	xor 		%r10, %r10
+	movq L, %r8
+	vmovdqu  	(Hp), H
 	vmovdqu		(T), RES
-	
+	cmp $16, %r8
+	jb .Lrem
 .Lloop:
 
 	vpxor 		(INp,LOC), RES, RES			#RES = RES + Xi
 	call _GFMUL								#RES = RES * H
-	
-	
-	add 	$16, LOC
-	cmp		LOC, L
-	jne   .Lloop
 
+
+	add 	$16, LOC
+	subq $16, %r8
+	cmp		$16, %r8
+	jae   .Lloop
+.Lrem:
+	cmp $0, %r8
+	je .polyend
+	movq %r8, L
+	subq $16, %rsp
+	movq $0, (%rsp)
+	movq $0, 8(%rsp)
+	shr $2, %r8
+	movq %r8, %r9
+	shlq $4, %r8
+	leaq CONST_Vector(%rip), %r12
+	vmovdqu (%r12, %r8), %xmm10
+	vpmaskmovd (INp, LOC), %xmm10, %xmm10
+	andq $~-4, L
+	cmp $0, L
+	je .noExtraBytes
+	shlq $2, %r9
+	addq %r9, LOC
+.byteloop:
+	addq LOC, INp
+	movl (INp), %eax
+	movl %eax, (%rsp, %r9)
+	vpxor (%rsp), %xmm10, %xmm10
+.noExtraBytes:
+	vpxor %xmm10, RES, RES
+	call _GFMUL
 	#calculation of T is over here. RES=T
-											
-	vmovdqu RES, (T)	
+	addq $16, %rsp
+.polyend:
+	vmovdqu RES, (%rdi)
+	popq %rax
+	popq %r13
+	popq %r12
 	popq %r10
+	popq %r9
+	popq %r8
 	popq %rcx
 	popq %rdx
 	popq %rsi
-	popq %rdi	
+	popq %rdi
 ret
 
-	
+.size Polyval_Horner, .-Polyval_Horner
+
+.set T, %rdi
+.set Hp, %rsi
+.set aadINp, %rdx
+.set aadLen, %rcx
+.set msgINp, %r8
+.set msgLen, %r9
+.set LOC, %r10
+.set aadLoc, %r11
+.set msgLoc, %r12
+.set TMP, %r13
+.set pLENBLK, %r14
+.set TMP1, %rsi
+.set buffer, %r15
+.globl Polyval_Horner_AAD_MSG_LENBLK
+Polyval_Horner_AAD_MSG_LENBLK:
+# parameter 1: %rdi		T	 	- pointers to POLYVAL output
+# parameter 2: %rsi		Hp 	 	- pointer to H (user key)
+# parameter 3: %rdx		aadINp 	- pointer to AAD input
+# parameter 4: %rcx		aadLen 	 	- aad Length
+# parameter 5: %r8		msgINp 	 	- pointer to MSG input
+# parameter 6: %r9		msgLen 	 	- msg Length
+# parameter 7: 8(%rsp)  lenBlk      - lenBLK
+
+
+
+.Lbegin:
+	#We will start with L _GFMULS for POLYVAL(BIG_BUFFER)
+	#RES = _GFMUL(RES, H)
+
+	pushq %rdi
+	pushq %rsi
+	pushq %rdx
+	pushq %rcx
+	pushq %r8
+	pushq %r9
+	pushq %r10
+	pushq %r11
+	pushq %r12
+	pushq %r13
+	pushq %r14
+	pushq %r15
+	movq 12*8+8(%rsp), pLENBLK
+	subq $16, %rsp
+	movq %rsp, buffer
+	movq $0, 0(buffer)
+	movq $0, 8(buffer)
+	xorq 		%r10, %r10
+	movq 		aadLen, aadLoc
+	movq			msgLen, msgLoc
+	#shr 		$4, aadLoc						#L contains number of bytes to proceed
+	shlq			$60, aadLen
+	shrq			$60, aadLen
+	vmovdqu  	(Hp), H
+	vmovdqu		(T), RES
+	cmp $16, aadLoc
+	jb .LaadRemainder
+	subq $16, aadLoc
+
+.Lloop1:
+
+	vpxor 		(aadINp,LOC), RES, RES			#RES = RES + Xi
+	call _GFMUL								#RES = RES * H
+
+
+	add 	$16, LOC
+	cmp		LOC, aadLoc
+	jae   .Lloop1
+.LaadRemainder:
+
+	cmp $0, aadLen
+	je .MsgPart
+
+	#handle rem aad
+	movq aadLen, TMP
+	shr $2, TMP
+	movq TMP, TMP1
+	shlq $4, TMP
+	shlq $62, aadLen
+	shrq $62, aadLen
+	leaq CONST_Vector(%rip), aadLoc
+	vmovdqu (aadLoc,TMP), %xmm10
+	vpmaskmovd  (aadINp, LOC), %xmm10, %xmm10
+	cmp $0, aadLen
+	je .noAddedBytes
+	shlq $2, TMP1
+	addq TMP1, LOC
+	addq LOC, aadINp
+	movl (aadINp), %r13d
+	movl %r13d, (buffer,TMP1)
+	vpxor (buffer), %xmm10, %xmm10
+.noAddedBytes:
+	vpxor %xmm10, RES, RES
+	call _GFMUL
+	movl $0, (buffer,TMP1)
+.MsgPart:
+	xorq LOC, LOC
+	cmp $16, msgLoc
+	jb .LMsgRemaining
+	subq $16, msgLoc
+.MsgLoop:
+	vpxor (msgINp, LOC), RES, RES
+	call _GFMUL								#RES = RES * H
+	add 	$16, LOC
+	cmp		LOC, msgLoc
+	jae   .MsgLoop
+.LMsgRemaining:
+	shlq			$60, msgLen
+	shrq			$60, msgLen
+	cmp $0, msgLen
+	je .LenBlkPart
+
+	# handle rem msg
+
+	movq msgLen, TMP
+	shrq $2, TMP
+	movq TMP, TMP1
+	shlq $4, TMP
+	shlq $62, msgLen
+	shrq $62, msgLen
+	leaq CONST_Vector(%rip), aadLoc
+	vmovdqu (aadLoc,TMP), %xmm10
+	vpmaskmovd  (msgINp, LOC), %xmm10, %xmm10
+	cmp $0, msgLen
+	je .NoMsgBytesAdd
+	shlq $2, TMP1
+	addq TMP1, LOC
+	movl (msgINp, LOC), %r13d
+	movl %r13d, (buffer,TMP1)
+	vpxor (buffer), %xmm10, %xmm10
+
+.NoMsgBytesAdd:
+	vpxor %xmm10, RES, RES
+	call _GFMUL
+
+.LenBlkPart:
+
+	#calculation of T is over here. RES=T
+	vpxor (pLENBLK), RES, RES
+	call _GFMUL
+	vmovdqu RES, (%rdi)
+.END:
+	addq $16, %rsp
+	popq %r15
+	popq %r14
+	popq %r13
+	popq %r12
+	popq %r11
+	popq %r10
+	popq %r9
+	popq %r8
+	popq %rcx
+	popq %rdx
+	popq %rsi
+	popq %rdi
+ret
+.size Polyval_Horner_AAD_MSG_LENBLK, .-Polyval_Horner_AAD_MSG_LENBLK

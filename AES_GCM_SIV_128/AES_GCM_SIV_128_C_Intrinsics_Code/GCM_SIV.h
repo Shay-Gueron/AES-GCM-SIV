@@ -76,7 +76,21 @@ typedef struct KEY_SCHEDULE
 		unsigned int nr;
 	} ROUND_KEYS;
 	
-	
+typedef struct GCM_SIV_CONTEXT
+{
+	ROUND_KEYS KS;
+	uint8_t Htbl[16*8];
+	ALIGN64 uint8_t secureBuffer[16*16];
+	#ifdef DETAILS
+	uint8_t details_info[16*56]; // first 20*16 for enc , last 20*16 for dec
+	#endif
+}AES_GCM_SIV_CONTEXT;
+
+
+void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, const uint8_t* AAD, const uint8_t* PT, size_t L1, size_t L2, const uint8_t* IV, const uint8_t* KEY);
+
+int AES_GCM_SIV_Decrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, const uint8_t* AAD, const uint8_t* CT, size_t L1, size_t L2, const uint8_t* IV, const uint8_t* KEY);
+
 void Polyval_Horner(unsigned char T[16],  			// input/output 
 					 unsigned char* H,				// H
 					 unsigned char* BUF,			// Buffer
@@ -122,73 +136,55 @@ void print_buffer_BE(uint8_t *in, int length);
 void print_counters_from_TAG_BE(uint8_t *in, int num_of_counters);
 void print_counters_from_TAG_LE(uint8_t *in, int num_of_counters);
 void print_lengths(int init_AAD_byte_len, 
-				  int init_AAD_bit_len, 
-				  int init_MSG_byte_len, 
-				  int init_MSG_bit_len, 
-				  int padded_AAD_byte_len,
-				  int padded_MSG_byte_len, 
-				  int L1, int L2);
+                  int init_MSG_byte_len);
 				  
 void print_buffers_BE(int init_AAD_byte_len, 
-					int padded_AAD_byte_len, 
-					int init_MSG_byte_len, 
-					int total_blocks,
-					unsigned char* SINGLE_KEY,
-					unsigned char* K,
-					unsigned char* H,
-					unsigned char* IV,
-					unsigned char* BIG_BUF); 	
+                    int init_MSG_byte_len, 
+                    unsigned char*K,
+                    unsigned char*H,
+                    unsigned char*IV,
+                    unsigned char*AAD,
+					unsigned char*PT,
+					unsigned char*LENBLK) ;	
 					
+
 void print_buffers_LE(int init_AAD_byte_len, 
-					int padded_AAD_byte_len, 
-					int init_MSG_byte_len, 
-					int total_blocks,
-					unsigned char* SINGLE_KEY,
-					unsigned char* K,
-					unsigned char* H,
-					unsigned char* IV,
-					unsigned char* BIG_BUF); 
+                    int init_MSG_byte_len, 
+                    unsigned char*K,
+                    unsigned char*H,
+                    unsigned char*IV,
+                    unsigned char*AAD,
+					unsigned char*PT,
+					unsigned char*LENBLK) ;
 					
 void print_res_buffers_BE(int init_AAD_byte_len, int init_MSG_byte_len,
-							unsigned char* H,
-							unsigned char* K,
-							unsigned char* T,
-							unsigned char* T_masked,
-							unsigned char* TAG,
-							unsigned char* BIG_BUF,
-							unsigned char* CT); 	
+                            unsigned char* H,
+                            unsigned char* K,
+                            unsigned char* T,
+							unsigned char* TxorIV,
+							unsigned char* TxorIV_MSB_Zeroed,
+                            unsigned char* TAG,
+                            unsigned char* AAD,
+                            unsigned char* CT); 	
 							
 void print_res_buffers_LE(int init_AAD_byte_len, int init_MSG_byte_len,
-							unsigned char* H,
-							unsigned char* K,
-							unsigned char* T,
-							unsigned char* T_masked,
-							unsigned char* TAG,
-							unsigned char* BIG_BUF,
-							unsigned char* CT); 	
-					
-void init_lengths(int init_AAD_byte_len, 
-				int init_MSG_byte_len, 
-				int* init_AAD_bit_len, 
-				int* init_MSG_bit_len,
-				int* padded_AAD_byte_len,
-				int* padded_MSG_byte_len,
-				int* total_blocks,
-				int* L1, int* L2);
+                            unsigned char* H,
+                            unsigned char* K,
+                            unsigned char* T,
+							unsigned char* TxorIV,
+							unsigned char* TxorIV_MSB_Zeroed,
+                            unsigned char* TAG,
+                            unsigned char* AAD,
+                            unsigned char* CT);
+
 				
-void init_buffers(int total_blocks, int init_MSG_bit_len, int init_AAD_bit_len, 
-				unsigned char* BIG_BUF, 
-				unsigned char* LENBLK,
-				unsigned char* SINGLE_KEY, 
-				unsigned char* K, 
-				unsigned char* IV, 
-				unsigned char* ZERO_and_ONE,
-				unsigned char* AND_MASK);
+void init_buffers(unsigned char* AAD, int init_AAD_byte_len, unsigned char* PT, unsigned char* CT, unsigned char* DT, int init_MSG_byte_len,
+			unsigned char* K, unsigned char* IV, unsigned char* LENBLK);
 
 
 void AES_KS(unsigned char* key, unsigned char* KS);
 void AES_KS_ENC_x1(unsigned char* PT, unsigned char* CT, int len, unsigned char *KS, unsigned char* key);
 void INIT_Htable_6(unsigned char* Htbl, unsigned char* H);
 void ECB_ENC_block(unsigned char* PT, unsigned char* CT, unsigned char* KS);
-
+void Clear_SIV_CTX(AES_GCM_SIV_CONTEXT* ctx);
 #endif

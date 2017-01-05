@@ -87,6 +87,7 @@ void Decrypt_Htable(unsigned char* CT,
     __m128i T, CTR, OR_MASK, ONE,TWO;
 	__m128i register CTR1, CTR2,CTR3,CTR4,CTR5,sCTR1,sCTR2,sCTR3,sCTR4,sCTR5,sCTR6, CTR6, POLY, TMP0,TMP1, TMP2, TMP3,TMP4;
 	int i;
+	uint8_t B[16] = {0};
 	int count = 0;
     T	= _mm_loadu_si128(((__m128i*)POLYVAL_dec));
 	CTR = _mm_loadu_si128(((__m128i*)pTAG));
@@ -329,6 +330,44 @@ void Decrypt_Htable(unsigned char* CT,
 		TMP4 = _mm_clmulepi64_si128(T, sCTR1, 0x11);
 		TMP2 = _mm_clmulepi64_si128(T, sCTR1, 0x10);
 		TMP3 = _mm_clmulepi64_si128(T, sCTR1, 0x01);
+		TMP2 = _mm_xor_si128(TMP3, TMP2);
+		TMP3 = _mm_slli_si128(TMP2, 8);
+		TMP2 = _mm_srli_si128(TMP2, 8);
+		TMP1 = _mm_xor_si128(TMP1, TMP3);
+		TMP4 = _mm_xor_si128(TMP2, TMP4);
+		TMP2 = _mm_clmulepi64_si128(TMP1, POLY, 0x10);
+		TMP3 = _mm_shuffle_epi32(TMP1, 78);
+		TMP1 = _mm_xor_si128(TMP2, TMP3);
+		TMP2 = _mm_clmulepi64_si128(TMP1, POLY, 0x10);
+		TMP3 = _mm_shuffle_epi32(TMP1, 78);
+		TMP1 = _mm_xor_si128(TMP2, TMP3);
+		T = _mm_xor_si128(TMP1, TMP4);
+	}
+	if (byte_len>0)
+	{
+		memcpy(B, (uint8_t*)(&((__m128i*)CT)[count]), byte_len);
+		CTR1 = CTR;
+		CTR = _mm_add_epi32(CTR, ONE);
+		CTR1 = _mm_xor_si128(CTR1, ((__m128i*)KS)[0]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[1]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[2]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[3]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[4]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[5]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[6]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[7]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[8]);
+		CTR1 = _mm_aesenc_si128(CTR1, ((__m128i*)KS)[9]);
+		CTR1 = _mm_aesenclast_si128(CTR1, ((__m128i*)KS)[10]);
+		CTR1 = _mm_xor_si128(CTR1,*((__m128i*)B));
+		*(__m128i*)B = CTR1;
+		memset(B+byte_len, 0, 16-byte_len);
+		T = _mm_xor_si128(*(__m128i*)B, T);
+		TMP1 = _mm_clmulepi64_si128(T, sCTR1, 0x00);
+		TMP4 = _mm_clmulepi64_si128(T, sCTR1, 0x11);
+		TMP2 = _mm_clmulepi64_si128(T, sCTR1, 0x10);
+		TMP3 = _mm_clmulepi64_si128(T, sCTR1, 0x01);
+		memcpy((uint8_t*)(&((__m128i*)PT)[count]), B, byte_len);
 		TMP2 = _mm_xor_si128(TMP3, TMP2);
 		TMP3 = _mm_slli_si128(TMP2, 8);
 		TMP2 = _mm_srli_si128(TMP2, 8);

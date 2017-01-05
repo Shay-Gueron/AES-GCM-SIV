@@ -67,6 +67,8 @@ three:
 .quad	3,0
 four:
 .quad	4,0
+CONST_Vector:
+.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
 
 .macro AES_ROUND i
     vmovdqu  \i*16(KS), TMP
@@ -106,6 +108,7 @@ four:
 .set TAG, %rdx
 .set KS, %rcx
 .set LEN, %r8
+.set gTMP, %r11
 
 
 #####################################################################
@@ -134,11 +137,17 @@ ENC_MSG_x4:
 	pushq  %rcx
 	pushq  %r8	  
     pushq  %r10
+	pushq  %r11
+	pushq  %r12
+	pushq  %r13
+	pushq %rax
+	xorq   	  gTMP, gTMP
 	movq      LEN, %r10
     shrq      $4, LEN							#LEN = num of blocks
     shlq      $60, %r10
     je        NO_PARTS
-    addq      $1, LEN
+	shrq	  $60, %r10
+    movq      %r10, gTMP
 NO_PARTS:	
 	movq      LEN, %r10
     shlq      $62, %r10
@@ -214,7 +223,7 @@ LOOP:
    
 REMAINDER:
    cmpq      $0, %r10
-   je   END
+   je   END_BLOCK
    
 LOOP2:
 	
@@ -248,7 +257,66 @@ LOOP2:
 	decq      %r10
     jne       LOOP2
 	
+END_BLOCK:
+	cmp $0, gTMP # gtmp holds the number of bytes left <16
+	je END
+	subq $16, %rsp
+	movq $0, (%rsp)
+	movq $0, 8(%rsp)
+	vpxor         (KS), CTR1, STATE1
+	vaesenc     16(KS), STATE1, STATE1
+	movq gTMP, %r10 # r10 = len left
+	movq gTMP, %r8 # r8 = len left
+	vaesenc    32(KS) , STATE1, STATE1
+    shr $2, %r10 # number of double words possible 
+	andq $~-4, %r8 ###r8= last 16 bytes %4 
+	movq %r10, %r13
+	vaesenc    48(KS) , STATE1, STATE1
+    shlq $4, %r10  # r10 = offset to mask of const
+	vaesenc    64(KS) , STATE1, STATE1
+    vaesenc    80(KS) , STATE1, STATE1
+    leaq CONST_Vector(%rip), %r12
+	vmovdqu (%r12, %r10),  CTR2
+	vaesenc    96(KS) , STATE1, STATE1
+	vpmaskmovd (PT), CTR2, CTR3
+    vaesenc    112(KS), STATE1, STATE1
+	shlq $2, %r13
+    vaesenc    128(KS), STATE1, STATE1
+	addq %r13, PT
+    vaesenc    144(KS), STATE1, STATE1
+	
+    vaesenclast  160(KS), STATE1, STATE1
+	cmp $0, %r8
+	je .NoAddedBytes_Enc_X4
+	movl (PT), %r10d
+	movl %r10d, (%rsp, %r13)
+	vpxor (%rsp), CTR3, CTR3
+.NoAddedBytes_Enc_X4:
+	vpxor CTR3, STATE1, STATE1
+	addq $16, %rsp
+	vpmaskmovd STATE1, CTR2, (CT)
+	cmp $0, %r8
+	je END
+	subq $16, %rsp
+	vmovdqu STATE1, (%rsp)
+	
+	movl (%rsp, %r13), %eax
+	addq $16, %rsp
+	addq %r13, CT
+.CTLOOP:
+	movb %al, (CT)
+	inc CT
+	dec %r8
+	shrq $8, %rax
+	cmp $0, %r8
+	jne .CTLOOP
+	
+	
 END:
+	popq %rax
+	popq %r13
+	popq %r12
+	popq %r11
 	popq %r10
 	popq %r8
 	popq %rcx

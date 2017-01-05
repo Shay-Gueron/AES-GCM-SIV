@@ -67,7 +67,8 @@ shuff_mask:
 .quad 0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
 poly:
 .quad 0x1, 0xc200000000000000 
-
+CONST_Vector:
+.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
 
 ################################################################################
 # Generates the H table
@@ -84,25 +85,24 @@ INIT_Htable:
 .set T,%xmm0
 .set TMP0,%xmm1
 
-
-   vmovdqu	(H), T
-   vmovdqu   T, TMP0
-   vmovdqu   T, (Htbl)     # H 
-   call  GFMUL
-   vmovdqu  T, 16(Htbl)    # H^2 
-   call  GFMUL
-   vmovdqu  T, 32(Htbl)    # H^3
-   call  GFMUL
-   vmovdqu  T, 48(Htbl)    # H^4 
-   call  GFMUL
-   vmovdqu  T, 64(Htbl)    # H^5
-   call  GFMUL
-   vmovdqu  T, 80(Htbl)    # H^6 
-   call  GFMUL
-   vmovdqu  T, 96(Htbl)    # H^7 
-   call  GFMUL
-   vmovdqu  T, 112(Htbl)   # H^8  
-   ret
+    vmovdqu  (H), T
+    vmovdqu   T, TMP0
+    vmovdqu   T, (Htbl)     # H 
+    call  GFMUL
+    vmovdqu  T, 16(Htbl)    # H^2 
+    call  GFMUL
+    vmovdqu  T, 32(Htbl)    # H^3
+    call  GFMUL
+    vmovdqu  T, 48(Htbl)    # H^4 
+    call  GFMUL
+    vmovdqu  T, 64(Htbl)    # H^5
+    call  GFMUL
+    vmovdqu  T, 80(Htbl)    # H^6 
+    call  GFMUL
+    vmovdqu  T, 96(Htbl)    # H^7 
+    call  GFMUL
+    vmovdqu  T, 112(Htbl)   # H^8  
+    ret
 .size INIT_Htable, .-INIT_Htable
 
 
@@ -122,24 +122,25 @@ INIT_Htable_6:
 .set TMP0,%xmm1
 
 
-   vmovdqu	(H), T
-   vmovdqu   T, TMP0
-   vmovdqu   T, (Htbl)     # H 
-   call  GFMUL
-   vmovdqu  T, 16(Htbl)    # H^2 
-   call  GFMUL
-   vmovdqu  T, 32(Htbl)    # H^3
-   call  GFMUL
-   vmovdqu  T, 48(Htbl)    # H^4 
-   call  GFMUL
-   vmovdqu  T, 64(Htbl)    # H^5
-   call  GFMUL
-   vmovdqu  T, 80(Htbl)    # H^6 
-   ret
+    vmovdqu  (H), T
+    vmovdqu   T, TMP0
+    vmovdqu   T, (Htbl)     # H 
+    call  GFMUL
+    vmovdqu  T, 16(Htbl)    # H^2 
+    call  GFMUL
+    vmovdqu  T, 32(Htbl)    # H^3
+    call  GFMUL
+    vmovdqu  T, 48(Htbl)    # H^4 
+    call  GFMUL
+    vmovdqu  T, 64(Htbl)    # H^5
+    call  GFMUL
+    vmovdqu  T, 80(Htbl)    # H^6 
+    ret
 .size INIT_Htable_6, .-INIT_Htable_6
 
 ################################################################################
 # void Polyval_Htable(uint8_t Htbl[16*8], uint8_t *MSG, uint64_t LEN, uint8_t *T);
+
 
 .set DATA, %xmm0
 .set T, %xmm1
@@ -159,72 +160,221 @@ INIT_Htable_6:
 .set hlp0, %r11
 
 .macro SCHOOLBOOK_AAD i
-    vpclmulqdq	$0x01, 16*\i(Htbl), DATA, TMP3
-    vpxor		   TMP3, TMP2, TMP2
-    vpclmulqdq	$0x00, 16*\i(Htbl), DATA, TMP3
-    vpxor		   TMP3, TMP0, TMP0
-    vpclmulqdq	$0x11, 16*\i(Htbl), DATA, TMP3
-    vpxor		   TMP3, TMP1, TMP1
-    vpclmulqdq	$0x10, 16*\i(Htbl), DATA, TMP3
-    vpxor		   TMP3, TMP2, TMP2
+    vpclmulqdq  $0x01, 16*\i(Htbl), DATA, TMP3
+    vpxor          TMP3, TMP2, TMP2
+    vpclmulqdq  $0x00, 16*\i(Htbl), DATA, TMP3
+    vpxor          TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, 16*\i(Htbl), DATA, TMP3
+    vpxor          TMP3, TMP1, TMP1
+    vpclmulqdq  $0x10, 16*\i(Htbl), DATA, TMP3
+    vpxor          TMP3, TMP2, TMP2
 .endm
 
-.globl	Polyval_Htable
-.type	Polyval_Htable,@function
-.align	16
+
+########################################################################################################################
+# void Polyval_Htable(uint8_t Htbl[16*8], uint8_t *AAD, uint64_t AAD_LEN, uint8_t *T);
+
+.set Htbl, %rdi
+.set inp, %rsi
+.set len, %rdx
+.set Tp, %rcx
+.set gtmp0, %r10
+.set gtmp1, %r12
+.set gtmp2, %r14
+.set gtmp3, %r15
+.set buffer, %r8
+
+.globl  Polyval_Htable
+.type   Polyval_Htable,@function
+.align  16
 Polyval_Htable:
 
-# parameter 1: %rdi		Htable 	- pointer to Htable
-# parameter 2: %rsi		INp  	- pointer to input
-# parameter 3: %rdx		LEN 	- length of BUFFER in bytes 
-# parameter 4: %rcx		T 	 	- pointer to POLYVAL output
+# parameter 1: %rdi     Htable  - pointer to Htable
+# parameter 2: %rsi     INp     - pointer to input
+# parameter 3: %rdx     LEN     - length of BUFFER in bytes 
+# parameter 4: %rcx     T       - pointer to POLYVAL output
 
     test  len, len
-    jnz   .LbeginAAD
+    jnz   .LbeginAAD_
     ret
 
-.LbeginAAD:
+.LbeginAAD_:
 
-    vzeroupper
-	pushq %rdi
-	pushq %rsi
-	pushq %rdx
-	pushq %rcx
-	pushq %r11
-
+    vzeroall
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+	pushq %r8
+	pushq %r9
+	pushq %r10
+    pushq %r11
+	pushq %r12
+	pushq %r13
+	pushq %r14
+	pushq %r15
+	subq $16, %rsp
+	movq %rsp, buffer
+	movq $0, 0(buffer)
+	movq $0, 8(buffer)
     vpxor    Xhi, Xhi, Xhi
-    vmovdqu	(Tp),T
+    vmovdqu (Tp),T
 
 # we hash 8 block each iteration, if the total amount of blocks is not a multiple of 8, we hash the first n%8 blocks first
-    mov	   len, hlp0
-    and	   $~-128, hlp0
-
-    jz	      .Lmod_loop
-
-    sub	   hlp0, len
-    sub	   $16, hlp0
-
-    #hash first prefix block
-    vmovdqu	(inp), DATA
+    movq    len, hlp0
+    andq    $~-128, hlp0
+	movq	len, %r9
+	andq    $-16, hlp0
+	andq	$~-16, %r9
+	
+	subq $0x80, len
+	jb .LRemainder_part
+	movq $112, %r10
+    vmovdqu (inp), DATA
     vpxor    T, DATA, DATA
-
-    vpclmulqdq  $0x01, (Htbl, hlp0), DATA, TMP2
-    vpclmulqdq  $0x00, (Htbl, hlp0), DATA, TMP0
-    vpclmulqdq  $0x11, (Htbl, hlp0), DATA, TMP1
-    vpclmulqdq  $0x10, (Htbl, hlp0), DATA, TMP3
+	
+    vpclmulqdq  $0x01, (Htbl, %r10), DATA, TMP2
+    vpclmulqdq  $0x00, (Htbl, %r10), DATA, TMP0
+    vpclmulqdq  $0x11, (Htbl, %r10), DATA, TMP1
+    vpclmulqdq  $0x10, (Htbl, %r10), DATA, TMP3
     vpxor       TMP3, TMP2, TMP2
 
-    lea	16(inp), inp
-    test	hlp0, hlp0
-    jnz	.Lpre_loop
-    jmp	.Lred1
+    lea 16(inp), inp
 
     #hash remaining prefix bocks (up to 7 total prefix blocks)
 .align 64
-.Lpre_loop:
+.Lpre_hash_htable:
 
-    sub	$16, hlp0
+    subq $16, %r10
 
+    vmovdqu     (inp),DATA           # next data block
+
+    vpclmulqdq  $0x00, (Htbl,%r10), DATA, TMP3
+    vpxor       TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, (Htbl,%r10), DATA, TMP3
+    vpxor       TMP3, TMP1, TMP1
+    vpclmulqdq  $0x01, (Htbl,%r10), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    vpclmulqdq  $0x10, (Htbl,%r10), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+
+    test    %r10, %r10
+
+    leaq 16(inp), inp
+
+    jnz .Lpre_hash_htable
+    
+.Lred_pre_hash_htable:
+    vpsrldq     $8, TMP2, TMP3
+    vpslldq     $8, TMP2, TMP2
+
+    vpxor          TMP3, TMP1, Xhi
+    vpxor          TMP2, TMP0, T
+	subq $0x80, len
+	jb .LPre_Remainder_part
+.Lmod_loop_:
+    
+    jb  .LPre_Remainder_part
+
+    vmovdqu     16*7(inp),DATA      # Ii
+
+    vpclmulqdq  $0x01, (Htbl), DATA, TMP2
+    vpclmulqdq  $0x00, (Htbl), DATA, TMP0
+    vpclmulqdq  $0x11, (Htbl), DATA, TMP1
+    vpclmulqdq  $0x10, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    #########################################################
+    vmovdqu     16*6(inp),DATA
+    SCHOOLBOOK_AAD 1
+    #########################################################
+    vmovdqu     16*5(inp),DATA
+
+    vpclmulqdq  $0x10, poly(%rip), T, TMP4         #reduction stage 1a
+    vpalignr       $8, T, T, T
+
+    SCHOOLBOOK_AAD 2
+
+    vpxor          TMP4, T, T                 #reduction stage 1b
+    #########################################################
+    vmovdqu     16*4(inp),DATA
+
+    SCHOOLBOOK_AAD 3
+    #########################################################
+    vmovdqu     16*3(inp),DATA
+
+    vpclmulqdq  $0x10, poly(%rip), T, TMP4         #reduction stage 2a
+    vpalignr       $8, T, T, T
+
+    SCHOOLBOOK_AAD 4
+
+    vpxor          TMP4, T, T                 #reduction stage 2b
+    #########################################################
+    vmovdqu     16*2(inp),DATA
+
+    SCHOOLBOOK_AAD 5
+
+    vpxor          Xhi, T, T                  #reduction finalize
+    #########################################################
+    vmovdqu     16*1(inp),DATA
+
+    SCHOOLBOOK_AAD 6
+    #########################################################
+    vmovdqu     16*0(inp),DATA
+    vpxor          T,DATA,DATA
+
+    SCHOOLBOOK_AAD 7
+    #########################################################
+    vpsrldq $8, TMP2, TMP3
+    vpslldq $8, TMP2, TMP2
+
+    vpxor       TMP3, TMP1, Xhi
+    vpxor       TMP2, TMP0, T
+
+    lea 16*8(inp), inp
+	subq $0x80, len
+    jmp .Lmod_loop_
+.LPre_Remainder_part:
+    vpclmulqdq  $0x10, poly(%rip), T, TMP4
+	vpalignr       $8, T, T, T
+	vpxor          TMP4, T, T 
+	vpxor TMP0, TMP0, TMP0
+	vpxor TMP1, TMP1, TMP1
+	vpclmulqdq  $0x10, poly(%rip), T, TMP4         #reduction stage 2a
+    vpalignr       $8, T, T, T
+	vpxor          TMP4, T, T 
+	vpxor TMP2, TMP2, TMP2
+	vpxor TMP3, TMP3, TMP3
+	vpxor          Xhi, T, T
+	cmp $-0x80, len
+	je .Lsave_
+	addq $0x80, len
+	jmp .LRemainder_check
+.LRemainder_part:
+	addq $0x80, len
+	cmp $0, len
+	je .Ldone_
+.LRemainder_check:
+	cmp $0, %r9
+	jne .LRemainder_with_semi_block
+	#remainder has no semi blocks
+	vmovdqu (inp), DATA
+    vpxor    T, DATA, DATA
+	subq $16, hlp0
+    vpclmulqdq  $0x00, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP1, TMP1
+    vpclmulqdq  $0x01, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    vpclmulqdq  $0x10, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    leaq 16(inp), inp
+    cmp $0, hlp0
+	je .Lred1_
+.align 64
+.Lpre_loop_:
+    
+	subq $16, hlp0
     vmovdqu     (inp),DATA           # next data block
 
     vpclmulqdq  $0x00, (Htbl,hlp0), DATA, TMP3
@@ -235,104 +385,147 @@ Polyval_Htable:
     vpxor       TMP3, TMP2, TMP2
     vpclmulqdq  $0x10, (Htbl,hlp0), DATA, TMP3
     vpxor       TMP3, TMP2, TMP2
-
-    test	hlp0, hlp0
-
-    lea	16(inp), inp
-
-    jnz	.Lpre_loop
-	
-.Lred1:
-    vpsrldq		$8, TMP2, TMP3
-    vpslldq		$8, TMP2, TMP2
-
-    vpxor		   TMP3, TMP1, Xhi
-    vpxor		   TMP2, TMP0, T
-	
-.align 64
-.Lmod_loop:
-    sub	$0x80, len
-    jb	.Ldone
-
-    vmovdqu		16*7(inp),DATA		# Ii
-
-    vpclmulqdq	$0x01, (Htbl), DATA, TMP2
-    vpclmulqdq	$0x00, (Htbl), DATA, TMP0
-    vpclmulqdq	$0x11, (Htbl), DATA, TMP1
-    vpclmulqdq	$0x10, (Htbl), DATA, TMP3
+    leaq 16(inp), inp 
+	cmpq    $0, hlp0
+    jne .Lpre_loop_
+	jmp .Lred1_
+.LRemainder_with_semi_block:
+	addq $16, Htbl
+	cmp $0, hlp0
+	je .Lsemi_block_first 
+	vmovdqu (inp), DATA
+    vpxor    T, DATA, DATA
+	subq $16, hlp0
+    vpclmulqdq  $0x00, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP1, TMP1
+    vpclmulqdq  $0x01, (Htbl,hlp0), DATA, TMP3
     vpxor       TMP3, TMP2, TMP2
-    #########################################################
-    vmovdqu		16*6(inp),DATA
-    SCHOOLBOOK_AAD 1
-    #########################################################
-    vmovdqu		16*5(inp),DATA
+    vpclmulqdq  $0x10, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+	
+    leaq 16(inp), inp
+    cmp $0, hlp0
+	je .Lsemiblock
+.align 64
+.Lpre_loop_semi_block:
+    
+	subq $16, hlp0
+    vmovdqu     (inp),DATA           # next data block
 
-    vpclmulqdq	$0x10, poly(%rip), T, TMP4         #reduction stage 1a
-    vpalignr	   $8, T, T, T
+    vpclmulqdq  $0x00, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP1, TMP1
+    vpclmulqdq  $0x01, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    vpclmulqdq  $0x10, (Htbl,hlp0), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    leaq 16(inp), inp
+	cmpq    $0, hlp0
 
-    SCHOOLBOOK_AAD 2
-
-    vpxor		   TMP4, T, T                 #reduction stage 1b
-    #########################################################
-    vmovdqu		16*4(inp),DATA
-
-    SCHOOLBOOK_AAD 3
-    #########################################################
-    vmovdqu		16*3(inp),DATA
-
-    vpclmulqdq	$0x10, poly(%rip), T, TMP4         #reduction stage 2a
-    vpalignr	   $8, T, T, T
-
-    SCHOOLBOOK_AAD 4
-
-    vpxor		   TMP4, T, T                 #reduction stage 2b
-    #########################################################
-    vmovdqu		16*2(inp),DATA
-
-    SCHOOLBOOK_AAD 5
-
-    vpxor		   Xhi, T, T                  #reduction finalize
-    #########################################################
-    vmovdqu		16*1(inp),DATA
-
-    SCHOOLBOOK_AAD 6
-    #########################################################
-    vmovdqu		16*0(inp),DATA
-    vpxor		   T,DATA,DATA
-
-    SCHOOLBOOK_AAD 7
-    #########################################################
-    vpsrldq	$8, TMP2, TMP3
-    vpslldq	$8, TMP2, TMP2
-
-    vpxor		TMP3, TMP1, Xhi
-    vpxor		TMP2, TMP0, T
-
-    lea	16*8(inp), inp
-    jmp .Lmod_loop
-    #########################################################
-
-.Ldone:
-    vpclmulqdq	$0x10, poly(%rip), T, TMP3
-    vpalignr    $8, T, T, T
-    vpxor       TMP3, T, T
-
-    vpclmulqdq	$0x10, poly(%rip), T, TMP3
-    vpalignr    $8, T, T, T
-    vpxor       TMP3, T, T
-    vpxor       Xhi, T, T
-
-.Lsave:
    
-	vmovdqu		T,(Tp)
-    vzeroupper
+    jne .Lpre_loop_semi_block	
+.Lsemiblock:
+	subq $16, Htbl
+	
+	movq %r9, gtmp0
+	shrq $2, gtmp0
+	movq gtmp0, gtmp1
+	shlq $4, gtmp0
+	andq $~-4, %r9
+	leaq CONST_Vector(%rip), gtmp2
+	vmovdqu (gtmp2, gtmp0), %xmm10
+	vpmaskmovd (inp), %xmm10, DATA
+	cmp $0, %r9
+	je .NoAddedBytes
+	shlq $2, gtmp1
+	addq gtmp1, inp
+	movl (inp), %r13d
+	movl %r13d, (buffer, gtmp1)
+	vpxor (buffer), DATA, DATA
+.NoAddedBytes:
+	vpclmulqdq  $0x00, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP1, TMP1
+    vpclmulqdq  $0x01, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    vpclmulqdq  $0x10, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+	jmp .Lred1_
+
+	
+.Lsemi_block_first:
+	subq $16, Htbl
+	subq hlp0, len
+	movq len, gtmp0
+	shrq $2, gtmp0
+	movq gtmp0, gtmp1
+	shlq $4, gtmp0
+	andq $~-4, len
+	leaq CONST_Vector(%rip), gtmp2
+	vmovdqu (gtmp2, gtmp0), %xmm10
+	vpmaskmovd (inp), %xmm10, DATA
+	cmp $0, len
+	je .NoAddedBytesSemiBlock
+	shlq $2, gtmp1
+	addq gtmp1, inp
+	movl (inp), %r13d
+	movl %r13d, (buffer, gtmp1)
+	vpxor (buffer), DATA, DATA
+.NoAddedBytesSemiBlock:
+	vpxor T, DATA, DATA
+	vpclmulqdq  $0x00, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP0, TMP0
+    vpclmulqdq  $0x11, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP1, TMP1
+    vpclmulqdq  $0x01, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2
+    vpclmulqdq  $0x10, (Htbl), DATA, TMP3
+    vpxor       TMP3, TMP2, TMP2	
+	
+	########################################################
+.Lred1_:
+    vpsrldq     $8, TMP2, TMP3
+    vpslldq     $8, TMP2, TMP2
+
+    vpxor          TMP3, TMP1, Xhi
+    vpxor          TMP2, TMP0, T
+    
+
+    
+
+.Ldone_:
+    vpclmulqdq  $0x10, poly(%rip), T, TMP3
+    vpalignr    $8, T, T, T
+    vpxor       TMP3, T, T
+
+    vpclmulqdq  $0x10, poly(%rip), T, TMP3
+    vpalignr    $8, T, T, T
+    vpxor       TMP3, T, T
+    vpxor       Xhi, T, T	
+.Lsave_:
+   
+    vmovdqu     T,(Tp)
+    vzeroall
+  
+	addq $16, %rsp
+	popq %r15
+	popq %r14
+	popq %r13
+	popq %r12
 	popq %r11
-	popq %rcx
-	popq %rdx
-	popq %rsi
-	popq %rdi
+	popq %r10
+	popq %r9
+	popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
     ret
-.size	Polyval_Htable,.-Polyval_Htable
+.size   Polyval_Htable,.-Polyval_Htable
 
 
 .set T,%xmm0

@@ -65,8 +65,13 @@ TWO:
 .quad   2,0
 poly:
 .quad 0x1, 0xc200000000000000 
-
-
+CONST_Vector:
+.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
+AND_VEC:
+.long 0,0,0,0, 0x000000ff,0,0,0, 0x0000ffff,0,0,0, 0x00ffffff,0,0,0, 0xffffffff,0,0,0
+.long 0xffffffff,0x000000ff,0,0, 0xffffffff,0x0000ffff,0,0, 0xffffffff,0x00ffffff,0,0, 0xffffffff,0xffffffff,0,0
+.long 0xffffffff,0xffffffff, 0x000000ff,0, 0xffffffff,0xffffffff,0x0000ffff,0, 0xffffffff,0xffffffff,0x00ffffff,0, 0xffffffff,0xffffffff,0xffffffff,0
+.long 0xffffffff,0xffffffff,0xffffffff,0x000000ff, 0xffffffff,0xffffffff,0xffffffff, 0x0000ffff, 0xffffffff,0xffffffff,0xffffffff,0x00ffffff, 0xffffffff,0xffffffff,0xffffffff,0xffffffff
 ###############################################################################
 .set T,%xmm0
 .set TMP0,%xmm1
@@ -163,25 +168,33 @@ Decrypt_Htable:
     pushq %r8
     pushq %r9
     pushq %r10
+	pushq %r11
+	pushq %r12
     pushq %r13
+	pushq %r14
+	pushq %r15
     pushq %rax
     
     
-    movq    8+9*8(%rsp), LEN
+    movq    8+13*8(%rsp), LEN
     movq $0xffffffff, %r13
     andq    %r13, LEN
-    test    LEN, LEN
+	
+    
+	vzeroall
+    mov      16+13*8(%rsp), secureBuffer
+	subq $16, %rsp
+    vmovdqu  (POL), T
+
+    leaq 32(secureBuffer), secureBuffer
+    leaq 32(Htbl), Htbl
+	testq    LEN, LEN
     jnz   .Lbegin
     jmp .LDone
 
 .Lbegin:
 
-    vzeroupper
-    mov      16+9*8(%rsp), secureBuffer
-    vmovdqu  (POL), T
-
-    leaq 32(secureBuffer), secureBuffer
-    leaq 32(Htbl), Htbl
+    
     
     #make CTRBLKs from TAG
     vmovdqu     (TAG), CTR
@@ -445,10 +458,82 @@ Decrypt_Htable:
     jmp   .LDataSingles
 
 DATA_END:
-    vmovdqu  T, (POL)
+	cmp $0, LEN
+	jbe .LSave
+	movq $0, (%rsp)
+	movq $0, 8(%rsp)
+	vmovdqa CTR, TMP1
+    vpaddd  ONE(%rip), CTR, CTR
+	movq LEN, %r11
+    vpxor    0*16(KS), TMP1, TMP1
+    vaesenc  1*16(KS), TMP1, TMP1
+	shrq $2, %r11
+	movq %r11, %r12
+    vaesenc  2*16(KS), TMP1, TMP1
+    vaesenc  3*16(KS), TMP1, TMP1
+    vaesenc  4*16(KS), TMP1, TMP1
+	shlq $4, %r11
+	leaq CONST_Vector(%rip), %r13
+    vaesenc  5*16(KS), TMP1, TMP1
+    vaesenc  6*16(KS), TMP1, TMP1
+	movq LEN, %r14
+	andq $~-4, LEN
+	vmovdqu (%r13, %r11), TMP2
+    vaesenc  7*16(KS), TMP1, TMP1
+	shlq $4, %r14
+	leaq AND_VEC(%rip), %r15
+	addq %r14, %r15
+	vmovdqu (%r15), TMP4
+    vaesenc  8*16(KS), TMP1, TMP1
+	vpmaskmovd (CT), TMP2, TMP3
+    vaesenc  9*16(KS), TMP1, TMP1
+	cmp $0, LEN
+    vaesenclast  10*16(KS), TMP1, TMP1
+	vpand TMP4, TMP1, TMP1
+	je .NoAddedBytes
+	shlq $2, %r12
+	movl (CT, %r12), %r13d
+	movl %r13d, (%rsp, %r12)
+	vpxor (%rsp), TMP3, TMP3
+	#TMP3 - PT BLOCK
+	vpxor TMP1, TMP3 , TMP3
+	vpmaskmovd TMP3, TMP2, (PT)
+	vpand TMP4, TMP3, TMP3
+	cmp $0, LEN
+	je .DONE_PT
+	vmovdqu TMP3, (%rsp)
+	movl (%rsp, %r12), %r13d
+	addq %r12, PT
+	movl %r13d, %eax
+.bytesadded:
+	dec LEN
+	movb %al, (PT)
+	shrl $8, %eax
+	inc PT
+	cmp $0, LEN
+	jne .bytesadded
+.DONE_PT:
+	
+	vpxor    TMP3, T, T
+    vmovdqu  -32(Htbl), TMP0
+    call     GFMUL_	
+	jmp .LSave
+.NoAddedBytes:
+	vpxor TMP1, TMP3 , TMP3
+	vpmaskmovd TMP3, TMP2, (PT)
+	vpxor    TMP3, T, T
+    vmovdqu  -32(Htbl), TMP0
+    call     GFMUL_	
+.LSave:
+	vmovdqu  T, (POL)
 .LDone:
+	addq $16, %rsp
     popq %rax
-    popq %r13
+    popq %r15
+	popq %r14
+	popq %r13
+	popq %r12
+	popq %r11
     popq %r10
     popq %r9
     popq %r8

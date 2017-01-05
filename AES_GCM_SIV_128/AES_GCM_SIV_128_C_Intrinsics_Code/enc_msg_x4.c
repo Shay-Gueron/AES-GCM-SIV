@@ -82,10 +82,9 @@ void ENC_MSG_x4(const unsigned char *PT,
                       int length)
 {
     __m128i or_mask, TWO,ctr_block, tmp, tmp1, tmp2, tmp3, ONE;
-    int i,j,remainder_loc;
-    if (length%16)
-        length = length/16 + 1;
-    else length/=16;
+    int i,j,remainder_loc, has_semi =0;
+    has_semi = length%16;
+    length/=16;
     ONE = _mm_setr_epi32(1,0,0,0);
 	TWO = _mm_setr_epi32(2,0,0,0);
 	ctr_block = _mm_setzero_si128();
@@ -122,10 +121,7 @@ void ENC_MSG_x4(const unsigned char *PT,
 			_mm_storeu_si128(&((__m128i*)CT)[i+1],tmp1);
 			_mm_storeu_si128(&((__m128i*)CT)[i+2],tmp2);
 			_mm_storeu_si128(&((__m128i*)CT)[i+3],tmp3);
-		}
-	// handling remainder and less than 4 blocks
-	if (length%4==0)
-		return;
+	}
 	// The remainder_loc is used to remember the location of our block handled 
 	remainder_loc = length-length%4;
     for(i=0; i < (length%4); i++)
@@ -141,4 +137,22 @@ void ENC_MSG_x4(const unsigned char *PT,
             tmp = _mm_xor_si128(tmp,_mm_loadu_si128(&((__m128i*)PT)[remainder_loc+i]));
             _mm_storeu_si128 (&((__m128i*)CT)[remainder_loc+i],tmp);
     }
+	if (has_semi!=0)
+	{
+		uint8_t BLK[16] = {0};
+		memcpy(BLK, PT+length*16, has_semi);
+		tmp = ctr_block;
+        ctr_block = _mm_add_epi32(ctr_block, ONE);
+        tmp = _mm_xor_si128(tmp, ((__m128i*)KS)[0]);
+
+            for(j=1; j <10; j++) {
+                tmp = _mm_aesenc_si128 (tmp, ((__m128i*)KS)[j]);
+                };
+            tmp = _mm_aesenclast_si128 (tmp, ((__m128i*)KS)[j]);
+            *(__m128i*)BLK = _mm_xor_si128(tmp,*(__m128i*)BLK);
+			memset(BLK+has_semi, 0, 16-has_semi);
+            
+			memcpy(CT+length*16, BLK, has_semi);
+    }
+	
 }
