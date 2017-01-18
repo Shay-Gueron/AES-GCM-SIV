@@ -65,7 +65,10 @@ con2:
 .long    0x1b,0x1b,0x1b,0x1b
 con3:
 .byte -1,-1,-1,-1,-1,-1,-1,-1,4,5,6,7,4,5,6,7
-
+one:
+.long 1,0,0,0
+and_mask:
+.long 0,0xffffffff, 0xffffffff, 0xffffffff
 #########################################################
 #Regular Key Expansion no assist
 
@@ -206,6 +209,138 @@ AES256_KS_ENC_x1:
     ROUND_last   14
     vmovdqu      BLOCK1, (CT)
     ret
+#*******************************************************************
+#   void AES256_KS_ENC_x1_INIT_x6(const unsigned char NONCE[16],   *
+#                       unsigned char CT[96],                      *
+#                       AES_KEY *KS,                               *
+#                       const unsigned char *userKey);             *
+#*******************************************************************
+.set BLOCK2, %xmm6
+.set BLOCK3, %xmm7
+.set ONE, %xmm5
+.set BLOCK4, %xmm11
+.set BLOCK5, %xmm12
+.set BLOCK6, %xmm13
+.globl AES256_KS_ENC_x1_INIT_x6
+AES256_KS_ENC_x1_INIT_x6:
+
+# parameter 1: %rdi         Pointer to NONCE
+# parameter 2: %rsi         Pointer to CT
+# parameter 3: %rdx         Pointer to KS
+# parameter 4: %rcx         Pointer to initial key
+
+    movl         $14, 240(KS)                    #key.rounds = 12
+    vmovdqu      (con1), CON_MASK                #CON_MASK  = 1,1,1,1
+    vmovdqu      (mask), MASK_256            #MASK_256
+    vmovdqu      (%rdi), BLOCK1
+	vmovdqu      and_mask(%rip), BLOCK4
+	vmovdqu      one(%rip), ONE
+	vpshufd      $0x90, BLOCK1, BLOCK1
+	vpand        BLOCK4, BLOCK1, BLOCK1
+	vpaddd       ONE, BLOCK1, BLOCK2
+	vpaddd       ONE, BLOCK2, BLOCK3
+	vpaddd       ONE, BLOCK3, BLOCK4
+	vpaddd       ONE, BLOCK4, BLOCK5
+	vpaddd       ONE, BLOCK5, BLOCK6
+    vmovdqu      (KEYp),   KEY_1                 # KEY_1 || KEY_2 [0..7] = user key
+    vmovdqu      16(KEYp), KEY_2
+    vpxor        KEY_1, BLOCK1, BLOCK1
+	vpxor        KEY_1, BLOCK2, BLOCK2
+	vpxor        KEY_1, BLOCK3, BLOCK3
+	vpxor        KEY_1, BLOCK4, BLOCK4
+	vpxor        KEY_1, BLOCK5, BLOCK5
+	vpxor        KEY_1, BLOCK6, BLOCK6
+    vaesenc      KEY_2, BLOCK1, BLOCK1
+	vaesenc      KEY_2, BLOCK2, BLOCK2
+	vaesenc      KEY_2, BLOCK3, BLOCK3
+	vaesenc      KEY_2, BLOCK4, BLOCK4
+	vaesenc      KEY_2, BLOCK5, BLOCK5
+	vaesenc      KEY_2, BLOCK6, BLOCK6
+    vmovdqu      KEY_1, (KS)                     # First round key
+    vmovdqu      KEY_2, 16(KS)
+    vpxor        AUX_REG, AUX_REG, AUX_REG
+    ROUND_double 2 3
+	vaesenc      %xmm1, BLOCK2, BLOCK2
+	vaesenc      %xmm1, BLOCK3, BLOCK3
+	vaesenc      %xmm1, BLOCK4, BLOCK4
+	vaesenc      %xmm1, BLOCK5, BLOCK5
+	vaesenc      %xmm1, BLOCK6, BLOCK6
+	vaesenc      %xmm3, BLOCK2, BLOCK2
+	vaesenc      %xmm3, BLOCK3, BLOCK3
+	vaesenc      %xmm3, BLOCK4, BLOCK4
+	vaesenc      %xmm3, BLOCK5, BLOCK5
+	vaesenc      %xmm3, BLOCK6, BLOCK6
+    ROUND_double 4 5
+	vaesenc      %xmm1, BLOCK2, BLOCK2
+	vaesenc      %xmm1, BLOCK3, BLOCK3
+	vaesenc      %xmm1, BLOCK4, BLOCK4
+	vaesenc      %xmm1, BLOCK5, BLOCK5
+	vaesenc      %xmm1, BLOCK6, BLOCK6
+	vaesenc      %xmm3, BLOCK2, BLOCK2
+	vaesenc      %xmm3, BLOCK3, BLOCK3
+	vaesenc      %xmm3, BLOCK4, BLOCK4
+	vaesenc      %xmm3, BLOCK5, BLOCK5
+	vaesenc      %xmm3, BLOCK6, BLOCK6
+    ROUND_double 6 7
+	vaesenc      %xmm1, BLOCK2, BLOCK2
+	vaesenc      %xmm1, BLOCK3, BLOCK3
+	vaesenc      %xmm1, BLOCK4, BLOCK4
+	vaesenc      %xmm1, BLOCK5, BLOCK5
+	vaesenc      %xmm1, BLOCK6, BLOCK6
+	vaesenc      %xmm3, BLOCK2, BLOCK2
+	vaesenc      %xmm3, BLOCK3, BLOCK3
+	vaesenc      %xmm3, BLOCK4, BLOCK4
+	vaesenc      %xmm3, BLOCK5, BLOCK5
+	vaesenc      %xmm3, BLOCK6, BLOCK6
+    ROUND_double 8 9
+	vaesenc      %xmm1, BLOCK2, BLOCK2
+	vaesenc      %xmm1, BLOCK3, BLOCK3
+	vaesenc      %xmm1, BLOCK4, BLOCK4
+	vaesenc      %xmm1, BLOCK5, BLOCK5
+	vaesenc      %xmm1, BLOCK6, BLOCK6
+	vaesenc      %xmm3, BLOCK2, BLOCK2
+	vaesenc      %xmm3, BLOCK3, BLOCK3
+	vaesenc      %xmm3, BLOCK4, BLOCK4
+	vaesenc      %xmm3, BLOCK5, BLOCK5
+	vaesenc      %xmm3, BLOCK6, BLOCK6
+    ROUND_double 10 11
+	vaesenc      %xmm1, BLOCK2, BLOCK2
+	vaesenc      %xmm1, BLOCK3, BLOCK3
+	vaesenc      %xmm1, BLOCK4, BLOCK4
+	vaesenc      %xmm1, BLOCK5, BLOCK5
+	vaesenc      %xmm1, BLOCK6, BLOCK6
+	vaesenc      %xmm3, BLOCK2, BLOCK2
+	vaesenc      %xmm3, BLOCK3, BLOCK3
+	vaesenc      %xmm3, BLOCK4, BLOCK4
+	vaesenc      %xmm3, BLOCK5, BLOCK5
+	vaesenc      %xmm3, BLOCK6, BLOCK6
+    ROUND_double 12 13
+	vaesenc      %xmm1, BLOCK2, BLOCK2
+	vaesenc      %xmm1, BLOCK3, BLOCK3
+	vaesenc      %xmm1, BLOCK4, BLOCK4
+	vaesenc      %xmm1, BLOCK5, BLOCK5
+	vaesenc      %xmm1, BLOCK6, BLOCK6
+	vaesenc      %xmm3, BLOCK2, BLOCK2
+	vaesenc      %xmm3, BLOCK3, BLOCK3
+	vaesenc      %xmm3, BLOCK4, BLOCK4
+	vaesenc      %xmm3, BLOCK5, BLOCK5
+	vaesenc      %xmm3, BLOCK6, BLOCK6
+    ROUND_last   14
+	vaesenclast      %xmm1, BLOCK2, BLOCK2
+	vaesenclast      %xmm1, BLOCK3, BLOCK3
+	vaesenclast      %xmm1, BLOCK4, BLOCK4
+	vaesenclast      %xmm1, BLOCK5, BLOCK5
+	vaesenclast      %xmm1, BLOCK6, BLOCK6
+	vpxor %xmm1, %xmm1, %xmm1
+	vpxor %xmm3, %xmm3, %xmm3
+    vmovdqu      BLOCK1, 0*16(CT)
+	vmovdqu      BLOCK2, 1*16(CT)
+	vmovdqu      BLOCK3, 2*16(CT)
+	vmovdqu      BLOCK4, 3*16(CT)
+	vmovdqu      BLOCK5, 4*16(CT)
+	vmovdqu      BLOCK6, 5*16(CT)
+    ret
+#########################################################
 #########################################################
 # Expand without storing and encrypt two blocks
 .macro ROUND_double_x2 i j

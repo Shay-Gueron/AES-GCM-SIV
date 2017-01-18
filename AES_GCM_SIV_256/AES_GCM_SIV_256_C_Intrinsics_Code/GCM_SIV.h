@@ -180,8 +180,17 @@ void print_res_buffers_LE(int init_AAD_byte_len, int init_MSG_byte_len,
 				
 void init_buffers(unsigned char* AAD, int init_AAD_byte_len, unsigned char* PT, unsigned char* CT, unsigned char* DT, int init_MSG_byte_len,
 			unsigned char* K, unsigned char* IV, unsigned char* LENBLK);
-
-
+/*
+	This function key expansion (128bit) first key - and encrypt 4 blocks in the following way:
+	CT[0] = AES_128(first_key, NONCE[95:0] || 0)
+	CT[1] = AES_128(first_key, NONCE[95:0] || 1)
+	CT[2] = AES_128(first_key, NONCE[95:0] || 2)
+	CT[3] = AES_128(first_key, NONCE[95:0] || 3)
+	CT[4] = AES_128(first_key, NONCE[95:0] || 4)
+	CT[5] = AES_128(first_key, NONCE[95:0] || 5)
+*/
+void AES256_KS_ENC_x1_INIT_x6(const unsigned char* NONCE, unsigned char* CT, 
+				   unsigned char* KS, unsigned char* key);
 void AES_KS(unsigned char* key, unsigned char* KS);
 void AES_KS_ENC_x1(unsigned char* PT, unsigned char* CT, int len, unsigned char *KS, unsigned char* key);
 void INIT_Htable_6(unsigned char* Htbl, unsigned char* H);

@@ -1,0 +1,66 @@
+#!/bin/csh
+
+echo ""
+GCM_SIV_GENERAL_V02_BE 0  0    > out_BE.txt
+echo ""						   >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 0  8    >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 0  12   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 0  16   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 0  32   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 0  48   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 0  64   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 1  8    >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 1  12   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 1  16   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 1  32   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 1  48   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 1  64   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 12  4   >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 18  20  >> out_BE.txt
+echo ""                        >> out_BE.txt
+GCM_SIV_GENERAL_V02_BE 20  18  >> out_BE.txt
+echo ""
+GCM_SIV_GENERAL_V02_LE 0  0    > out_LE.txt
+echo ""                        >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 0  8    >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 0  12   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 0  16   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 0  32   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 0  48   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 0  64   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 1  8    >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 1  12   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 1  16   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 1  32   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 1  48   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 1  64   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 12  4   >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 18  20  >> out_LE.txt
+echo ""                       >> out_LE.txt
+GCM_SIV_GENERAL_V02_LE 20  18  >> out_LE.txt

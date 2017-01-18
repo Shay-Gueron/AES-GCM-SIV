@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 		printf("Random test number %d:\n", count+1);
 		rand_vec(PLAINTEXT, in_len);
 		rand_vec(K1, 16);
-		rand_vec(N, 16);
+		rand_vec(&N[4], 12);
 #endif
 	
 //Check SIV_GCM 2 keys	
@@ -222,43 +222,68 @@ void print16(uint8_t *in) {
 	}
 	printf("\n");
 }	
-
-void print_buffer(uint8_t *in, int length)
+void print_buffer_LE(uint8_t *in, int length)
 {
-   int i,j,k;
+   int i;
    if (length == 0) {
-		printf("\n");
-		return;
-	}
+        printf("\n");
+        return;
+    }
    for(i=0; i<length/16; i++)
    {
       if (i!=0) printf("                                ");
-	  print16(&in[i*16]);
+      print16(&in[i*16]);
    }
 
    if(i*16<length)
    {
-      if (i != 0) printf("                                ");
-	  j = i*16;
-      for(i=0; i<(length%16); i++)
+      int last=i*16;
+      if (length > 16) printf("                                ");
+      for (i=last+16;i>length;i--)
       {
-	    #ifdef LE
-		for (k=length%16; k<16; k++)
-		{
-			printf("00");
-		}
-		printf("%02x", in[j+length%16-i]);
-		#else
-        printf("%02x", in[j+i]);
-		for (k=length%16; k<16; k++)
-		{
-			printf("00");
-		}
-		#endif
+        printf("  ");
+      }
+      for(i=length-1; i>=last; i--)
+      {
+         printf("%02x", in[i]);
       }
    printf("\n");
    }
 }
+
+void print_buffer_BE(uint8_t *in, int length)
+{
+   int i;
+   if (length == 0) {
+        printf("\n");
+        return;
+    }
+   for(i=0; i<length/16; i++)
+   {
+      if (i!=0) printf("                                ");
+      print16(&in[i*16]);
+   }
+
+   if(i*16<length)
+   {
+      if (length > 16) printf("                                ");
+      for(i=i*16; i<length; i++)
+      {
+         printf("%02x", in[i]);
+      }
+   printf("\n");
+   }
+}
+
+void print_buffer(uint8_t *in, int length)
+{
+   #ifdef LE
+   print_buffer_LE(in, length);
+   #else
+   print_buffer_BE(in ,length);
+   #endif
+}
+
 
 void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, 
 				  uint64_t aad_len, uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad)

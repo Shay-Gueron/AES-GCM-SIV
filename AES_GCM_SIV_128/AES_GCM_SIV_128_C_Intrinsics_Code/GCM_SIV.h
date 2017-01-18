@@ -127,7 +127,15 @@ void Decrypt_Htable(unsigned char* CT, 				//input
 				 unsigned char* KS, 				//Key Schedule for decryption
 				 int byte_len,
 				 unsigned char secureBuffer[16*8]);			
-	
+/*
+	This function key expansion (128bit) first key - and encrypt 4 blocks in the following way:
+	CT[0] = AES_128(first_key, NONCE[95:0] || 0)
+	CT[1] = AES_128(first_key, NONCE[95:0] || 1)
+	CT[2] = AES_128(first_key, NONCE[95:0] || 2)
+	CT[3] = AES_128(first_key, NONCE[95:0] || 3)
+*/
+void AES128_KS_ENC_x1_INIT_x4(const unsigned char* NONCE, unsigned char* CT, unsigned char* KS,
+				   unsigned char* first_key);				 
 	
 void print16_BE(uint8_t *in);
 void print16_LE(uint8_t *in);

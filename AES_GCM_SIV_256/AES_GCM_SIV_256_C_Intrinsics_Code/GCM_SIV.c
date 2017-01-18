@@ -87,16 +87,18 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 	uint8_t Record_Enc_Key[32] = {0};
 	uint8_t T[16] = {0};
 	uint64_t AND_MASK[2] = {0xffffffffffffffff,0x7fffffffffffffff};
-	uint8_t *T1, *T2, *T3;
-	T1 = Record_Hash_Key;
-	T2 = &Record_Enc_Key[16];
-	T3 = Record_Enc_Key;
+	uint64_t KDF_T[12] = {0};
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
+	AES256_KS_ENC_x1_INIT_x6(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
+	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
+	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
+	((uint64_t*)Record_Enc_Key)[1] = KDF_T[6];
+	((uint64_t*)Record_Enc_Key)[2] = KDF_T[8];
+	((uint64_t*)Record_Enc_Key)[3] = KDF_T[10];
     if ((L1+L2) <= 128) { //HORNER
-		AES256_KS_ENC_x1(IV, T1 , (unsigned char *)(ctx->KS.KEY), KEY);    		//T1 = AES_K (IV) - T1 = Record_Hash_Key
-		ECB_ENC_block(T1, T2 , (unsigned char *)(ctx->KS.KEY));    		//T2 = AES_K (T1) - T2 = Record_Enc_Key[255:128]
-		ECB_ENC_block(T2, T3 , (unsigned char *)(ctx->KS.KEY));    		//T3 = AES_K (T2) - T3 = Record_Enc_Key[127:0]
+	
 		Polyval_Horner(T, Record_Hash_Key, AAD, L1);					// using non padded inputs as needed
 		Polyval_Horner(T, Record_Hash_Key, PT, L2);
 		Polyval_Horner(T, Record_Hash_Key, len_blk, 16);
@@ -118,9 +120,6 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
     }
     else 
 	{ //Htable    
-	    AES256_KS_ENC_x1(IV, T1 , (unsigned char *)(ctx->KS.KEY), KEY);    		//T1 = AES_K (IV) - T1 = Record_Hash_Key
-		ECB_ENC_block(T1, T2 , (unsigned char *)(ctx->KS.KEY));    		//T2 = AES_K (T1) - T2 = Record_Enc_Key[255:128]
-		ECB_ENC_block(T2, T3 , (unsigned char *)(ctx->KS.KEY));    		//T3 = AES_K (T2) - T3 = Record_Enc_Key[127:0]	
 		INIT_Htable(ctx->Htbl, Record_Hash_Key);								//T = POLYVAL(padded_AADAAD||padded_MSG||LENBLK)
 		Polyval_Htable(ctx->Htbl, AAD, L1, T);
 		Polyval_Htable(ctx->Htbl, PT, L2, T);
@@ -163,18 +162,19 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 	uint8_t Record_Enc_Key[32] = {0};
 	uint8_t TAG_dec[16] = {0};
 	uint64_t AND_MASK[2] = {0xffffffffffffffff,0x7fffffffffffffff};
-	uint8_t *T1, *T2, *T3;
+	uint64_t KDF_T[12] = {0};
 	uint8_t POLYVAL_dec[16]={0};
 	int i;
-	T1 = Record_Hash_Key;
-	T2 = &Record_Enc_Key[16];
-	T3 = Record_Enc_Key;
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
 
-	AES256_KS_ENC_x1(IV, T1 , (unsigned char *)(ctx->KS.KEY), KEY);    		//T1 = AES_K (IV) - T1 = Record_Hash_Key
-	ECB_ENC_block(T1, T2 , (unsigned char *)(ctx->KS.KEY));    		//T2 = AES_K (T1) - T2 = Record_Enc_Key[255:128]
-	ECB_ENC_block(T2, T3 , (unsigned char *)(ctx->KS.KEY));    		//T3 = AES_K (T2) - T3 = Record_Enc_Key[127:0]
+	AES256_KS_ENC_x1_INIT_x6(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
+	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
+	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
+	((uint64_t*)Record_Enc_Key)[1] = KDF_T[6];
+	((uint64_t*)Record_Enc_Key)[2] = KDF_T[8];
+	((uint64_t*)Record_Enc_Key)[3] = KDF_T[10];
 	INIT_Htable_6(ctx->Htbl, Record_Hash_Key);
 	AES_256_KS(Record_Enc_Key, (unsigned char *)(ctx->KS.KEY));
 	
