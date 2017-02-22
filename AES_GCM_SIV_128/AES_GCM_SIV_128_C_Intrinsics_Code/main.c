@@ -119,11 +119,9 @@ int main(int argc, char *argv[])
     PT = (uint8_t*)_mm_malloc(init_MSG_byte_len, 64);        //buffer for L2 bytes
     CT      = (uint8_t*)_mm_malloc(init_MSG_byte_len, 64);    //buffer for L2 bytes
     DT      = (uint8_t*)_mm_malloc(init_MSG_byte_len, 64);    //buffer for decrypted text
-    Clear_SIV_CTX(&ctx);
     init_buffers(AAD, init_AAD_byte_len, PT, CT, DT, init_MSG_byte_len, K, IV, LENBLK);
 	total_blocks = ((init_AAD_byte_len/16)*16+(init_MSG_byte_len/16)*16+16)/16;
-
-
+	AES_GCM_SIV_Init(&ctx, K);
     
 //*********************************** START - ENCRYPT **********************************************    
 #ifdef COUNT
@@ -168,7 +166,7 @@ int main(int argc, char *argv[])
     #endif
 #endif
 
-	Clear_SIV_CTX(&ctx);
+	AES_GCM_SIV_Init(&ctx, K);
   
     
     

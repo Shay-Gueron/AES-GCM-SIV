@@ -79,7 +79,11 @@ void Clear_SIV_CTX(AES_GCM_SIV_CONTEXT* ctx)
 	for (i=0;i<16*16;i++)
 		ctx->secureBuffer[i] = 0;
 }
-
+void AES_GCM_SIV_Init(AES_GCM_SIV_CONTEXT* ctx, const uint8_t* KEY)
+{
+	Clear_SIV_CTX(ctx);
+	AES_KS(KEY, (unsigned char *)(ctx->KS.KEY));
+}
 void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, const uint8_t* AAD, const uint8_t* PT, size_t L1, size_t L2, const uint8_t* IV, const uint8_t* KEY)
 {
 	uint64_t len_blk[2];
@@ -90,7 +94,8 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 	uint64_t KDF_T[8] = {0};
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
-	AES128_KS_ENC_x1_INIT_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	//AES128_KS_ENC_x1_INIT_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	AES_128_ENC_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
 	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
 	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
 	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
@@ -135,7 +140,6 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
         AES_KS_ENC_x1(T, TAG, 16, (unsigned char *)(ctx->KS.KEY), Record_Enc_Key);                                //TAG = AES_Record_Enc_Key (T_masked)
 		ENC_MSG_x8(PT, CT, TAG, (unsigned char *)(ctx->KS.KEY), L2);          //CT = AES_K (CTRBLCK) xor MSG      
 	}
-	
 	#ifdef DETAILS
 	memcpy((unsigned char *)ctx->details_info, (unsigned char *)(ctx->KS.KEY), 16*15);
 	memcpy(ctx->details_info+16*19, TAG, 16);
@@ -161,17 +165,24 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 	int i;
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
-	
 	AES128_KS_ENC_x1_INIT_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	//AES_128_ENC_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
 	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
 	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
 	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
 	((uint64_t*)Record_Enc_Key)[1] = KDF_T[6];
     AES_KS(Record_Enc_Key, (unsigned char *)(ctx->KS.KEY));
-    INIT_Htable_6(ctx->Htbl, Record_Hash_Key);
-    Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);                                                    //POLYVAL(padded_AAD)
-	Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, ctx->Htbl, (unsigned char *)(ctx->KS.KEY), L2, (unsigned char *)(ctx->secureBuffer));
-	Polyval_Horner(POLYVAL_dec, Record_Hash_Key, len_blk, 16);                                                      //POLYVAL(padded_AAD||padded_MSG||LENBLK)
+	if ((L1+L2) <= 128) {
+		ENC_MSG_x4(CT, DT, TAG, (unsigned char *)(ctx->KS.KEY), (uint64_t)L2);
+		Polyval_Horner_AAD_MSG_LENBLK(POLYVAL_dec, Record_Hash_Key, AAD, (uint64_t)L1, DT,  (uint64_t)L2, len_blk); // using non padded inputs as needed	
+	}
+	else
+	{
+		INIT_Htable_6(ctx->Htbl, Record_Hash_Key);
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);                                                    //POLYVAL(padded_AAD)
+		Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, ctx->Htbl, (unsigned char *)(ctx->KS.KEY), L2, (unsigned char *)(ctx->secureBuffer));
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, len_blk, 16);                                                      //POLYVAL(padded_AAD||padded_MSG||LENBLK)
+	}
 	#ifdef DETAILS
 	memcpy((uint8_t*)(ctx->details_info+16*39), POLYVAL_dec, 16);
 	#endif
@@ -185,22 +196,19 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 	#ifdef DETAILS
 	memcpy((uint8_t*)(ctx->details_info+16*41), POLYVAL_dec, 16);
 	#endif
-    ECB_ENC_block(POLYVAL_dec, TAG_dec, (unsigned char *)(ctx->KS.KEY));	//TAG_dec = AES_K (POLYVAL_masked)
-	
+    if (Finalize_Tag(POLYVAL_dec, TAG_dec, (unsigned char *)(ctx->KS.KEY), TAG)!=0)	//TAG_dec = AES_K (POLYVAL_masked)
+	{
+        for (i=0; i<L2; i++)
+        {
+            DT[i] = CT[i];
+        }
+		return 1;
+	}
 	#ifdef DETAILS
 	memcpy((unsigned char *)(ctx->details_info+16*23), (unsigned char *)(ctx->KS.KEY), 16*15);
 	memcpy(ctx->details_info+16*42, TAG_dec, 16);
 	memcpy(ctx->details_info+16*43, Record_Hash_Key, 16);
 	memcpy(ctx->details_info+16*44, Record_Enc_Key, 16);
 	#endif
-
-	if (memcmp(TAG, TAG_dec, 16) != 0)
-    {
-        for (i=0; i<L2; i++)
-        {
-            DT[i] = CT[i];
-        }
-		return 1;
-    }
 	return 0;
 }

@@ -241,6 +241,87 @@ void AES128_KS_ENC_x1_INIT_x4(const unsigned char* NONCE, unsigned char* CT, uns
 	_mm_storeu_si128((__m128i*)(CT+2*16), block3);	
 	_mm_storeu_si128((__m128i*)(CT+3*16), block4);	
 }
+
+void AES_128_ENC_x4(const unsigned char* NONCE, unsigned char* CT, unsigned char* KS)
+{
+	
+	register __m128i one = _mm_set_epi32(0,0,0,1);
+	register __m128i keyA, block2, block3, block4;
+	register __m128i block1 = _mm_set_epi32(((int*)NONCE)[2], ((int*)NONCE)[1], ((int*)NONCE)[0], 0);
+	keyA = _mm_loadu_si128((__m128i const*)(KS));	
+	block2 = _mm_add_epi32(block1, one);
+	block3 = _mm_add_epi32(block2, one);
+	block4 = _mm_add_epi32(block3, one);
+	block1 = _mm_xor_si128(keyA, block1);
+	block2 = _mm_xor_si128(keyA, block2);
+	block3 = _mm_xor_si128(keyA, block3);
+	block4 = _mm_xor_si128(keyA, block4);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+1*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+2*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+3*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+4*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+5*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+6*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+	
+	keyA = _mm_loadu_si128((__m128i *)(KS+7*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+8*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+
+	keyA = _mm_loadu_si128((__m128i *)(KS+9*16));
+	block1 = _mm_aesenc_si128(block1, keyA);
+	block2 = _mm_aesenc_si128(block2, keyA);
+	block3 = _mm_aesenc_si128(block3, keyA);
+	block4 = _mm_aesenc_si128(block4, keyA);
+	
+	keyA = _mm_loadu_si128((__m128i *)(KS+10*16));
+	block1 = _mm_aesenclast_si128(block1, keyA);
+	block2 = _mm_aesenclast_si128(block2, keyA);
+	block3 = _mm_aesenclast_si128(block3, keyA);
+	block4 = _mm_aesenclast_si128(block4, keyA);
+	_mm_storeu_si128((__m128i*)(CT+0*16), block1);	
+	_mm_storeu_si128((__m128i*)(CT+1*16), block2);	
+	_mm_storeu_si128((__m128i*)(CT+2*16), block3);	
+	_mm_storeu_si128((__m128i*)(CT+3*16), block4);	
+}
+
 void AES_KS_no_mem_ENC_x2(const unsigned char* PT, unsigned char* CT1, 
 				   unsigned char* CT2, int bytes_length, unsigned char* KS,
 				   unsigned char* first_key, int key_len){

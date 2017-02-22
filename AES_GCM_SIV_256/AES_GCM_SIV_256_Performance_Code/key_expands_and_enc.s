@@ -462,6 +462,9 @@ ECB_ENC_block:
     mov %rbp, %rsp
     pop %rbp
     ret
+
+	
+
 ########################################################
 # Expand without storing and encrypt three blocks
 
@@ -555,3 +558,90 @@ AES256_KS_no_mem_ENC_x3:
    vmovdqu      BLOCK2, 0(%rdx)
    vmovdqu      BLOCK3, 16(%rdx)
    ret
+
+#########################################################
+
+.macro ENC_ROUNDx6 i j
+	vmovdqu \i*16(%rdx), \j
+	vaesenc    \j, BLOCK1, BLOCK1
+	vaesenc    \j, BLOCK2, BLOCK2
+	vaesenc    \j, BLOCK3, BLOCK3
+	vaesenc    \j, BLOCK4, BLOCK4
+	vaesenc    \j, BLOCK5, BLOCK5
+	vaesenc    \j, BLOCK6, BLOCK6
+.endm
+.macro ENC_ROUNDLASTx6 i j
+	vmovdqu \i*16(%rdx), \j
+	vaesenclast    \j, BLOCK1, BLOCK1
+	vaesenclast    \j, BLOCK2, BLOCK2
+	vaesenclast    \j, BLOCK3, BLOCK3
+	vaesenclast    \j, BLOCK4, BLOCK4
+	vaesenclast    \j, BLOCK5, BLOCK5
+	vaesenclast    \j, BLOCK6, BLOCK6
+.endm
+#########################################################
+#void AES_256_ENC_x6(const unsigned char* NONCE, unsigned char* CT, unsigned char* KS);	
+.set BLOCK1, %xmm9
+.set BLOCK2, %xmm10
+.set BLOCK3, %xmm11
+.set BLOCK4, %xmm12
+.set BLOCK5, %xmm13
+.set BLOCK6, %xmm14
+.set ONE, %xmm8
+.globl AES_256_ENC_x6
+AES_256_ENC_x6:
+# parameter 1: %rdi                         Pointer to NONCE
+# parameter 2: %rsi                         Pointer to CT
+# parameter 4: %rdx                         Pointer to keys
+
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+	
+    vmovdqu    (%rdx), %xmm1                  # xmm1 = first 16 bytes of random key
+    vmovdqu  0*16(%rdi), BLOCK1
+	vmovdqu and_mask(%rip), BLOCK4
+	vmovdqu  one(%rip), ONE
+	vpshufd $0x90, BLOCK1, BLOCK1
+	vpand BLOCK4, BLOCK1, BLOCK1
+	vpaddd ONE, BLOCK1, BLOCK2
+	vpaddd ONE, BLOCK2, BLOCK3
+	vpaddd ONE, BLOCK3, BLOCK4
+	vpaddd ONE, BLOCK4, BLOCK5
+	vpaddd ONE, BLOCK5, BLOCK6
+	
+    vpxor    %xmm1, BLOCK1, BLOCK1
+	vpxor    %xmm1, BLOCK2, BLOCK2
+	vpxor    %xmm1, BLOCK3, BLOCK3
+	vpxor    %xmm1, BLOCK4, BLOCK4
+	vpxor    %xmm1, BLOCK5, BLOCK5
+	vpxor    %xmm1, BLOCK6, BLOCK6
+ 
+    ENC_ROUNDx6 1, %xmm1
+	ENC_ROUNDx6 2, %xmm2
+	ENC_ROUNDx6 3, %xmm1
+	ENC_ROUNDx6 4, %xmm2
+	ENC_ROUNDx6 5, %xmm1
+	ENC_ROUNDx6 6, %xmm2
+	ENC_ROUNDx6 7, %xmm1
+	ENC_ROUNDx6 8, %xmm2
+	ENC_ROUNDx6 9, %xmm1
+	ENC_ROUNDx6 10, %xmm2
+	ENC_ROUNDx6 11, %xmm1
+	ENC_ROUNDx6 12, %xmm2
+	ENC_ROUNDx6 13, %xmm1
+	ENC_ROUNDLASTx6 14, %xmm2
+	
+	vmovdqu     BLOCK1, 0*16(%rsi)
+	vmovdqu     BLOCK2, 1*16(%rsi)
+	vmovdqu     BLOCK3, 2*16(%rsi)
+	vmovdqu     BLOCK4, 3*16(%rsi)
+	vmovdqu     BLOCK5, 4*16(%rsi)
+	vmovdqu     BLOCK6, 5*16(%rsi)
+	
+	vpxor %xmm1, %xmm1, %xmm1
+	vpxor %xmm2, %xmm2, %xmm2
+    popq  %rdx
+    popq  %rsi
+    popq  %rdi
+    ret

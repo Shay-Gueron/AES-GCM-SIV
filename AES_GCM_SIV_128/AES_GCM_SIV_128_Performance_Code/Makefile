@@ -1,4 +1,4 @@
-GCC = gcc -mpclmul -O3 -maes  -mavx -w
+GCC = /usr/intel/pkgs/gcc/5.2.0/bin/gcc -mpclmul -O3 -maes  -mavx -w
 ICC = icc
 FLAGS = -DRDTSC
 DEF= -DDETAILS -DADD_INFO

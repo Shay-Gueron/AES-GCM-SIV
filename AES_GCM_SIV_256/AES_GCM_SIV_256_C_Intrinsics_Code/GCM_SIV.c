@@ -79,7 +79,11 @@ void Clear_SIV_CTX(AES_GCM_SIV_CONTEXT* ctx)
 	for (i=0;i<16*16;i++)
 		ctx->secureBuffer[i] = 0;
 }
-
+void AES_GCM_SIV_Init(AES_GCM_SIV_CONTEXT* ctx, const uint8_t* KEY)
+{
+	Clear_SIV_CTX(ctx);
+	AES_256_KS(KEY, (unsigned char *)(ctx->KS.KEY));
+}
 void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, const uint8_t* AAD, const uint8_t* PT, size_t L1, size_t L2, const uint8_t* IV, const uint8_t* KEY)
 {
 	uint64_t len_blk[2];
@@ -90,7 +94,8 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 	uint64_t KDF_T[12] = {0};
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
-	AES256_KS_ENC_x1_INIT_x6(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	//AES256_KS_ENC_x1_INIT_x6(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	AES_256_ENC_x6(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
 	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
 	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
 	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
@@ -167,21 +172,28 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 	int i;
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
-
 	AES256_KS_ENC_x1_INIT_x6(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	//AES_256_ENC_x6(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
 	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
 	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
 	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
 	((uint64_t*)Record_Enc_Key)[1] = KDF_T[6];
 	((uint64_t*)Record_Enc_Key)[2] = KDF_T[8];
 	((uint64_t*)Record_Enc_Key)[3] = KDF_T[10];
-	INIT_Htable_6(ctx->Htbl, Record_Hash_Key);
 	AES_256_KS(Record_Enc_Key, (unsigned char *)(ctx->KS.KEY));
-	
-	
-	Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);													//POLYVAL(padded_AAD)
-	Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, ctx->Htbl, (unsigned char *)(ctx->KS.KEY), L2, ctx->secureBuffer);
-	Polyval_Horner(POLYVAL_dec, Record_Hash_Key, len_blk, 16);														//POLYVAL(padded_AAD||padded_MSG||LENBLK)
+	if ((L1+L2) <= 128) {
+		ENC_MSG_x4(CT, DT, TAG, (unsigned char *)(ctx->KS.KEY), (uint64_t)L2);
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);					// using non padded inputs as needed
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, DT, L2);
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, len_blk, 16);
+	}
+	else
+	{
+		INIT_Htable_6(ctx->Htbl, Record_Hash_Key);
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);													//POLYVAL(padded_AAD)
+		Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, ctx->Htbl, (unsigned char *)(ctx->KS.KEY), L2, ctx->secureBuffer);
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, len_blk, 16);														//POLYVAL(padded_AAD||padded_MSG||LENBLK)
+	}
 	//Calculate TAG_dec
 	#ifdef DETAILS
 	memcpy((uint8_t*)(ctx->details_info+16*39), POLYVAL_dec, 16);

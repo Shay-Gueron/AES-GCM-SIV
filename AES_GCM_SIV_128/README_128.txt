@@ -24,17 +24,17 @@ The versions were tested with GCC 5.2.0.
 Results on performance code (using Performance code version on Fixed frequency):
                 Decryption	
               	HSW [C/B]   BDW [C/B]    SKL [C/B]
-AAD=0 MSG=1024	1.97        1.44        1.17
-AAD=0 MSG=2048	1.53        1.06        0.88
-AAD=0 MSG=4096	1.38        0.91        0.76
-AAD=0 MSG=8192	1.27        0.82        0.69
+AAD=0 MSG=1024	1.98        1.43        1.17
+AAD=0 MSG=2048	1.54        1.06        0.88
+AAD=0 MSG=4096	1.39        0.91        0.76
+AAD=0 MSG=8192	1.28        0.82        0.69
 AAD=0 MSG=16384	1.24        0.78        0.66
 
 
                 Encryption	
                 HSW [C/B]   BDW [C/B]   SKL [C/B]
-AAD=0 MSG=1024	1.88        1.46        1.43
-AAD=0 MSG=2048	1.56        1.18        1.18
-AAD=0 MSG=4096	1.41        1.04        1.05
-AAD=0 MSG=8192	1.32        0.97        0.99
+AAD=0 MSG=1024	1.82        1.44        1.37
+AAD=0 MSG=2048	1.53        1.16        1.14
+AAD=0 MSG=4096	1.39        1.03        1.04
+AAD=0 MSG=8192	1.32        0.96        0.98
 AAD=0 MSG=16384	1.29        0.93        0.96

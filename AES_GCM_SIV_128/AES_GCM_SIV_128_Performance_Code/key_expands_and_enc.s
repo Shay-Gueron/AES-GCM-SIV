@@ -71,6 +71,15 @@ one:
 and_mask:
 .long 0,0xffffffff, 0xffffffff, 0xffffffff
 
+.align 16
+.Lbswap_mask:
+.byte 15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
+shuff_mask:
+.quad 0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
+poly:
+.quad 0x1, 0xc200000000000000 
+
+
 #########################################################
 #Regular Key Expansion no assist        
 
@@ -81,6 +90,7 @@ AES_KS:
     #movl      $10, 240(%rsi)
     pushq %rdi
     pushq %rsi
+	pushq %rax
     vmovdqu    (%rdi), %xmm1                             # xmm1 = user key
     vmovdqu    %xmm1, (%rsi)                             # rsi points to output
     
@@ -126,6 +136,7 @@ LOOP1_AVX:
     vpxor %xmm3, %xmm1, %xmm1
     vpxor %xmm2, %xmm1, %xmm1
     vmovdqu %xmm1, 32(%rsi)
+	popq %rax
     popq %rsi
     popq %rdi
     ret        
@@ -228,7 +239,7 @@ AES128_KS_ENC_x1_INIT_x4:
 # parameter 5: %rcx                          Pointer to initial key
 
 
-  # movl      $10, 240(%rcx)                    # key.rounds = 10
+    movl      $10, 240(%rcx)                    # key.rounds = 10
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -249,59 +260,128 @@ AES128_KS_ENC_x1_INIT_x4:
 	vpxor    %xmm1, BLOCK3, BLOCK3
 	vpxor    %xmm1, BLOCK4, BLOCK4
     
-    vmovdqa (con1), %xmm0                    #xmm0  = 1,1,1,1
-    vmovdqa (mask), %xmm15                   #xmm15 = mask
-    
-    ROUND 1, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUND 2, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUND 3, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUND 4, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUND 5, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUND 6, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUND 7, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUND 8, %rdx
-	vaesenc %xmm1, BLOCK2, BLOCK2
-	vaesenc %xmm1, BLOCK3, BLOCK3
-	vaesenc %xmm1, BLOCK4, BLOCK4
+	vmovdqa (con1), %xmm0                    #xmm0  = 1,1,1,1
+	vmovdqa (mask), %xmm15                   #xmm15 = mask
    
-    vmovdqa (con2), %xmm0
-    
-    ROUND 9, %rdx
+	ROUND 1, %rdx
 	vaesenc %xmm1, BLOCK2, BLOCK2
 	vaesenc %xmm1, BLOCK3, BLOCK3
 	vaesenc %xmm1, BLOCK4, BLOCK4
-    ROUNDLAST 10, %rdx
-    vaesenclast %xmm1, BLOCK2, BLOCK2
+	ROUND 2, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	ROUND 3, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	ROUND 4, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	ROUND 5, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	ROUND 6, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	ROUND 7, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	ROUND 8, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	vmovdqa (con2), %xmm0
+  
+	ROUND 9, %rdx
+	vaesenc %xmm1, BLOCK2, BLOCK2
+	vaesenc %xmm1, BLOCK3, BLOCK3
+	vaesenc %xmm1, BLOCK4, BLOCK4
+	ROUNDLAST 10, %rdx
+	vaesenclast %xmm1, BLOCK2, BLOCK2
 	vaesenclast %xmm1, BLOCK3, BLOCK3
 	vaesenclast %xmm1, BLOCK4, BLOCK4
-    vmovdqu     BLOCK1, 0*16(%rsi)
+	vmovdqu     BLOCK1, 0*16(%rsi)
 	vmovdqu     BLOCK2, 1*16(%rsi)
 	vmovdqu     BLOCK3, 2*16(%rsi)
 	vmovdqu     BLOCK4, 3*16(%rsi)
 	
 	vpxor %xmm1, %xmm1, %xmm1
     popq  %rcx
+    popq  %rdx
+    popq  %rsi
+    popq  %rdi
+    ret        
+
+#########################################################
+
+.macro ENC_ROUNDx4 i j
+	vmovdqu \i*16(%rdx), \j
+	vaesenc    \j, BLOCK1, BLOCK1
+	vaesenc    \j, BLOCK2, BLOCK2
+	vaesenc    \j, BLOCK3, BLOCK3
+	vaesenc    \j, BLOCK4, BLOCK4
+.endm
+.macro ENC_ROUNDLASTx4 i j
+	vmovdqu \i*16(%rdx), \j
+	vaesenclast    \j, BLOCK1, BLOCK1
+	vaesenclast    \j, BLOCK2, BLOCK2
+	vaesenclast    \j, BLOCK3, BLOCK3
+	vaesenclast    \j, BLOCK4, BLOCK4
+.endm
+#########################################################
+#void AES_128_ENC_x4(const unsigned char* NONCE, unsigned char* CT, unsigned char* KS);	
+.set BLOCK2, %xmm10
+.set BLOCK3, %xmm11
+.set BLOCK4, %xmm12
+.set ONE, %xmm13
+.globl AES_128_ENC_x4
+AES_128_ENC_x4:
+# parameter 1: %rdi                         Pointer to NONCE
+# parameter 2: %rsi                         Pointer to CT
+# parameter 4: %rdx                         Pointer to keys
+
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+	
+    vmovdqu    (%rdx), %xmm1                  # xmm1 = first 16 bytes of random key
+    vmovdqu  0*16(%rdi), BLOCK1
+	vmovdqu and_mask(%rip), BLOCK4
+	vmovdqu  one(%rip), ONE
+	vpshufd $0x90, BLOCK1, BLOCK1
+	vpand BLOCK4, BLOCK1, BLOCK1
+	vpaddd ONE, BLOCK1, BLOCK2
+	vpaddd ONE, BLOCK2, BLOCK3
+	vpaddd ONE, BLOCK3, BLOCK4
+	
+    vpxor    %xmm1, BLOCK1, BLOCK1
+	vpxor    %xmm1, BLOCK2, BLOCK2
+	vpxor    %xmm1, BLOCK3, BLOCK3
+	vpxor    %xmm1, BLOCK4, BLOCK4
+ 
+    ENC_ROUNDx4 1, %xmm1
+	ENC_ROUNDx4 2, %xmm2
+	ENC_ROUNDx4 3, %xmm1
+	ENC_ROUNDx4 4, %xmm2
+	ENC_ROUNDx4 5, %xmm1
+	ENC_ROUNDx4 6, %xmm2
+	ENC_ROUNDx4 7, %xmm1
+	ENC_ROUNDx4 8, %xmm2
+	ENC_ROUNDx4 9, %xmm1
+	ENC_ROUNDLASTx4 10, %xmm2
+	
+	vmovdqu     BLOCK1, 0*16(%rsi)
+	vmovdqu     BLOCK2, 1*16(%rsi)
+	vmovdqu     BLOCK3, 2*16(%rsi)
+	vmovdqu     BLOCK4, 3*16(%rsi)
+	
+	vpxor %xmm1, %xmm1, %xmm1
+	vpxor %xmm2, %xmm2, %xmm2
     popq  %rdx
     popq  %rsi
     popq  %rdi
@@ -317,7 +397,7 @@ AES128_KS_ENC_x1_INIT_x4:
 .set BLOCK1, %xmm4
 .set BLOCK2, %xmm5
 
-#.set DUMP_KEYS, 1
+
 
 .macro KS_BLOCK_b reg reg2 auxReg
     vpsllq $32, \reg, \auxReg         #!!saving mov instruction to xmm3
@@ -336,10 +416,7 @@ AES128_KS_ENC_x1_INIT_x4:
     
     vaesenc  KS1_REGA, BLOCK1, BLOCK1
     vaesenc  KS1_REGA, BLOCK2, BLOCK2
-#.ifdef DUMP_KEYS
-#      vmovdqa KS1_REGA, \i*16(%rcx)   
-#.endif      
-.endm        
+.endm  
 
 .macro roundlast_b i
     vpshufb %xmm15, KS1_REGA, KS1_REGB        #!!saving mov instruction to xmm2
@@ -348,10 +425,7 @@ AES128_KS_ENC_x1_INIT_x4:
     KS_BLOCK_b KS1_REGA KS1_REGB AUXREG
     
     vaesenclast  KS1_REGA, BLOCK1, BLOCK1
-    vaesenclast  KS1_REGA, BLOCK2, BLOCK2
-#.ifdef DUMP_KEYS      
-#      vmovdqa KS1_REGA, \i*16(%rcx)   
-#.endif      
+    vaesenclast  KS1_REGA, BLOCK2, BLOCK2     
 .endm        
 
 .globl AES_KS_no_mem_ENC_x2
@@ -374,9 +448,6 @@ AES_KS_no_mem_ENC_x2:
     vmovdqu  0*16(%rdi), BLOCK1
     vmovdqu  1*16(%rdi), BLOCK2
    
-#.ifdef DUMP_KEYS   
-#   vmovdqa    KS1_REGA, (%rcx)                 # KEY[0] = first 16 bytes of random key
-#.endif   
    
     vpxor    KS1_REGA, BLOCK1, BLOCK1
     vpxor    KS1_REGA, BLOCK2, BLOCK2
@@ -456,16 +527,70 @@ ECB_ENC_block:
     ret
 
     
-.align 16
-.Lbswap_mask:
-.byte 15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
-shuff_mask:
-.quad 0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
-poly:
-.quad 0x1, 0xc200000000000000 
 
 
+##########################################################
+# encrypt one block only
 
+.align  16
+
+.globl Finalize_Tag
+Finalize_Tag:
+
+.set KSp, %rdx
+.set STATE_1, %xmm1
+
+#parameter 1: PT            %rdi    (pointer to 128 bit)
+#parameter 2: CT            %rsi    (pointer to 128 bit)
+#parameter 3: ks            %rdx    (pointer to ks)
+#parameter 3: ks            %rcx    (pointer to tag)
+
+    pushq   %rdx
+    pushq   %rdi
+    pushq   %rsi
+    pushq   %rbp                                # store rbp
+	pushq   %r8
+	pushq   %r9
+	pushq   %r10
+	pushq   %r11
+    movq     %rsp, %rbp
+    subq $16, %rsp
+    movq $0, %rax
+    vmovdqu (%rdi), STATE_1
+
+    movq (%rcx), %r10
+	movq 8(%rcx), %r11
+    vpxor       (KSp), STATE_1, STATE_1
+    vaesenc 1*16(KSp), STATE_1, STATE_1
+    vaesenc 2*16(KSp), STATE_1, STATE_1
+    vaesenc 3*16(KSp), STATE_1, STATE_1
+    vaesenc 4*16(KSp), STATE_1, STATE_1
+    vaesenc 5*16(KSp), STATE_1, STATE_1
+    vaesenc 6*16(KSp), STATE_1, STATE_1
+    vaesenc 7*16(KSp), STATE_1, STATE_1
+    vaesenc 8*16(KSp), STATE_1, STATE_1
+    vaesenc 9*16(KSp), STATE_1, STATE_1
+    vaesenclast 10*16(KSp), STATE_1, STATE_1    # STATE_1 == IV
+
+    vmovdqa STATE_1, (%rsi)
+	vmovdqu STATE_1, (%rsp)
+	movq (%rsp), %r8
+	movq 8(%rsp), %r9
+	xorq %r8, %r10
+	xorq %r9, %r11
+	addq %r10, %r11
+	movq %r11, %rax
+	addq $16, %rsp
+    movq %rbp, %rsp
+	popq    %r11
+	popq    %r10
+	popq    %r9
+	popq    %r8
+    popq    %rbp
+    popq    %rsi
+    popq    %rdi
+    popq    %rdx
+    ret
 
 
 

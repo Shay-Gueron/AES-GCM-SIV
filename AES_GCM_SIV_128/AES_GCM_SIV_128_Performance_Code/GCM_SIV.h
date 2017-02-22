@@ -194,5 +194,6 @@ void AES_KS(unsigned char* key, unsigned char* KS);
 void AES_KS_ENC_x1(unsigned char* PT, unsigned char* CT, int len, unsigned char *KS, unsigned char* key);
 void INIT_Htable_6(unsigned char* Htbl, unsigned char* H);
 void ECB_ENC_block(unsigned char* PT, unsigned char* CT, unsigned char* KS);
+int Finalize_Tag(unsigned char* PT, unsigned char* CT, unsigned char* KS, uint8_t* orig_tag);
 void Clear_SIV_CTX(AES_GCM_SIV_CONTEXT* ctx);
 #endif

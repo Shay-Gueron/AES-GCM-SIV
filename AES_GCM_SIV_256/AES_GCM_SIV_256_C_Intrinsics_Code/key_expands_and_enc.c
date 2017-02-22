@@ -242,6 +242,65 @@ void AES256_KS_ENC_x1_INIT_x6(const unsigned char* NONCE, unsigned char* CT,
 	_mm_storeu_si128((__m128i*)(CT+5*16), b6);
 }
 
+
+void AES_256_ENC_x6(const unsigned char* NONCE, unsigned char* CT, 
+				   unsigned char* KS){
+    register __m128i xmm1, xmm3, b1;
+	int i=0;
+	register __m128i one = _mm_set_epi32(0,0,0,1);
+	register __m128i b2, b3, b4,b5,b6;
+	b1 = _mm_set_epi32(((int*)NONCE)[2], ((int*)NONCE)[1], ((int*)NONCE)[0], 0);
+	b2 = _mm_add_epi32(b1, one);
+	b3 = _mm_add_epi32(b2, one);
+	b4 = _mm_add_epi32(b3, one);
+	b5 = _mm_add_epi32(b4, one);
+	b6 = _mm_add_epi32(b5, one);
+	xmm1 = _mm_loadu_si128((__m128i*)KS);
+	xmm3 = _mm_loadu_si128((__m128i*)(KS+16*1));
+	b1 = _mm_xor_si128(b1, xmm1);
+	b2 = _mm_xor_si128(b2, xmm1);
+	b3 = _mm_xor_si128(b3, xmm1);
+	b4 = _mm_xor_si128(b4, xmm1);
+	b5 = _mm_xor_si128(b5, xmm1);
+	b6 = _mm_xor_si128(b6, xmm1);
+	b1 = _mm_aesenc_si128(b1, xmm3);
+	b2 = _mm_aesenc_si128(b2, xmm3);
+	b3 = _mm_aesenc_si128(b3, xmm3);
+	b4 = _mm_aesenc_si128(b4, xmm3);
+	b5 = _mm_aesenc_si128(b5, xmm3);
+	b6 = _mm_aesenc_si128(b6, xmm3);
+	for (i=1; i<=6; i++)
+	{
+		xmm1 = _mm_loadu_si128((__m128i*)(KS+2*16*i));
+		xmm3 = _mm_loadu_si128((__m128i*)(KS+2*16*i+16));
+		b1 = _mm_aesenc_si128(b1, xmm1);
+		b2 = _mm_aesenc_si128(b2, xmm1);
+		b3 = _mm_aesenc_si128(b3, xmm1);
+		b4 = _mm_aesenc_si128(b4, xmm1);
+		b5 = _mm_aesenc_si128(b5, xmm1);
+		b6 = _mm_aesenc_si128(b6, xmm1);
+		b1 = _mm_aesenc_si128(b1, xmm3);
+		b2 = _mm_aesenc_si128(b2, xmm3);
+		b3 = _mm_aesenc_si128(b3, xmm3);
+		b4 = _mm_aesenc_si128(b4, xmm3);
+		b5 = _mm_aesenc_si128(b5, xmm3);
+		b6 = _mm_aesenc_si128(b6, xmm3);
+	}
+	xmm1 = _mm_loadu_si128((__m128i*)(KS+16*14));
+	b1 = _mm_aesenclast_si128(b1, xmm1);
+	b2 = _mm_aesenclast_si128(b2, xmm1);
+	b3 = _mm_aesenclast_si128(b3, xmm1);
+	b4 = _mm_aesenclast_si128(b4, xmm1);
+	b5 = _mm_aesenclast_si128(b5, xmm1);
+	b6 = _mm_aesenclast_si128(b6, xmm1);
+	_mm_storeu_si128((__m128i*)(CT+0*16), b1);
+	_mm_storeu_si128((__m128i*)(CT+1*16), b2);
+	_mm_storeu_si128((__m128i*)(CT+2*16), b3);
+	_mm_storeu_si128((__m128i*)(CT+3*16), b4);
+	_mm_storeu_si128((__m128i*)(CT+4*16), b5);
+	_mm_storeu_si128((__m128i*)(CT+5*16), b6);
+}
+
 void AES256_KS_no_mem_ENC_x2(const unsigned char* PT, unsigned char* CT, 
 				   unsigned char* KS, unsigned char* key){
     register __m128i xmm3, xmm2, b1, xmm4, b2, xmm1, con1, xmm14, mask, con3;
