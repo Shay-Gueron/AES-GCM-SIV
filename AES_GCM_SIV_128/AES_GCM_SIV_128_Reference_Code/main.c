@@ -96,7 +96,7 @@ void SIV_GCM_ENC_2_Keys(uint8_t* CT, 				// Output
 						uint8_t TAG[16], 			// Output
 						uint8_t K1[16], 
 						uint8_t K2[16],
-						uint8_t N[16],
+						uint8_t N[12],
 						uint8_t* AAD, 
 						uint8_t* MSG, 
 						uint64_t AAD_len, 
@@ -106,7 +106,7 @@ int SIV_GCM_DEC_2_Keys(uint8_t* MSG, 				// Output
 						uint8_t TAG[16], 			
 						uint8_t K1[16], 
 						uint8_t K2[16],
-						uint8_t N[16],
+						uint8_t N[12],
 						uint8_t* AAD, 
 						uint8_t* CT, 
 						uint64_t AAD_len, 
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 	
 	uint8_t TAG[16] = {0};
 	uint8_t K1[16] = {0};
-	uint8_t N[16] = {0};
+	uint8_t N[12] = {0};
 	int i = 0;
 	int res = 0;
 	uint64_t aad_len, in_len;
@@ -334,7 +334,7 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 		printf("K1 = K =                        "); print16(K1);
 	}
 	
-	printf("NONCE =                         "); print16(N);
+	printf("NONCE =                         "); print_buffer(N,12);
 	printf("\nAAD =                           "); print_buffer(AAD, aad_len);
 	printf("\nMSG =                           "); print_buffer(PLAINTEXT, in_len);
 	printf("\nPADDED_AAD =                    "); print_buffer(AAD, aad_len + aad_pad);

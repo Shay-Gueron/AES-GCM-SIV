@@ -279,7 +279,7 @@ void print_buffers_BE(int init_AAD_byte_len,
     #endif
     printf("                                --------------------------------\n");
     printf("K =                             "); print16_BE(K);
-    printf("NONCE =                         "); print16_BE(IV);
+    printf("NONCE =                         "); print_buffer_BE(IV,12);
 	printf("Record_Hash_Key =               "); print16_BE(H);
     printf("AAD =                           ");print_buffer_BE(AAD, init_AAD_byte_len);
     printf("MSG =                           ");print_buffer_BE(PT, init_MSG_byte_len);
@@ -306,7 +306,7 @@ void print_buffers_LE(int init_AAD_byte_len,
     printf("                                15141312111009080706050403020100\n");
     printf("                                --------------------------------\n");
     printf("K =                             "); print16_LE(K);
-    printf("NONCE =                         "); print16_LE(IV);
+    printf("NONCE =                         "); print_buffer_LE(IV,12);
 	printf("Record_Hash_Key =               "); print16_LE(H);
     printf("AAD =                           ");print_buffer_LE(AAD, init_AAD_byte_len);
     printf("MSG =                           ");print_buffer_LE(PT, init_MSG_byte_len);

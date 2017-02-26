@@ -336,7 +336,7 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 	printf("                                "); print16(K1+16);
 
 	
-	printf("NONCE =                         "); print16(N);
+	printf("NONCE =                         "); print_buffer(N, 12);
 	printf("\nAAD =                           "); print_buffer(AAD, aad_len);
 	printf("\nMSG =                           "); print_buffer(PLAINTEXT, in_len);
 	printf("\nPADDED_AAD =                    "); print_buffer(AAD, aad_len + aad_pad);

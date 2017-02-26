@@ -92,10 +92,13 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 	uint8_t T[16] = {0};
 	uint64_t AND_MASK[2] = {0xffffffffffffffff,0x7fffffffffffffff};
 	uint64_t KDF_T[8] = {0};
+	uint8_t _IV[16] = {0};
+	((uint64_t*)(_IV))[0] = ((uint64_t*)IV)[0];
+	((uint32_t*)(_IV))[2] = ((uint32_t*)(IV))[2];
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
 	//AES128_KS_ENC_x1_INIT_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
-	AES_128_ENC_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
+	AES_128_ENC_x4(_IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
 	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
 	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
 	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
@@ -106,7 +109,7 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 		memcpy((uint8_t*)(ctx->details_info+16*16), T, 16);
 		#endif
 		#ifdef XOR_WITH_NONCE
-        *(__m128i*)T = _mm_xor_si128(*(__m128i*)T, *(__m128i*)IV);
+        *(__m128i*)T = _mm_xor_si128(*(__m128i*)T, *(__m128i*)_IV);
 		#endif
 		#ifdef DETAILS
 		memcpy((uint8_t*)(ctx->details_info+16*17), T, 16);
@@ -128,7 +131,7 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 		memcpy((uint8_t*)(ctx->details_info+16*16), T, 16);
 		#endif
 		#ifdef XOR_WITH_NONCE
-        *(__m128i*)T = _mm_xor_si128(*(__m128i*)T, *(__m128i*)IV);
+        *(__m128i*)T = _mm_xor_si128(*(__m128i*)T, *(__m128i*)_IV);
 		#endif
 		#ifdef DETAILS
 		memcpy((uint8_t*)(ctx->details_info+16*17), T, 16);
@@ -163,10 +166,13 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 	uint64_t AND_MASK[2] = {0xffffffffffffffff,0x7fffffffffffffff};
 	uint8_t POLYVAL_dec[16]={0};
 	int i;
+	uint8_t _IV[16] = {0};
+	((uint64_t*)(_IV))[0] = ((uint64_t*)IV)[0];
+	((uint32_t*)(_IV))[2] = ((uint32_t*)(IV))[2];
 	len_blk[0] = (uint64_t)L1*8;
 	len_blk[1] = (uint64_t)L2*8;
-	AES128_KS_ENC_x1_INIT_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
-	//AES_128_ENC_x4(IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
+	AES128_KS_ENC_x1_INIT_x4(_IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY), KEY);
+	//AES_128_ENC_x4(_IV, (unsigned char *)KDF_T, (unsigned char *)(ctx->KS.KEY));
 	((uint64_t*)Record_Hash_Key)[0] = KDF_T[0];
 	((uint64_t*)Record_Hash_Key)[1] = KDF_T[2];
 	((uint64_t*)Record_Enc_Key)[0] = KDF_T[4];
@@ -187,7 +193,7 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 	memcpy((uint8_t*)(ctx->details_info+16*39), POLYVAL_dec, 16);
 	#endif
     #ifdef XOR_WITH_NONCE
-    *((__m128i*)POLYVAL_dec) = _mm_xor_si128(*((__m128i*)IV), *((__m128i*)POLYVAL_dec));            //POLYVAL xor IV
+    *((__m128i*)POLYVAL_dec) = _mm_xor_si128(*((__m128i*)_IV), *((__m128i*)POLYVAL_dec));            //POLYVAL xor IV
 	#endif
 	#ifdef DETAILS
 	memcpy((uint8_t*)(ctx->details_info+16*40), POLYVAL_dec, 16);
