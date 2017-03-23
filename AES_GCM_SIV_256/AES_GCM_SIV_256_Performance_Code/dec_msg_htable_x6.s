@@ -476,18 +476,17 @@ DATA_END:
 	movq LEN, %r11
     vpxor    0*16(KS), TMP1, TMP1
     vaesenc  1*16(KS), TMP1, TMP1
-	shrq $2, %r11
-	movq %r11, %r12
+#	shrq $2, %r11
+#	movq %r11, %r12
     vaesenc  2*16(KS), TMP1, TMP1
     vaesenc  3*16(KS), TMP1, TMP1
     vaesenc  4*16(KS), TMP1, TMP1
-	shlq $4, %r11
+
 	leaq CONST_Vector(%rip), %r13
     vaesenc  5*16(KS), TMP1, TMP1
     vaesenc  6*16(KS), TMP1, TMP1
 	movq LEN, %r14
-	andq $~-4, LEN
-	vmovdqu (%r13, %r11), TMP2
+
     vaesenc  7*16(KS), TMP1, TMP1
 	shlq $4, %r14
 	leaq AND_VEC(%rip), %r15
@@ -498,45 +497,59 @@ DATA_END:
 	vpmaskmovd (CT), TMP2, TMP3
         vaesenc  10*16(KS), TMP1, TMP1
         vaesenc  11*16(KS), TMP1, TMP1
-	cmp $0, LEN
+	movq %rsp, %r14
+	cmp $8, LEN
     	vaesenc  12*16(KS), TMP1, TMP1
 	vaesenc  13*16(KS), TMP1, TMP1
         vaesenclast  14*16(KS), TMP1, TMP1
 	vpand TMP4, TMP1, TMP1
-	je .NoAddedBytes
-	shlq $2, %r12
-	movl (CT, %r12), %r13d
-	movl %r13d, (%rsp, %r12)
-	vpxor (%rsp), TMP3, TMP3
+	jb .bytes_read_dec_loop
+	movq (CT), %r12
+	movq %r12, (%rsp)
+	addq $8, CT
+	addq $8, %r14
+	subq $8, LEN
+.bytes_read_dec_loop:
+	cmp $0, LEN
+	je .done_read_dec
+	dec LEN
+	movb (CT), %al
+	movb %al, (%r14)
+	inc %r14
+	inc CT
+	jmp .bytes_read_dec_loop
+.done_read_dec:
 	#TMP3 - PT BLOCK
-	vpxor TMP1, TMP3 , TMP3
-	vpmaskmovd TMP3, TMP2, (PT)
-	vpand TMP4, TMP3, TMP3
+	vpxor (%rsp), TMP1 , TMP3
+	vmovdqu TMP3, (%rsp)
+	movq %rsp, %r14
+	cmp $8, %r11
+	jb .bytes_write_dec
+	movq (%rsp), %r12
+	movq %r12, (PT)
+	addq $8, PT
+	subq $8, %r11
+	addq $8, %r14
+.bytes_write_dec:
+	cmp $0, %r11
+	je .done_write_dec
+	dec %r11
+	movb (%r14), %al
+	movb %al, (PT)
+	inc PT
+	inc %r14
+	jmp .bytes_write_dec
+.done_write_dec:
 	cmp $0, LEN
 	je .DONE_PT
-	vmovdqu TMP3, (%rsp)
-	movl (%rsp, %r12), %r13d
-	addq %r12, PT
-	movl %r13d, %eax
-.bytesadded:
-	dec LEN
-	movb %al, (PT)
-	shrl $8, %eax
-	inc PT
-	cmp $0, LEN
-	jne .bytesadded
+	movq $0, (%rsp)
+	movq $0, 8(%rsp)
 .DONE_PT:
-	
+	vpand TMP4, TMP3, TMP3
 	vpxor    TMP3, T, T
     vmovdqu  -32(Htbl), TMP0
     call     GFMUL_	
 	jmp .LSave
-.NoAddedBytes:
-	vpxor TMP1, TMP3 , TMP3
-	vpmaskmovd TMP3, TMP2, (PT)
-	vpxor    TMP3, T, T
-    vmovdqu  -32(Htbl), TMP0
-    call     GFMUL_	
 .LSave:
 	vmovdqu  T, (POL)
 .LDone:

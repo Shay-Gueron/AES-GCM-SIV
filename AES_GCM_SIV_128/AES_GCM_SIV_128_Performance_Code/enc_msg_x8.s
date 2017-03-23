@@ -76,8 +76,7 @@ seven:
 .quad   7,0
 eight:
 .quad   8,0
-CONST_Vector:
-.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
+
   
 
 .set STATE1, %xmm1
@@ -312,52 +311,62 @@ LOOP2:
     decq      %r10
     jne       LOOP2
 END_FULL_BLOCKS:
-    cmpq      $0, gTMP
+    cmp $0, gTMP
 	je END
-    movq $0, (%rsp)
-    movq $0, 8(%rsp)
-	vpxor         (KS), CTR1, STATE1
+	subq $16, %rsp
+	movq %rsp, %r13
+	movq $0, (%rsp)
+	movq $0, 8(%rsp)
+	movq gTMP, %r8
+	vpxor (KS), CTR1, STATE1
 	vaesenc     16(KS), STATE1, STATE1
-	movq gTMP, %r10 # r10 = len left
-	movq gTMP, %r8 # r8 = len left
 	vaesenc    32(KS) , STATE1, STATE1
-    shr $2, %r10 # number of double words possible 
-	shlq $62, %r8 
-	movq %r10, %r13
 	vaesenc    48(KS) , STATE1, STATE1
-    shlq $4, %r10  # r10 = offset to mask of const
-	shrq $62, %r8 ###r8= last 16 bytes %4
 	vaesenc    64(KS) , STATE1, STATE1
     vaesenc    80(KS) , STATE1, STATE1
-    leaq CONST_Vector(%rip), %r12
-	vmovdqu (%r12, %r10),  CTR3
 	vaesenc    96(KS) , STATE1, STATE1
-	vpmaskmovd (PT), CTR3, CTR2
     vaesenc    112(KS), STATE1, STATE1
-	shlq $2, %r13
-    vaesenc    128(KS), STATE1, STATE1
-	addq %r13, PT
-    vaesenc    144(KS), STATE1, STATE1
-	movl (PT), %r10d
+	vaesenc    128(KS), STATE1, STATE1
+	vaesenc    144(KS), STATE1, STATE1
     vaesenclast  160(KS), STATE1, STATE1
-	cmp $0, %r8
-	je .NoAddedBytes_Enc_X8
-	movl %r10d, (%rsp, %r13)
-	vpxor (%rsp), CTR2, CTR2
-.NoAddedBytes_Enc_X8:
-	vpxor CTR2, STATE1, STATE1
-	vpmaskmovd STATE1, CTR3, (CT)
+	cmp $8, gTMP
+	jb .bytes_read_loop
+	movq (PT), %r10
+	movq %r10, (%r13)
+	addq $8, PT
+	addq $8, %r13
+	subq $8, gTMP
+.bytes_read_loop:
+	cmp $0, gTMP
+	je .done_read
+	dec gTMP
+	movb (PT), %al
+	movb %al, (%r13)
+	inc %r13
+	inc PT
+	jmp .bytes_read_loop
+.done_read:
+	vpxor (%rsp), STATE1, STATE1
 	vmovdqu STATE1, (%rsp)
-	movl (%rsp,%r13), %eax
+	movq %rsp, %r13
+	cmp $8, %r8
+	jb .bytes_write_loop
+	movq (%r13), %r10
+	movq %r10, (CT)
+	addq $8, CT
+	subq $8, %r8
+	addq $8, %r13
+.bytes_write_loop:
 	cmp $0, %r8
-	je END
-.bytesloop:
-	movb %al, (CT, %r13)
-    inc %r13
+	je .done_write
 	dec %r8
-	shrq $8, %rax
-	cmp $0, %r8
-	jne .bytesloop
+	movb (%r13), %al
+	movb %al, (CT)
+	inc CT
+	inc %r13
+	jmp .bytes_write_loop
+.done_write:
+	addq $16, %rsp
 END:
 	addq $128, %rsp
 	movq    %rbp, %rsp

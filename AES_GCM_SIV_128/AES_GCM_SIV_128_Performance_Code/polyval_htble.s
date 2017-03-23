@@ -67,8 +67,6 @@ shuff_mask:
 .quad 0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
 poly:
 .quad 0x1, 0xc200000000000000 
-CONST_Vector:
-.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
 
 ################################################################################
 # Generates the H table
@@ -428,24 +426,28 @@ Polyval_Htable:
    
     jne .Lpre_loop_semi_block	
 .Lsemiblock:
-	subq $16, Htbl
 	
+	subq $16, Htbl
 	movq %r9, gtmp0
-	shrq $2, gtmp0
-	movq gtmp0, gtmp1
-	shlq $4, gtmp0
-	andq $~-4, %r9
-	leaq CONST_Vector(%rip), gtmp2
-	vmovdqu (gtmp2, gtmp0), %xmm10
-	vpmaskmovd (inp), %xmm10, DATA
+	movq buffer, gtmp1
+	cmp $8, %r9
+	jb .bytes_read_loop
+	movq (inp), gtmp2
+	movq gtmp2, (gtmp1)
+	addq $8, inp
+	addq $8, gtmp1
+	subq $8, %r9
+.bytes_read_loop:
 	cmp $0, %r9
-	je .NoAddedBytes
-	shlq $2, gtmp1
-	addq gtmp1, inp
-	movl (inp), %r13d
-	movl %r13d, (buffer, gtmp1)
-	vpxor (buffer), DATA, DATA
-.NoAddedBytes:
+	je .done_read
+	dec %r9
+	movb (inp), %al
+	movb %al, (gtmp1)
+	inc gtmp1
+	inc inp
+	jmp .bytes_read_loop
+.done_read:
+	vmovdqu (buffer), DATA
 	vpclmulqdq  $0x00, (Htbl), DATA, TMP3
     vpxor       TMP3, TMP0, TMP0
     vpclmulqdq  $0x11, (Htbl), DATA, TMP3
@@ -460,22 +462,26 @@ Polyval_Htable:
 .Lsemi_block_first:
 	subq $16, Htbl
 	subq hlp0, len
-	movq len, gtmp0
-	shrq $2, gtmp0
-	movq gtmp0, gtmp1
-	shlq $4, gtmp0
-	andq $~-4, len
-	leaq CONST_Vector(%rip), gtmp2
-	vmovdqu (gtmp2, gtmp0), %xmm10
-	vpmaskmovd (inp), %xmm10, DATA
-	cmp $0, len
-	je .NoAddedBytesSemiBlock
-	shlq $2, gtmp1
-	addq gtmp1, inp
-	movl (inp), %r13d
-	movl %r13d, (buffer, gtmp1)
-	vpxor (buffer), DATA, DATA
-.NoAddedBytesSemiBlock:
+	movq %r9, gtmp0
+	movq buffer, gtmp1
+	cmp $8, %r9
+	jb .bytes_read_loop1
+	movq (inp), gtmp2
+	movq gtmp2, (gtmp1)
+	addq $8, inp
+	addq $8, gtmp1
+	subq $8, %r9
+.bytes_read_loop1:
+	cmp $0, %r9
+	je .done_read1
+	dec %r9
+	movb (inp), %al
+	movb %al, (gtmp1)
+	inc gtmp1
+	inc inp
+	jmp .bytes_read_loop1
+.done_read1:
+	vmovdqu (buffer), DATA
 	vpxor T, DATA, DATA
 	vpclmulqdq  $0x00, (Htbl), DATA, TMP3
     vpxor       TMP3, TMP0, TMP0

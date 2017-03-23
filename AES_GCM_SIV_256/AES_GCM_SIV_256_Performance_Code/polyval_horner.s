@@ -67,8 +67,6 @@ shuff_mask:
 .quad 0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
 poly:
 .quad 0x1, 0xc200000000000000
-CONST_Vector:
-.long 0,0,0,0, 0x80000000,0,0,0, 0x80000000,0x80000000,0,0, 0x80000000,0x80000000,0x80000000,0
 
 #####################
 #Used by _GFMUL		#
@@ -173,28 +171,28 @@ Polyval_Horner:
 .Lrem:
 	cmp $0, %r8
 	je .polyend
-	movq %r8, L
 	subq $16, %rsp
 	movq $0, (%rsp)
 	movq $0, 8(%rsp)
-	shr $2, %r8
-	movq %r8, %r9
-	shlq $4, %r8
-	leaq CONST_Vector(%rip), %r12
-	vmovdqu (%r12, %r8), %xmm10
-	vpmaskmovd (INp, LOC), %xmm10, %xmm10
-	andq $~-4, L
-	cmp $0, L
-	je .noExtraBytes
-	shlq $2, %r9
-	addq %r9, LOC
-.byteloop:
-	addq LOC, INp
-	movl (INp), %eax
-	movl %eax, (%rsp, %r9)
-	vpxor (%rsp), %xmm10, %xmm10
-.noExtraBytes:
-	vpxor %xmm10, RES, RES
+	movq %rsp, L
+	cmp $8, %r8
+	jb .bytes_read_l
+	movq (INp, LOC), %r9
+	movq %r9, (L)
+	addq $8, LOC
+	addq $8, L
+	subq $8, %r8
+.bytes_read_l:
+	cmp $0, %r8
+	je .done_read_l
+	dec %r8
+	movb (INp, LOC), %al
+	movb %al, (L)
+	inc L
+	inc LOC
+	jmp .bytes_read_l
+.done_read_l:
+	vpxor (%rsp), RES, RES
 	call _GFMUL
 	#calculation of T is over here. RES=T
 	addq $16, %rsp
@@ -287,27 +285,29 @@ Polyval_Horner_AAD_MSG_LENBLK:
 	je .MsgPart
 
 	#handle rem aad
-	movq aadLen, TMP
-	shr $2, TMP
-	movq TMP, TMP1
-	shlq $4, TMP
-	shlq $62, aadLen
-	shrq $62, aadLen
-	leaq CONST_Vector(%rip), aadLoc
-	vmovdqu (aadLoc,TMP), %xmm10
-	vpmaskmovd  (aadINp, LOC), %xmm10, %xmm10
+	movq buffer, TMP
+	cmp $8, aadLen
+	jb .bytes_read_aad_loop
+	movq (aadINp, LOC), TMP1
+	movq TMP1, (TMP)
+	addq $8, LOC
+	addq $8, TMP
+	subq $8,aadLen
+.bytes_read_aad_loop:
 	cmp $0, aadLen
-	je .noAddedBytes
-	shlq $2, TMP1
-	addq TMP1, LOC
-	addq LOC, aadINp
-	movl (aadINp), %r13d
-	movl %r13d, (buffer,TMP1)
-	vpxor (buffer), %xmm10, %xmm10
-.noAddedBytes:
+	je .aadDone
+	dec aadLen
+	movb (aadINp, LOC), %al
+	movb %al, (TMP)
+	inc LOC
+	inc TMP
+	jmp .bytes_read_aad_loop
+.aadDone:	
+	vmovdqu (buffer), %xmm10
 	vpxor %xmm10, RES, RES
 	call _GFMUL
-	movl $0, (buffer,TMP1)
+	movq $0, (buffer)
+	movq $0, 8(buffer)
 .MsgPart:
 	xorq LOC, LOC
 	cmp $16, msgLoc
@@ -326,27 +326,32 @@ Polyval_Horner_AAD_MSG_LENBLK:
 	je .LenBlkPart
 
 	# handle rem msg
-
-	movq msgLen, TMP
-	shrq $2, TMP
-	movq TMP, TMP1
-	shlq $4, TMP
-	shlq $62, msgLen
-	shrq $62, msgLen
-	leaq CONST_Vector(%rip), aadLoc
-	vmovdqu (aadLoc,TMP), %xmm10
-	vpmaskmovd  (msgINp, LOC), %xmm10, %xmm10
+	movq $0, (buffer)
+	movq $0, 8(buffer)
+	movq buffer, TMP
+	cmp $8, msgLen
+	jb .bytes_read_msg_loop
+	movq (msgINp, LOC), TMP1
+	movq TMP1, (TMP)
+	addq $8, LOC
+	addq $8, TMP
+	subq $8,msgLen
+.bytes_read_msg_loop:
 	cmp $0, msgLen
-	je .NoMsgBytesAdd
-	shlq $2, TMP1
-	addq TMP1, LOC
-	movl (msgINp, LOC), %r13d
-	movl %r13d, (buffer,TMP1)
-	vpxor (buffer), %xmm10, %xmm10
-
-.NoMsgBytesAdd:
+	je .msgDone
+	dec msgLen
+	movb (msgINp, LOC), %al
+	movb %al, (TMP)
+	inc LOC
+	inc TMP
+	jmp .bytes_read_msg_loop
+.msgDone:	
+	vmovdqu (buffer), %xmm10
 	vpxor %xmm10, RES, RES
 	call _GFMUL
+	movq $0, (buffer)
+	movq $0, 8(buffer)
+	
 
 .LenBlkPart:
 
