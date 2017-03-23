@@ -476,8 +476,7 @@ DATA_END:
 	movq LEN, %r11
     vpxor    0*16(KS), TMP1, TMP1
     vaesenc  1*16(KS), TMP1, TMP1
-#	shrq $2, %r11
-#	movq %r11, %r12
+
     vaesenc  2*16(KS), TMP1, TMP1
     vaesenc  3*16(KS), TMP1, TMP1
     vaesenc  4*16(KS), TMP1, TMP1
@@ -494,7 +493,7 @@ DATA_END:
 	vmovdqu (%r15), TMP4
     vaesenc  8*16(KS), TMP1, TMP1
     vaesenc  9*16(KS), TMP1, TMP1
-	vpmaskmovd (CT), TMP2, TMP3
+
         vaesenc  10*16(KS), TMP1, TMP1
         vaesenc  11*16(KS), TMP1, TMP1
 	movq %rsp, %r14
