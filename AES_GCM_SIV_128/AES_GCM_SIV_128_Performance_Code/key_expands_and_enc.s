@@ -556,6 +556,7 @@ Finalize_Tag:
     movq     %rsp, %rbp
     subq $16, %rsp
     movq $0, %rax
+	movq $1, %r8
     vmovdqu (%rdi), STATE_1
 
     movq (%rcx), %r10
@@ -574,12 +575,12 @@ Finalize_Tag:
 
     vmovdqa STATE_1, (%rsi)
 	vmovdqu STATE_1, (%rsp)
-	movq (%rsp), %r8
-	movq 8(%rsp), %r9
-	xorq %r8, %r10
-	xorq %r9, %r11
-	addq %r10, %r11
-	movq %r11, %rax
+	
+	xorq (%rsp), %r10
+	xorq 8(%rsp), %r11
+	orq %r10, %r11
+	cmp $0, %r11
+	cmovneq %r8, %rax
 	addq $16, %rsp
     movq %rbp, %rsp
 	popq    %r11
