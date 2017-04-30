@@ -313,7 +313,7 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t N[
 	printf("\nRecord_Hash_Key =               "); print16((uint8_t*)HASH_KEY);
 	printf("\nRecord_Enc_Key =                "); print16((uint8_t*)ENC_KEY);
 	printf("\nLENBLK =                        "); print16((uint8_t*)LENBLK);
-	printf("\nPOLYVAL xor N =                 "); print16((uint8_t*)T);
+	printf("\nPOLYVAL xor N (Msbit cleared) = "); print16((uint8_t*)POLYV);
 	printf("\nTAG =                           "); print16(TAG);
 	printf("\nCTRBLK =                        "); print16((uint8_t*)CTR);
 #endif

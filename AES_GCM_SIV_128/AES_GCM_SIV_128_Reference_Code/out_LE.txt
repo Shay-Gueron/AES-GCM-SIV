@@ -26,7 +26,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000000000000000000000
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 00000000000000000000000000000003
 
 TAG =                           25de56ca9e439eb45b70253fd8e220dc
 
@@ -71,7 +71,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000400000000000000000
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 74ec5cdca7902a9de4c5620974b793e8
 
 TAG =                           4c363a49227c285b813b01f6ff828757
 
@@ -116,7 +116,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000600000000000000000
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 1b3606ee8f50de1d4abe2d5a6c6ceb4b
 
 TAG =                           3966100d8becfdc40b1a3957b38d97a4
 
@@ -161,7 +161,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000800000000000000000
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 563180705512119e01dec1e3266c8023
 
 TAG =                           c4a037745768609c1921fef690af3a30
 
@@ -208,7 +208,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000001000000000000000000
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 3b1c266abf6b98989a6db3509adc6ecd
 
 TAG =                           ff5561bf4768d87c668c57d4dc458e1a
 
@@ -259,7 +259,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000001800000000000000000
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 22427515cb3dbc2a6bd222bc46873882
 
 TAG =                           f8884371c239feb0355d39bf1d316e5e
 
@@ -314,7 +314,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000002000000000000000000
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 78cfd13599f844608f344d34d3b6391d
 
 TAG =                           b85ba7db3639df6bd588aa17d33d268a
 
@@ -365,7 +365,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000400000000000000008
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 2a9b70f395c1be966f37c1e2e78167b1
 
 TAG =                           0815bd9a75990d79df9c9660251a0a3b
 
@@ -410,7 +410,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000600000000000000008
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 45412ac1bd014a16c14c8eb1ff5a1f12
 
 TAG =                           5a079ead9f460c3aaa5a7402519c2908
 
@@ -455,7 +455,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000800000000000000008
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 0846ac5f674385958a2c6208b55a747a
 
 TAG =                           1f4457448cbd7eb94b4e9e03ec36898f
 
@@ -502,7 +502,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000001000000000000000008
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 6bca2eb1551205220849897cafdae72f
 
 TAG =                           e19834ed8416a759a07d28877f6aafe6
 
@@ -553,7 +553,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000001800000000000000008
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 7c30f822cddf116778c1695d7187a99f
 
 TAG =                           f2511cf35c244b2e7c89765f86c38c6a
 
@@ -608,7 +608,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000002000000000000000008
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 5ab19499a5f06792ad340f77d505cdfc
 
 TAG =                           4417e24af81e0037e03d5675e46ac4cd
 
@@ -659,7 +659,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000200000000000000060
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 1899fb18cc7e3c60fda268cd3d9dcef5
 
 TAG =                           148af4e2998ede73cbf828fb841feb07
 
@@ -708,7 +708,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        00000000000000a00000000000000090
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 7e0810f636aa4c506c928fcb92d48144
 
 TAG =                           146510fef6876d1e456f975e80c9af24
 
@@ -760,7 +760,7 @@ Record_Enc_Key =                6cef442d9d216073a5f262d8dca00440
 
 LENBLK =                        000000000000009000000000000000a0
 
-POLYVAL xor N =                 5419f80f79be10201a9494962760b3d9
+POLYVAL xor N (Msbit cleared) = 7d79ccb584e3b8ae48e3101a3ac2cb76
 
 TAG =                           fdb9130f0c2ac70c9247fb00efb2f9bf
 
