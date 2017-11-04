@@ -4,7 +4,7 @@ AES-GCM-SIV implementations (128 and 256 bit)
 
 Code implementations that correspond to the CFRG submission "AES-GCM-SIV: Nonce Misuse-Resistant Authenticated Encryption". 
 
-The specification draftwas  posted on https://tools.ietf.org/html/draft-gueron-gcmsiv-02), on March 9, 2016. 
+The specification draftwas  posted on https://datatracker.ietf.org/doc/draft-irtf-cfrg-gcmsiv/. 
 Authors: 
 
     Shay Gueron, University of Haifa and Intel Corporation
