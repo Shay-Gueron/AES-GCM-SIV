@@ -13,12 +13,13 @@ Authors:
     
     Yehuda Lindell, Bar Ilan University
 
-The original GCM-SIV paper (definition and security proofs): 
+Detailed Information
+The AES-GCM-SIV specification is described in:
+•	S. Gueron, A. Langley and Y. Lindell. AES-GCM-SIV: Specification and Analysis. Cryptology ePrint Archive, Report 2017/168, 2017. 
 
-S. Gueron, Y. Lindell, GCM-SIV: Full Nonce Misuse-Resistant Authenticated Encryption at Under One Cycle per Byte, 22nd ACM Conference on Computer and Communications Security, 22nd ACM CCS: pages 109-119, 2015.
-
-The ePrint version: https://eprint.iacr.org/2015/102
-
+The scientific justification behind the AES-GCM-SIV mode of operation appeared in the following papers:
+•	S. Gueron and Y. Lindell. GCM-SIV: Full Nonce Misuse-Resistant Authenticated Encryption at Under One Cycle per Byte. In the 22nd ACM CCS, pages 109-119, 2015.
+•	S. Gueron and Y. Lindell. Better Bounds for Block Cipher Modes of Operation via Nonce-Based Key Derivation. In the 24th ACM CCS, pages 1019-1036, 2017. 
 
 <b> Software License </b>
 
@@ -26,5 +27,3 @@ Copyright (c) 2016, Shay Gueron
                                                                              
 Permission to use this code for AES-GCM-SIV is granted.                                                 
                                                                              
-
-
