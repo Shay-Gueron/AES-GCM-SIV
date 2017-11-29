@@ -256,7 +256,7 @@ void POLYVAL(uint64_t* input, uint64_t* H, uint64_t len, uint64_t* result)
 }
 
 
-void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t N[12], uint8_t* AAD, uint8_t* MSG, 
+void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t N[16], uint8_t* AAD, uint8_t* MSG,
 						uint64_t AAD_len, uint64_t MSG_len)
 {
 	uint64_t POLYV[2] = {0};
@@ -322,7 +322,7 @@ void GCM_SIV_ENC_2_Keys(uint8_t* CT, uint8_t TAG[16], uint8_t K1[16], uint8_t N[
 }
 
 
-int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t N[12], uint8_t* AAD, uint8_t* CT, 
+int GCM_SIV_DEC_2_Keys(uint8_t* MSG, uint8_t TAG[16], uint8_t K1[16], uint8_t N[16], uint8_t* AAD, uint8_t* CT,
 						uint64_t AAD_len, uint64_t MSG_len)
 {
 	uint64_t T[2] = {0};
