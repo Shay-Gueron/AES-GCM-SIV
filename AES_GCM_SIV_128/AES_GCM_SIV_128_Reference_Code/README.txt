@@ -77,7 +77,11 @@ in SIV_GCM_c.c are implemented:
 4. GCM_SIV_ENC_Keys
 5. GCM_SIV_DEC_Keys
 
+This implementation of AES-GCM-SIV supports message length of up to  2^31 - 1 bytes, and AAD length of up to 2^31 - 1 bytes.
 
+It is possible to modify this implementation to support larger input (message and AAD) sizes up to the maximum allowed sizes (e.g., message of 2^36 – 1 byes) that are allowed by the specification document.
+
+Such changes need to be done carefully, because supporting very long input could degrade the performance due to the limited cache and memory sizes supported by the OS.
 
 The output example:
 *****************************

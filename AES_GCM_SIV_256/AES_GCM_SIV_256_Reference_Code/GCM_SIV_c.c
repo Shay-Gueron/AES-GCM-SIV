@@ -161,7 +161,7 @@ void AES_256_Encrypt(uint32_t* out, uint32_t* in, uint32_t* ks)
     out[3] ^= ks[3];
 }
 
-void AES_256_CTR(uint8_t* out, uint8_t* in, uint32_t* CTR, int mlen, uint32_t* ks)
+void AES_256_CTR(uint8_t* out, uint8_t* in, uint32_t* CTR, unsigned long mlen, uint32_t* ks)
 {
     uint32_t EK[4];
     uint32_t *P = (uint32_t*)in;
@@ -177,7 +177,7 @@ void AES_256_CTR(uint8_t* out, uint8_t* in, uint32_t* CTR, int mlen, uint32_t* k
         P+=4;
         C+=4;
         // CTR[3] = bswap_32(bswap_32(CTR[3]) + 1);
-		CTR[0] = ((CTR[0] +1) % (0xFFFFFFFF));
+		CTR[0] = ((CTR[0] +1) & (0xFFFFFFFF));
     }
     if(i*16 < mlen)
     {

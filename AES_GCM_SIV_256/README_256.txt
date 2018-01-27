@@ -17,6 +17,12 @@ result of measurements (Performance package).
 Each exec file has 2 inputs <AAD_LEN> <MSG LEN> and same input "constants" 
 as sample - so it will be easy to verify and check with each other.
 
+This implementation of AES-GCM-SIV supports message length of up to  2^31 - 1 bytes, and AAD length of up to 2^31 - 1 bytes.
+
+It is possible to modify this implementation to support larger input (message and AAD) sizes up to the maximum allowed sizes (e.g., message of 2^36 – 1 byes) that are allowed by the specification document.
+
+Such changes need to be done carefully, because supporting very long input could degrade the performance due to the limited cache and memory sizes supported by the OS.
+
 Please read each README for further details.
 Please use gcc with version 5.2+ (can be modified on the makefile)
 The versions were tested with GCC 5.2.0.
