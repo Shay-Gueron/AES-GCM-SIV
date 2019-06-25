@@ -1,9 +1,33 @@
-GCC = gcc -mpclmul -O3 -maes  -mavx -w
-ICC = icc
-FLAGS = -DRDTSC
-#DEF= -DDETAILS -DADD_INFO 
-DEF= -DCOUNT
-FLAGS+= -Wa,-q
+#GCC = gcc -mpclmul -O3 -maes  -mavx -w
+GCC    = gcc -O3 -maes -mpclmul -mavx -w
+ICC    = icc
+FLAGS  = -DRDTSC -DLITTLE_ENDIAN_
+#DEF    = -DDETAILS -DADD_INFO 
+DEF    = -DCOUNT
+#FLAGS += -Wa,-q
+
+ifeq ($(OS),Windows_NT)
+    CCFLAGS += -D WIN32
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        CCFLAGS += -DLINUX
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        #CCFLAGS += -DOSX -march=native
+        GCC    = clang $(CCFLAGS) -O3 -march=native
+    endif
+    #UNAME_P := $(shell uname -p)
+    #ifeq ($(UNAME_P),x86_64)
+    #    CCFLAGS += -DAMD64
+    #endif
+    #ifneq ($(filter %86,$(UNAME_P)),)
+    #    CCFLAGS += -DIA32
+    #endif
+    #ifneq ($(filter arm%,$(UNAME_P)),)
+    #    CCFLAGS += -DARM
+    #endif
+endif
 
 ALL:  GHASH 
 	
