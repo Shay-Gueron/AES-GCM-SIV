@@ -86,6 +86,7 @@ typedef struct GCM_SIV_CONTEXT
 	#endif
 }AES_GCM_SIV_CONTEXT;
 
+void AES_GCM_SIV_Init(AES_GCM_SIV_CONTEXT* ctx, const uint8_t* KEY);
 
 void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, const uint8_t* AAD, const uint8_t* PT, size_t L1, size_t L2, const uint8_t* IV, const uint8_t* KEY);
 
