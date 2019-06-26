@@ -3,7 +3,7 @@ ICC = icc
 FLAGS = -DRDTSC
 DEF= -DDETAILS -DADD_INFO
 #DEF= -DCOUNT
-FLAGS+= -Wa,-q
+FLAGS+= -Wa,-q -Werror
 
 ALL:  GHASH 
 	
