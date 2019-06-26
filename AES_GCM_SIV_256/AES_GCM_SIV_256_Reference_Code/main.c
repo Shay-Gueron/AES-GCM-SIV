@@ -290,7 +290,6 @@ int main(int argc, char *argv[])
 		decrypted_CT[i] = 0;
 	}
 #ifdef DETAILS
-
 	init_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad);
 	printf("*****************************");
 	printf("\nPerforming SIV_GCM - Two Keys:");
@@ -298,7 +297,8 @@ int main(int argc, char *argv[])
 	printf("AAD_len = %d bytes\n", aad_len);
 	printf("MSG_len = %d bytes\n", in_len);
 	print_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
-#endif //#else
+#endif
+
 	for (i=0; i<(aad_len+aad_pad); i++) {
 		AAD[i] = 0;
     }
@@ -309,7 +309,6 @@ int main(int argc, char *argv[])
 		rand_vec(PLAINTEXT, in_len);
 		rand_vec(K1, 32);
 		rand_vec(&N[4], 12);
-//#endif
 
         //Check SIV_GCM 2 keys
     	GCM_SIV_ENC_2_Keys(CIPHERTEXT, TAG, K1, N, AAD, PLAINTEXT, aad_len, in_len);
