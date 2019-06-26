@@ -214,20 +214,6 @@ void rand_vec(uint8_t *in, int length)
    }
 }
 
-extern void print16(uint8_t *in);
-// void print16(uint8_t *in)
-// {
-//     int i;
-// 	for(i=0; i<16; i++)
-// 	{
-// 		#ifdef LE
-// 		printf("%02x", in[15-i]);
-// 		#else
-// 		printf("%02x", in[i]);
-// 		#endif
-// 	}
-// 	printf("\n");
-// }
 void print_buffer_LE(uint8_t *in, int length)
 {
    int i;
