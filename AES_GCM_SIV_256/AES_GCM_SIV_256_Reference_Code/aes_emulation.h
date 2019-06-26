@@ -64,6 +64,7 @@
 
 #include <stddef.h>
 #include <inttypes.h>
+#include <string.h>
 
 typedef uint32_t _xmm[4];
 

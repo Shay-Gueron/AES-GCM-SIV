@@ -61,6 +61,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "aes_emulation.h"
+#include "clmul_emulator.h"
 
 #if !defined (ALIGN16)
 #if defined (__GNUC__)
