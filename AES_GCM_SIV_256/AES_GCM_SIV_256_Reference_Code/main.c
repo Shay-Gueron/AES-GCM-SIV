@@ -56,6 +56,13 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS          #
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                #
 ###############################################################################
+#                                                                             #
+###############################################################################
+# Usage:                                                                      #
+#      ./GCM_SIV_GENERAL_V02_LE [len_of_AAD len_of_MSG]                       #
+#                                                                             #
+###############################################################################
+
 */
 
 #include <stdio.h>
@@ -319,10 +326,9 @@ int main(int argc, char *argv[])
 	    } else {
 		    printf("SIV_GCM_2_KEYS Failed\n");
 	    }
-
-    	free(PLAINTEXT);
-        free(CIPHERTEXT);
-        free(decrypted_CT);
-        free(AAD);
     }
+    free(PLAINTEXT);
+    free(CIPHERTEXT);
+    free(decrypted_CT);
+    free(AAD);
 }
