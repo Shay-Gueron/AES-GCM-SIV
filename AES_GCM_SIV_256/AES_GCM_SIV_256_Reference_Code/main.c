@@ -58,9 +58,10 @@
 ###############################################################################
 */
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
 
 #if !defined (ALIGN16)
 #if defined (__GNUC__)
@@ -342,20 +343,3 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 	printf("\nPADDED_AAD =                    "); print_buffer(AAD, aad_len + aad_pad);
 	printf("\nPADDED_MSG =                    "); print_buffer(PLAINTEXT, in_len + msg_pad);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
