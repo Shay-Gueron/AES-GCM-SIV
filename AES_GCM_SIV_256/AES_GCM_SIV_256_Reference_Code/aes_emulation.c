@@ -118,27 +118,27 @@ int emulated_aesenc_row_shifting(
 
 void emulated_aesenc(_xmm _xmm1, _xmm _xmm2)
 {
-	uint32_t s0, s1, s2, s3;	
+	uint32_t s0, s1, s2, s3;
 	s0 = _xmm1[0];
 	s1 = _xmm1[1];
 	s2 = _xmm1[2];
 	s3 = _xmm1[3];
 
-	_xmm1[0] = emulated_aesenc_enc_table_0[s0 & 0xff] ^ 
-		 emulated_aesenc_enc_table_1[(s1 >> 8) & 0xff] ^ 
-		 emulated_aesenc_enc_table_2[(s2 >> 16) & 0xff] ^ 
+	_xmm1[0] = emulated_aesenc_enc_table_0[s0 & 0xff] ^
+		 emulated_aesenc_enc_table_1[(s1 >> 8) & 0xff] ^
+		 emulated_aesenc_enc_table_2[(s2 >> 16) & 0xff] ^
 		 emulated_aesenc_enc_table_3[(s3 >> 24) & 0xff];
-	_xmm1[1] = emulated_aesenc_enc_table_0[s1 & 0xff] ^ 
-		 emulated_aesenc_enc_table_1[(s2 >> 8) & 0xff] ^ 
-		 emulated_aesenc_enc_table_2[(s3 >> 16) & 0xff] ^ 
-		 emulated_aesenc_enc_table_3[(s0 >> 24) & 0xff];	
-	_xmm1[2] = emulated_aesenc_enc_table_0[s2 & 0xff] ^ 
-		 emulated_aesenc_enc_table_1[(s3 >> 8) & 0xff] ^ 
-		 emulated_aesenc_enc_table_2[(s0 >> 16) & 0xff] ^ 
+	_xmm1[1] = emulated_aesenc_enc_table_0[s1 & 0xff] ^
+		 emulated_aesenc_enc_table_1[(s2 >> 8) & 0xff] ^
+		 emulated_aesenc_enc_table_2[(s3 >> 16) & 0xff] ^
+		 emulated_aesenc_enc_table_3[(s0 >> 24) & 0xff];
+	_xmm1[2] = emulated_aesenc_enc_table_0[s2 & 0xff] ^
+		 emulated_aesenc_enc_table_1[(s3 >> 8) & 0xff] ^
+		 emulated_aesenc_enc_table_2[(s0 >> 16) & 0xff] ^
 		 emulated_aesenc_enc_table_3[(s1 >> 24) & 0xff] ;
-	_xmm1[3] = emulated_aesenc_enc_table_0[s3 & 0xff] ^ 
-		 emulated_aesenc_enc_table_1[(s0 >> 8) & 0xff] ^ 
-		 emulated_aesenc_enc_table_2[(s1 >> 16) & 0xff] ^ 
+	_xmm1[3] = emulated_aesenc_enc_table_0[s3 & 0xff] ^
+		 emulated_aesenc_enc_table_1[(s0 >> 8) & 0xff] ^
+		 emulated_aesenc_enc_table_2[(s1 >> 16) & 0xff] ^
 		 emulated_aesenc_enc_table_3[(s2 >> 24) & 0xff];
 	_xmm1[0] ^= _xmm2[0];
 	_xmm1[1] ^= _xmm2[1];

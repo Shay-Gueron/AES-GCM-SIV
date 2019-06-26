@@ -85,5 +85,8 @@ extern uint8_t  emulated_aesenc_rijndael_sbox[256];
 
 void emulated_aesenc(_xmm _xmm1, _xmm _xmm2);
 void emulated_aesenclast(_xmm _xmm1, _xmm _xmm2);
-	
+
+int emulated_aesenc_row_shifting(uint32_t *out);
+int emulated_aesenc_substitute_bytes(uint32_t *out);
+
 #endif
