@@ -74,6 +74,7 @@
 # include <emmintrin.h>
 # include <smmintrin.h>
 #endif
+#include <string.h>
 
 void ENC_MSG_x8(const unsigned char *PT,
                       unsigned char *CT,
