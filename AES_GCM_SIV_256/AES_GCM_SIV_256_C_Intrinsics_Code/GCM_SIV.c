@@ -198,7 +198,7 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 		INIT_Htable_6(ctx->Htbl, Record_Hash_Key);
 		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);													//POLYVAL(padded_AAD)
 		Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, ctx->Htbl, (unsigned char *)(ctx->KS.KEY), L2, ctx->secureBuffer);
-		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, len_blk, 16);														//POLYVAL(padded_AAD||padded_MSG||LENBLK)
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, (unsigned char *)len_blk, 16);														//POLYVAL(padded_AAD||padded_MSG||LENBLK)
 	}
 	//Calculate TAG_dec
 	#ifdef DETAILS

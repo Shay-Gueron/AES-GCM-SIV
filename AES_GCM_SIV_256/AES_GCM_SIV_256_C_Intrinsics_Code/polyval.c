@@ -62,7 +62,7 @@
 #include <wmmintrin.h>
 #include <tmmintrin.h>
 #include <stdint.h>
-
+#include <string.h>
 
 
 #define SCHOOLBOOK_AAD(reg, htbl_reg){\
@@ -139,7 +139,8 @@ void Polyval_Horner(unsigned char* TAG,
 					unsigned char* inp,
 					int length)
 {
-	__m128i TMP0, TMP1, TMP2, TMP3, TMP4, T, POLY, H;
+	//__m128i TMP0, TMP1, TMP2, TMP3, TMP4, T, POLY, H;
+	__m128i TMP1, TMP2, TMP3, TMP4, T, POLY, H;
 	int i=0;
 	if (length==0)
 		return;
@@ -193,6 +194,7 @@ void Polyval_Horner(unsigned char* TAG,
 	}
 	_mm_storeu_si128(((__m128i*)TAG), T);
 }
+
 void Polyval_Htable(unsigned char* Htbl,
                     unsigned char* inp,
 					int length,

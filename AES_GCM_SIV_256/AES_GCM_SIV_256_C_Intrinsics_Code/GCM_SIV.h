@@ -57,8 +57,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                #
 ###############################################################################
 */
-#ifndef GCM_SIV_H
-#define GCM_SIV_H
+#ifndef _GCM_SIV_H
+#define _GCM_SIV_H
 
 
 #if !defined (ALIGN64)
@@ -192,8 +192,11 @@ void init_buffers(unsigned char* AAD, int init_AAD_byte_len, unsigned char* PT, 
 void AES256_KS_ENC_x1_INIT_x6(const unsigned char* NONCE, unsigned char* CT, 
 				   unsigned char* KS, unsigned char* key);
 void AES_KS(unsigned char* key, unsigned char* KS);
+void AES_256_KS(unsigned char* key, unsigned char* KS);
 void AES_KS_ENC_x1(unsigned char* PT, unsigned char* CT, int len, unsigned char *KS, unsigned char* key);
 void INIT_Htable_6(unsigned char* Htbl, unsigned char* H);
 void ECB_ENC_block(unsigned char* PT, unsigned char* CT, unsigned char* KS);
 void Clear_SIV_CTX(AES_GCM_SIV_CONTEXT* ctx);
-#endif
+void AES_GCM_SIV_Init(AES_GCM_SIV_CONTEXT* ctx, const uint8_t* KEY);
+
+#endif /* _GCM_SIV_H */
