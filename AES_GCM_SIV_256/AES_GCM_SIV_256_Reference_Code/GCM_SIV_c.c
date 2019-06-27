@@ -130,7 +130,7 @@ void AES_256_Key_Expansion(const unsigned char *userkey, uint32_t* ks)
 
 void AES_256_Encrypt(uint32_t* out, uint32_t* in, uint32_t* ks)
 {
-    int i, j;
+    int i=0;
     uint32_t s0, s1, s2, s3;
     uint32_t t0, t1, t2, t3;
 

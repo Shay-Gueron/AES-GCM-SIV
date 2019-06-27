@@ -223,84 +223,84 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 
 int main(int argc, char *argv[])
 {
- 	uint8_t *PLAINTEXT = NULL;
-    uint8_t *AAD = NULL;
-    uint8_t *CIPHERTEXT = NULL;
-    uint8_t *decrypted_CT = NULL;
-	int i =0;
-	uint8_t TAG[16] = {0};
-	uint8_t K1[32] ={0};
-	uint8_t N[16] ={0};
-
-	int res = 0;
-	uint64_t aad_len, in_len;
-	uint64_t msg_pad = 0;
-	uint64_t aad_pad = 0;
-
-	//Get Input
-	if(argc == 1 || argc == 2) {
-      aad_len = ALEN;
-	  in_len  = MLEN;
-    }
-	else if (argc >= 3) {
-      aad_len = atoi(argv[1]);
-	  in_len  = atoi(argv[2]);
-	}
-
-	if ((aad_len % 16) != 0) {
-		aad_pad = 16 - (aad_len % 16);
-	}
-	if ((in_len % 16) != 0) {
-		msg_pad = 16 - (in_len % 16);
-	}
-
-	PLAINTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
-    CIPHERTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
-    decrypted_CT = 	 (uint8_t*)malloc(in_len + msg_pad);
-    AAD =  			 (uint8_t*)malloc(aad_len + aad_pad);
-	for (i=0; i<(in_len+msg_pad); i++) {
-		CIPHERTEXT[i] = 0;
-		decrypted_CT[i] = 0;
-	}
+  uint8_t *PLAINTEXT = NULL;
+  uint8_t *AAD = NULL;
+  uint8_t *CIPHERTEXT = NULL;
+  uint8_t *decrypted_CT = NULL;
+  int i =0;
+  uint8_t TAG[16] = {0};
+  uint8_t K1[32] ={0};
+  uint8_t N[16] ={0};
+  
+  int res = 0;
+  uint64_t aad_len = 0, in_len = 0;
+  uint64_t msg_pad = 0;
+  uint64_t aad_pad = 0;
+  
+  //Get Input
+  if(argc == 1 || argc == 2) {
+    aad_len = ALEN;
+    in_len  = MLEN;
+  }
+  else if (argc >= 3) {
+    aad_len = atoi(argv[1]);
+    in_len  = atoi(argv[2]);
+  }
+  
+  if ((aad_len % 16) != 0) {
+    aad_pad = 16 - (aad_len % 16);
+  }
+  if ((in_len % 16) != 0) {
+    msg_pad = 16 - (in_len % 16);
+  }
+  
+  PLAINTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
+  CIPHERTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
+  decrypted_CT = 	 (uint8_t*)malloc(in_len + msg_pad);
+  AAD =  			 (uint8_t*)malloc(aad_len + aad_pad);
+  for (i=0; i<(in_len+msg_pad); i++) {
+    CIPHERTEXT[i] = 0;
+    decrypted_CT[i] = 0;
+  }
 #ifdef DETAILS
-	init_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad);
-	printf("*****************************");
-	printf("\nPerforming SIV_GCM - Two Keys:");
-	printf("\n*****************************\n\n");
-	printf("AAD_len = %d bytes\n", aad_len);
-	printf("MSG_len = %d bytes\n", in_len);
-	print_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
+  init_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad);
+  printf("*****************************");
+  printf("\nPerforming SIV_GCM - Two Keys:");
+  printf("\n*****************************\n\n");
+  printf("AAD_len = %lld bytes\n", aad_len);
+  printf("MSG_len = %lld bytes\n", in_len);
+  print_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
 #endif
-
-	for (i=0; i<(aad_len+aad_pad); i++) {
-		AAD[i] = 0;
-    }
-
-	int count;
-	for (count = 0; count < 40; count ++) {
-		printf("Random test number %d:\n", (count+1));
-		rand_vec(PLAINTEXT, in_len);
-		rand_vec(K1, 32);
-		rand_vec(&N[4], 12);
-
-        //Check SIV_GCM 2 keys
-    	GCM_SIV_ENC_2_Keys(CIPHERTEXT, TAG, K1, N, AAD, PLAINTEXT, aad_len, in_len);
-	    res = GCM_SIV_DEC_2_Keys(decrypted_CT, TAG, K1, N, AAD, CIPHERTEXT, aad_len, in_len);
-
+  
+  for (i=0; i<(aad_len+aad_pad); i++) {
+    AAD[i] = 0;
+  }
+  
+  int count;
+  for (count = 0; count < 40; count ++) {
+    printf("Random test number %d:\n", (count+1));
+    rand_vec(PLAINTEXT, in_len);
+    rand_vec(K1, 32);
+    rand_vec(&N[4], 12);
+    
+    //Check SIV_GCM 2 keys
+    GCM_SIV_ENC_2_Keys(CIPHERTEXT, TAG, K1, N, AAD, PLAINTEXT, aad_len, in_len);
+    res = GCM_SIV_DEC_2_Keys(decrypted_CT, TAG, K1, N, AAD, CIPHERTEXT, aad_len, in_len);
+    
 #ifdef DETAILS
-    	printf("\nAAD =                           "); print_buffer(AAD, aad_len);
-	    printf("\nCIPHERTEXT =                    "); print_buffer(CIPHERTEXT, in_len);
-	    printf("\nDecrypted MSG =                 "); print_buffer(decrypted_CT, in_len);
+    printf("\nAAD =                           "); print_buffer(AAD, aad_len);
+    printf("\nCIPHERTEXT =                    "); print_buffer(CIPHERTEXT, in_len);
+    printf("\nDecrypted MSG =                 "); print_buffer(decrypted_CT, in_len);
 #endif
-
-	    if (res == SUCCESS && (memcmp(PLAINTEXT, decrypted_CT, in_len) == 0)) {
-		    printf("SIV_GCM_2_KEYS Passed\n");
-	    } else {
-		    printf("SIV_GCM_2_KEYS Failed\n");
-	    }
+    
+    if (res == SUCCESS && (memcmp(PLAINTEXT, decrypted_CT, in_len) == 0)) {
+      printf("SIV_GCM_2_KEYS Passed\n");
+    } else {
+      printf("SIV_GCM_2_KEYS Failed\n");
     }
-    free(PLAINTEXT);
-    free(CIPHERTEXT);
-    free(decrypted_CT);
-    free(AAD);
+  }
+  free(PLAINTEXT);
+  free(CIPHERTEXT);
+  free(decrypted_CT);
+  free(AAD);
 }

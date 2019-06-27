@@ -1,8 +1,12 @@
 GCC = gcc
 ICC = icc
-FLAGS =  -march=native -Ofast -Os -Werror
+FLAGS =  -march=native -Ofast -Os -Werror -Wall -Wno-error=strict-aliasing
 BINUTILS =
 DEF=-DDETAILS
+
+default:  all
+
+all:  ALL
 
 ALL:  SIV_GCM
 
