@@ -4,8 +4,9 @@ GCC = clang
 ICC = icc
 FLAGS = -DRDTSC -march=native -Werror -Wall
 #FLAGS+= -Wa,-q
-DEF= -DDETAILS -DLITTLE_ENDIAN_
-#DEF= -DCOUNT
+DEF  = -DDETAILS -DLITTLE_ENDIAN_
+DEF += -DADD_INFO
+#DEF +== -DCOUNT
 
 default: all
 

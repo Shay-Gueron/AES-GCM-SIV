@@ -107,9 +107,9 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 	((uint64_t*)Record_Enc_Key)[3] = KDF_T[10];
     if ((L1+L2) <= 128) { //HORNER
 	
-		Polyval_Horner(T, Record_Hash_Key, AAD, L1);					// using non padded inputs as needed
-		Polyval_Horner(T, Record_Hash_Key, PT, L2);
-		Polyval_Horner(T, Record_Hash_Key, len_blk, 16);
+    Polyval_Horner(T, Record_Hash_Key, (uint8_t *)AAD, L1);					// using non padded inputs as needed
+		Polyval_Horner(T, Record_Hash_Key, (uint8_t *)PT, L2);
+		Polyval_Horner(T, Record_Hash_Key, (uint8_t *)len_blk, 16);
 		#ifdef DETAILS
 		memcpy((uint8_t*)(ctx->details_info+16*16), T, 16);
 		#endif
@@ -131,7 +131,7 @@ void AES_GCM_SIV_Encrypt (AES_GCM_SIV_CONTEXT* ctx, uint8_t* CT, uint8_t* TAG, c
 		INIT_Htable(ctx->Htbl, Record_Hash_Key);								//T = POLYVAL(padded_AADAAD||padded_MSG||LENBLK)
 		Polyval_Htable(ctx->Htbl, AAD, L1, T);
 		Polyval_Htable(ctx->Htbl, PT, L2, T);
-		Polyval_Htable(ctx->Htbl, len_blk, 16, T);
+		Polyval_Htable(ctx->Htbl, (uint8_t *)len_blk, 16, T);
 		#ifdef DETAILS
 		memcpy((uint8_t*)(ctx->details_info+16*16), T, 16);
 		#endif
@@ -189,14 +189,14 @@ int AES_GCM_SIV_Decrypt(AES_GCM_SIV_CONTEXT* ctx, uint8_t* DT, uint8_t* TAG, con
 	AES_256_KS(Record_Enc_Key, (unsigned char *)(ctx->KS.KEY));
 	if ((L1+L2) <= 128) {
 		ENC_MSG_x4(CT, DT, TAG, (unsigned char *)(ctx->KS.KEY), (uint64_t)L2);
-		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);					// using non padded inputs as needed
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, (unsigned char *)AAD, L1);					// using non padded inputs as needed
 		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, DT, L2);
-		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, len_blk, 16);
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, (unsigned char *)len_blk, 16);
 	}
 	else
 	{
 		INIT_Htable_6(ctx->Htbl, Record_Hash_Key);
-		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, AAD, L1);													//POLYVAL(padded_AAD)
+		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, (unsigned char *)AAD, L1);													//POLYVAL(padded_AAD)
 		Decrypt_Htable(CT, DT, POLYVAL_dec, TAG, ctx->Htbl, (unsigned char *)(ctx->KS.KEY), L2, ctx->secureBuffer);
 		Polyval_Horner(POLYVAL_dec, Record_Hash_Key, (unsigned char *)len_blk, 16);														//POLYVAL(padded_AAD||padded_MSG||LENBLK)
 	}

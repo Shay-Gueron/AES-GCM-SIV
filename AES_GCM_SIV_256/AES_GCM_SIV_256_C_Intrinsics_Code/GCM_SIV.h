@@ -96,30 +96,30 @@ void Polyval_Horner(unsigned char T[16],  			// input/output
 					 unsigned char* BUF,			// Buffer
 					 unsigned int blocks);			// LEn2
 					 
-void ENC_MSG_x4(unsigned char* PT, 
+void ENC_MSG_x4(const unsigned char* PT, 
 				  unsigned char* CT, 				//Output
 				  unsigned char* TAG, 
 				  unsigned char* KS,
 				  int byte_len);
 				  
-void ENC_MSG_x8(unsigned char* PT, 
+void ENC_MSG_x8(const unsigned char* PT, 
 				  unsigned char* CT, 				//Output
 				  unsigned char* TAG, 
 				  unsigned char* KS,
 				  int byte_len);
 				  
 void INIT_Htable(uint8_t Htbl[16*8], uint8_t *H);
-void Polyval_Htable(uint8_t Htbl[16*8], uint8_t *MSG, uint64_t LEN, uint8_t T[16]);
+void Polyval_Htable(uint8_t Htbl[16*8], const uint8_t *MSG, uint64_t LEN, uint8_t T[16]);
 
 void Decrypt_Horner(unsigned char* CT, 				//input
 				 unsigned char* DT,					//output
-				 unsigned char POLYVAL_dec[16], 	//input/output
+				 const unsigned char POLYVAL_dec[16], 	//input/output
 				 unsigned char TAG[16],
 				 unsigned char H[16],
 				 unsigned char* KS, 				//Key Schedule for decryption
 				 int byte_len);		
 				 
-void Decrypt_Htable(unsigned char* CT, 				//input
+void Decrypt_Htable(const unsigned char* CT, 				//input
 				 unsigned char* PT,					//output
 				 unsigned char POLYVAL_dec[16], 	//input/output
 				 unsigned char TAG[16],
@@ -190,13 +190,18 @@ void init_buffers(unsigned char* AAD, int init_AAD_byte_len, unsigned char* PT, 
 	CT[5] = AES_128(first_key, NONCE[95:0] || 5)
 */
 void AES256_KS_ENC_x1_INIT_x6(const unsigned char* NONCE, unsigned char* CT, 
-				   unsigned char* KS, unsigned char* key);
-void AES_KS(unsigned char* key, unsigned char* KS);
-void AES_256_KS(unsigned char* key, unsigned char* KS);
-void AES_KS_ENC_x1(unsigned char* PT, unsigned char* CT, int len, unsigned char *KS, unsigned char* key);
+				   unsigned char* KS, const unsigned char* key);
+void AES_KS(const unsigned char* key, unsigned char* KS);
+void AES_256_KS(const unsigned char* key, unsigned char* KS);
+void AES_KS_ENC_x1(const unsigned char* PT, unsigned char* CT, int len, unsigned char *KS, const unsigned char* key);
 void INIT_Htable_6(unsigned char* Htbl, unsigned char* H);
 void ECB_ENC_block(unsigned char* PT, unsigned char* CT, unsigned char* KS);
 void Clear_SIV_CTX(AES_GCM_SIV_CONTEXT* ctx);
 void AES_GCM_SIV_Init(AES_GCM_SIV_CONTEXT* ctx, const uint8_t* KEY);
+
+void AES256_KS_ENC_x1(const unsigned char* PT, unsigned char* CT,
+                      unsigned char* KS, const unsigned char* key);
+void AES_256_ENC_x6(const unsigned char* NONCE, unsigned char* CT,
+                    unsigned char* KS);
 
 #endif /* _GCM_SIV_H */
