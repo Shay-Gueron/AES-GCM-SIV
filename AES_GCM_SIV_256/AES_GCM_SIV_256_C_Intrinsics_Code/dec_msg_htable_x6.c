@@ -62,7 +62,7 @@
 #include <wmmintrin.h>
 #include <tmmintrin.h>
 #include <stdint.h>
-
+#include <string.h>
 
 
 #define SCHOOLBOOK(reg, htbl_reg){\

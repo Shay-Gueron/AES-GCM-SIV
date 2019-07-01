@@ -1,6 +1,6 @@
 GCC = gcc
 ICC = icc
-FLAGS = 
+FLAGS = -O3 -march=native -Werror
 BINUTILS = 
 DEF=-DDETAILS 
 

@@ -71,17 +71,17 @@
 //****************************************************************************                 
 int main(int argc, char *argv[])
 {
-    int L1=0, L2=0;
-    int init_AAD_bit_len=0;
-    int init_MSG_bit_len=0;
+  //int L1=0, L2=0;
+    //int init_AAD_bit_len=0;
+    //int init_MSG_bit_len=0;
     int init_AAD_byte_len=0; // L1
     int init_MSG_byte_len=0; //L2
-    int padded_MSG_byte_len=0;
-    int padded_AAD_byte_len=0;  
+    //int padded_MSG_byte_len=0;
+    //int padded_AAD_byte_len=0;  
     int total_blocks=0; 
-    int i=0;
-    int enc_dec_flag=0;
-	unsigned char *AAD = NULL;
+    //int i=0;
+    //int enc_dec_flag=0;
+	  unsigned char *AAD = NULL;
     unsigned char *PT = NULL;
     unsigned char *CT = NULL;
     unsigned char *DT = NULL;
@@ -89,19 +89,21 @@ int main(int argc, char *argv[])
     uint8_t K[32]={0};
     uint8_t IV[16]={0};
     uint8_t TAG[16]={0};
-      
+
 	AES_GCM_SIV_CONTEXT ctx;
     // variables for printing
     uint8_t LENBLK[16]={0};
-	#ifdef DETAILS
+#ifdef DETAILS
     uint8_t* Record_Hash_Key = (ctx.details_info+20*16);
 	uint8_t* Record_Enc_Key = ctx.details_info+21*16;
-	uint8_t* Record_Hash_Key_DEC = ctx.details_info+43*16;
-	uint8_t* Record_Enc_Key_DEC = ctx.details_info+44*16;
+	//uint8_t* Record_Hash_Key_DEC = ctx.details_info+43*16;
+	//uint8_t* Record_Enc_Key_DEC = ctx.details_info+44*16;
 	uint8_t* T = ctx.details_info+16*16;
-	uint8_t* T_DEC = ctx.details_info+39*16;
+	//uint8_t* T_DEC = ctx.details_info+39*16;
+#ifdef DEC
 	uint8_t* TAG_D = ctx.details_info+42*16;
-	#endif
+#endif /* DEC */
+#endif /* DETAILS */
     //Get Input
     if(argc == 1 || argc == 2) {
       init_AAD_byte_len = 0;
@@ -125,154 +127,150 @@ int main(int argc, char *argv[])
 //*********************************** START - ENCRYPT **********************************************    
 #ifdef COUNT
     //ENCRYPT
-    #ifndef DEC
+#ifndef DEC
     MEASURE({
-    #endif
-#endif
+#endif /* DEC */
+#endif /* COUNT */
 	AES_GCM_SIV_Encrypt(&ctx, CT, TAG, AAD, PT, init_AAD_byte_len, init_MSG_byte_len, IV, K);
 #ifdef COUNT
     #ifndef DEC
     });
-    #endif
-#endif
+#endif /* DEC */
+#endif /* COUNT */
 
 //*********************************** END - ENCRYPT **********************************************  
-    
-        
+
 #ifdef DETAILS
-    print_lengths(init_AAD_byte_len, 
+    print_lengths(init_AAD_byte_len,
                   init_MSG_byte_len);
-    
-    #ifndef LITTLE_ENDIAN_            
+
+#ifndef LITTLE_ENDIAN_            
     print_buffers_BE(init_AAD_byte_len, 
                     init_MSG_byte_len, 
                     K,Record_Hash_Key,IV,
-                    AAD, PT, LENBLK); 
-    #else
+                    AAD, PT, LENBLK);
+    print_res_buffers_BE(init_AAD_byte_len, init_MSG_byte_len,
+                         Record_Hash_Key, K, T, T+16, T+32, TAG, AAD, CT);  
+    printf("Encryption_Key=                 ");print_buffer_BE(Record_Enc_Key, 32);
+#else
     print_buffers_LE(init_AAD_byte_len, 
                     init_MSG_byte_len, 
                     K,Record_Hash_Key,IV,
                     AAD, PT, LENBLK); 
-    #endif
-    #ifndef LITTLE_ENDIAN_
-    print_res_buffers_BE(init_AAD_byte_len, init_MSG_byte_len,
-                        Record_Hash_Key, K, T, T+16, T+32, TAG, AAD, CT);  
-    printf("Encryption_Key=                 ");print_buffer_BE(Record_Enc_Key, 32);
-    #else
     print_res_buffers_LE(init_AAD_byte_len, init_MSG_byte_len,
                         Record_Hash_Key, K, T, T+16, T+32, TAG, AAD, CT);
     printf("Encryption_Key=                 ");print_buffer_LE(Record_Enc_Key, 32);
-    #endif
-#endif
+#endif /* LITTLE_ENDIAN_ */
+#endif /* DETAILS */
 
 	AES_GCM_SIV_Init(&ctx, K);
-  
-    
-    
+
+
+
 //*********************************** START - DECRYPT **********************************************    
-#ifdef COUNT            
+#ifdef COUNT
     //DECRYPT
-    #ifdef DEC
+#ifdef DEC
     MEASURE({
-    #endif
-#endif
+#endif /* DEC */
+#endif /* COUNT */
 	result = AES_GCM_SIV_Decrypt(&ctx, DT, TAG, AAD, CT, init_AAD_byte_len, init_MSG_byte_len, IV, K);
-  
-#ifdef COUNT    
-    #ifdef DEC
+
+#ifdef COUNT
+#ifdef DEC
     });
-    #endif
-#endif
+#endif /* DEC */
+#endif /* COUNT */
 //*********************************** END - DECRYPT **********************************************  
 	Clear_SIV_CTX(&ctx);
+
 #ifdef DEC
 // upon tag mismatch, the output is a copy of the input ciphertext (and a mismatch indicator)
 
-#ifdef ADD_INFO
-#ifdef DETAILS  
+#ifdef DETAILS
     printf("\nPerforming Decryption and\nAuthentication:\n\n");
-    #ifndef LITTLE_ENDIAN_
+#ifndef LITTLE_ENDIAN_
     printf("Decrypted MSG =                 "); print_buffer_BE(DT, init_MSG_byte_len);
     printf("\nTAG' =                          "); print16_BE(TAG_D);
-    #ifdef ADD_INFO
+#ifdef ADD_INFO
     if (result == 0) {
         printf("\nTAG comparison PASSED!!!\n");
     }
     else {
         printf("\nTAG comparison FAILED!!!\n");
     }
-    #endif
-    #else
+#endif /* ADD_INFO */
+#else /* LITTLE_ENDIAN_ */
     printf("Decrypted MSG =                 "); print_buffer_LE(DT, init_MSG_byte_len);
     printf("\nTAG' =                          "); print16_LE(TAG_D);
-    #ifdef ADD_INFO
+#ifdef ADD_INFO
     if (result == 0) {
         printf("\nTAG comparison PASSED!!!\n");
     }
     else {
         printf("\nTAG comparison FAILED!!!\n");
     }
-    #endif
-    #endif
-#endif  
-#endif  
-#endif
+#endif /* AAD_INFO */
+#endif /* LITTLE_ENDIAN_ */
+#endif /* DETAILS */
+#endif /* DEC */
 
 #ifdef DETAILS
             printf("\n***************************\n");
               printf("         APPENDIX          \n");
               printf("***************************\n");
         printf("KEY_SCHEDULE (Encryption_Key)   ");
-        #ifndef LITTLE_ENDIAN_
-		#ifndef DEC
+#ifndef LITTLE_ENDIAN_
+#ifndef DEC
         print_buffer_BE((unsigned char *)(ctx.details_info), 16*15);
-		#else
+#else /* DEC */
 		print_buffer_BE((unsigned char *)(ctx.details_info+23*16), 16*15);
-		#endif
-        #ifdef ADD_INFO
-        #ifdef DEC
+#endif /* DEC */
+#ifdef ADD_INFO
+#ifdef DEC
         if (total_blocks > 6) {
             printf("\nHTABLE for aggregated POLYVAL \nH^j * x^(-128(j-1)) mod Q       ");
             print_buffer_BE((ctx.details_info+46*16), 16*6);
         }
-        #else
+#else /* DEC */
         if (total_blocks > 8) {
             printf("\nHTABLE for aggregated POLYVAL \nH^j * x^(-128(j-1)) mod Q       ");
             print_buffer_BE((ctx.details_info+46*16), 16*8);
         }
-        #endif
-        #endif
+#endif /* DEC */
+#endif /* ADD_INFO */
         printf("\nCTRBLKS (with MSbit set to 1)\n");
         print_counters_from_TAG_BE(TAG, init_MSG_byte_len/16 + ((init_MSG_byte_len%16 ==0) ? 0 : 1));
-        #else
-        #ifndef DEC
+#else /* LITTLE_ENDIAN_ */
+#ifndef DEC
         print_buffer_LE((unsigned char *)(ctx.details_info), 16*15);
-		#else
+#else /* DEC */
 		print_buffer_LE((unsigned char *)(ctx.details_info+23*16), 16*15);
-		#endif
+#endif /* DEC */
         if (total_blocks > 8) {
         printf("\nHTABLE for aggregated POLYVAL \nH^j * x^(-128(j-1)) mod Q       ");
         print_buffer_LE((ctx.details_info+46*16), 16*8);
         }
         printf("\nCTRBLKS (with MSbit set to 1)        ");
         print_counters_from_TAG_LE(TAG, init_MSG_byte_len/16 + ((init_MSG_byte_len%16 ==0) ? 0 : 1));
-        #endif
-        
- #endif
+#endif /* LITTLE_ENDIAN_ */
+
+#endif /* DETAILS */
+
  #ifdef RDTSC
  #ifdef COUNT
-        #ifdef DETAILS
+#ifdef DETAILS
         printf("\n\n****************************************************\n");
         printf("*************** PERFORMANCE ************************\n");
         printf("Best result for %d bytes (padded AAD + padded MSG): \n", init_MSG_byte_len+init_AAD_byte_len);
         printf("Cycles: %.0f\n", RDTSC_total_clk);
         printf("Cycles/Byte: %.2f\n", RDTSC_total_clk/(init_MSG_byte_len+init_AAD_byte_len));
-        #else
+#else /* DETAILS */
         //printf("%.0f\n", RDTSC_total_clk);
         printf("Cycles = %.0f  C/B = %.2f\n", RDTSC_total_clk, RDTSC_total_clk/(init_MSG_byte_len+init_AAD_byte_len));
-        #endif
- #endif
-#endif
+#endif /* DETAILS */
+#endif /* COUNT */
+#endif /* RDTSC */
 	_mm_free(AAD);
     _mm_free(PT);
     _mm_free(CT);

@@ -56,19 +56,21 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS          #
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                #
 ###############################################################################
+#                                                                             #
+###############################################################################
+# Usage:                                                                      #
+#      ./GCM_SIV_GENERAL_V02_LE [len_of_AAD len_of_MSG]                       #
+#                                                                             #
+###############################################################################
+
 */
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
 
-#if !defined (ALIGN16)
-#if defined (__GNUC__)
-#  define ALIGN16  __attribute__  ( (aligned (16)))
-# else
-#  define ALIGN16 __declspec (align (16))
-# endif
-#endif
+#include "GCM_SIV.h"
 
 #ifndef ALEN
 #define ALEN 0
@@ -86,122 +88,10 @@
 void print16(uint8_t *in);
 void print_buffer(uint8_t *in, int length);
 void rand_vec(uint8_t *in, int length);
-void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, uint64_t aad_len, 
+void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, uint64_t aad_len,
 				  uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad);
-void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, uint64_t aad_len, 
+void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, uint64_t aad_len,
                    uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad, int flag);
-
-
-				
-void SIV_GCM_ENC_2_Keys(uint8_t* CT, 				// Output
-						uint8_t TAG[16], 			// Output
-						uint8_t K1[32], 
-						uint8_t N[16],
-						uint8_t* AAD, 
-						uint8_t* MSG, 
-						uint64_t AAD_len, 
-						uint64_t MSG_len);
-				
-int SIV_GCM_DEC_2_Keys(uint8_t* MSG, 				// Output
-						uint8_t TAG[16], 			
-						uint8_t K1[32], 
-						uint8_t N[16],
-						uint8_t* AAD, 
-						uint8_t* CT, 
-						uint64_t AAD_len, 
-						uint64_t CT_len);
-
-
-
-						
-int main(int argc, char *argv[])
-{   
- 	uint8_t *PLAINTEXT = NULL;
-    uint8_t *AAD = NULL;
-    uint8_t *CIPHERTEXT = NULL;
-    uint8_t *decrypted_CT = NULL;
-	int i =0;
-	uint8_t TAG[16] = {0};
-	uint8_t K1[32] ={0};
-	uint8_t N[16] ={0};
-	
-	int res = 0;
-	uint64_t aad_len, in_len;
-	uint64_t msg_pad = 0;
-	uint64_t aad_pad = 0;
-    
-	//Get Input
-	if(argc == 1 || argc == 2) {
-      aad_len = ALEN;
-	  in_len  = MLEN;
-    }
-	else if (argc >= 3) {
-      aad_len = atoi(argv[1]);
-	  in_len  = atoi(argv[2]);
-	}
-	
-	if ((aad_len % 16) != 0) {
-		aad_pad = 16 - (aad_len % 16);
-	}
-	if ((in_len % 16) != 0) {
-		msg_pad = 16 - (in_len % 16);
-	}
-		
-	PLAINTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
-    CIPHERTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
-    decrypted_CT = 	 (uint8_t*)malloc(in_len + msg_pad);
-    AAD =  			 (uint8_t*)malloc(aad_len + aad_pad);
-	for (i=0; i<(in_len+msg_pad); i++)
-	{
-		CIPHERTEXT[i] = 0;
-		decrypted_CT[i] = 0;
-	}	
-#ifdef DETAILS	
-
-	init_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad);
-	printf("*****************************");
-	printf("\nPerforming SIV_GCM - Two Keys:");
-	printf("\n*****************************\n\n");
-	printf("AAD_len = %d bytes\n", aad_len);
-	printf("MSG_len = %d bytes\n", in_len);
-	print_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
-#else
-	for (i=0; i<(aad_len+aad_pad); i++)
-		AAD[i] = 0;
-
-	int count;
-	for (count = 0; count < 40; count ++) {
-		printf("Random test number %d:\n", count+1);
-		rand_vec(PLAINTEXT, in_len);
-		rand_vec(K1, 32);
-		rand_vec(&N[4], 12);
-#endif
-	
-//Check SIV_GCM 2 keys	
-	GCM_SIV_ENC_2_Keys(CIPHERTEXT, TAG, K1, N, AAD, PLAINTEXT, aad_len, in_len);
-	res = GCM_SIV_DEC_2_Keys(decrypted_CT, TAG, K1, N, AAD, CIPHERTEXT, aad_len, in_len);
-	
-#ifdef DETAILS	
-	printf("\nAAD =                           "); print_buffer(AAD, aad_len);
-	printf("\nCIPHERTEXT =                    "); print_buffer(CIPHERTEXT, in_len);
-	printf("\nDecrypted MSG =                 "); print_buffer(decrypted_CT, in_len);
-#endif
-	
-	if (res == SUCCESS && (memcmp(PLAINTEXT, decrypted_CT, in_len) == 0)) {
-		printf("SIV_GCM_2_KEYS Passed\n");
-	}
-	else {
-		printf("SIV_GCM_2_KEYS Failed\n");
-	}
-	
-	
- 
-	free(PLAINTEXT);
-    free(CIPHERTEXT);
-    free(decrypted_CT);
-    free(AAD);
- 
-}
 
 //**************************************************************************************
 void rand_vec(uint8_t *in, int length)
@@ -213,18 +103,6 @@ void rand_vec(uint8_t *in, int length)
    }
 }
 
-void print16(uint8_t *in) {
-	int i;
-	for(i=0; i<16; i++)
-	{
-		#ifdef LE
-		printf("%02x", in[15-i]);
-		#else
-		printf("%02x", in[i]);
-		#endif
-	}
-	printf("\n");
-}	
 void print_buffer_LE(uint8_t *in, int length)
 {
    int i;
@@ -288,7 +166,7 @@ void print_buffer(uint8_t *in, int length)
 }
 
 
-void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, 
+void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 				  uint64_t aad_len, uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad)
 {
 	int i, j;
@@ -299,7 +177,7 @@ void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 	}
 	K1[0]=1;
 	N[0]=3;
-	
+
 	//Init AAD [00..1][00..2]...[000 aad_len]
 	for(j=1, i=0; i < aad_len + aad_pad; i++) {
 		AAD[i] = 0;
@@ -315,10 +193,10 @@ void init_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 			PLAINTEXT[i] = j++;
 		}
 	}
-	
+
 }
 
-void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N, 
+void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 					uint64_t aad_len, uint64_t in_len, uint64_t aad_pad, uint64_t msg_pad, int flag)
 {
 	printf("                                            BYTES ORDER         \n");
@@ -330,12 +208,12 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 	printf("                                15141312111009080706050403020100\n");
 	#endif
 	printf("                                --------------------------------\n\n");
-	
+
 
 	printf("K1 = K =                        "); print16(K1);
 	printf("                                "); print16(K1+16);
 
-	
+
 	printf("NONCE =                         "); print_buffer(N, 12);
 	printf("\nAAD =                           "); print_buffer(AAD, aad_len);
 	printf("\nMSG =                           "); print_buffer(PLAINTEXT, in_len);
@@ -343,19 +221,86 @@ void print_buffers(uint8_t* PLAINTEXT, uint8_t* AAD, uint8_t* K1, uint8_t* N,
 	printf("\nPADDED_MSG =                    "); print_buffer(PLAINTEXT, in_len + msg_pad);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int main(int argc, char *argv[])
+{
+  uint8_t *PLAINTEXT = NULL;
+  uint8_t *AAD = NULL;
+  uint8_t *CIPHERTEXT = NULL;
+  uint8_t *decrypted_CT = NULL;
+  int i =0;
+  uint8_t TAG[16] = {0};
+  uint8_t K1[32] ={0};
+  uint8_t N[16] ={0};
+  
+  int res = 0;
+  uint64_t aad_len = 0, in_len = 0;
+  uint64_t msg_pad = 0;
+  uint64_t aad_pad = 0;
+  
+  //Get Input
+  if(argc == 1 || argc == 2) {
+    aad_len = ALEN;
+    in_len  = MLEN;
+  }
+  else if (argc >= 3) {
+    aad_len = atoi(argv[1]);
+    in_len  = atoi(argv[2]);
+  }
+  
+  if ((aad_len % 16) != 0) {
+    aad_pad = 16 - (aad_len % 16);
+  }
+  if ((in_len % 16) != 0) {
+    msg_pad = 16 - (in_len % 16);
+  }
+  
+  PLAINTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
+  CIPHERTEXT = 	 (uint8_t*)malloc(in_len + msg_pad);
+  decrypted_CT = 	 (uint8_t*)malloc(in_len + msg_pad);
+  AAD =  			 (uint8_t*)malloc(aad_len + aad_pad);
+  for (i=0; i<(in_len+msg_pad); i++) {
+    CIPHERTEXT[i] = 0;
+    decrypted_CT[i] = 0;
+  }
+#ifdef DETAILS
+  init_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad);
+  printf("*****************************");
+  printf("\nPerforming SIV_GCM - Two Keys:");
+  printf("\n*****************************\n\n");
+  printf("AAD_len = %lld bytes\n", aad_len);
+  printf("MSG_len = %lld bytes\n", in_len);
+  print_buffers(PLAINTEXT, AAD, K1, N, aad_len, in_len, aad_pad, msg_pad, TWO_KEYS);
+#endif
+  
+  for (i=0; i<(aad_len+aad_pad); i++) {
+    AAD[i] = 0;
+  }
+  
+  int count;
+  for (count = 0; count < 40; count ++) {
+    printf("Random test number %d:\n", (count+1));
+    rand_vec(PLAINTEXT, in_len);
+    rand_vec(K1, 32);
+    rand_vec(&N[4], 12);
+    
+    //Check SIV_GCM 2 keys
+    GCM_SIV_ENC_2_Keys(CIPHERTEXT, TAG, K1, N, AAD, PLAINTEXT, aad_len, in_len);
+    res = GCM_SIV_DEC_2_Keys(decrypted_CT, TAG, K1, N, AAD, CIPHERTEXT, aad_len, in_len);
+    
+#ifdef DETAILS
+    printf("\nAAD =                           "); print_buffer(AAD, aad_len);
+    printf("\nCIPHERTEXT =                    "); print_buffer(CIPHERTEXT, in_len);
+    printf("\nDecrypted MSG =                 "); print_buffer(decrypted_CT, in_len);
+#endif
+    
+    if (res == SUCCESS && (memcmp(PLAINTEXT, decrypted_CT, in_len) == 0)) {
+      printf("SIV_GCM_2_KEYS Passed\n");
+    } else {
+      printf("SIV_GCM_2_KEYS Failed\n");
+    }
+  }
+  free(PLAINTEXT);
+  free(CIPHERTEXT);
+  free(decrypted_CT);
+  free(AAD);
+}

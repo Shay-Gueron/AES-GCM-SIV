@@ -1,11 +1,15 @@
 GCC = gcc
 ICC = icc
-FLAGS = 
-BINUTILS = 
-DEF=-DDETAILS 
+FLAGS =  -march=native -Ofast -Os -Werror -Wall -Wno-error=strict-aliasing
+BINUTILS =
+DEF=-DDETAILS
 
-ALL:  SIV_GCM 
-	
+default:  all
+
+all:  ALL
+
+ALL:  SIV_GCM
+
 SIV_GCM:
 
 	$(GCC) $(FLAGS) $(DEF) main.c GCM_SIV_c.c clmul_emulator.c aes_emulation.c aes_emulation_tables.c -o GCM_SIV_GENERAL_V02_BE

@@ -1,4 +1,6 @@
-#!/bin/csh
+#!/bin/bash
+
+PATH=$PATH:.
 
 echo ""
 GCM_SIV_ENC 0  0
